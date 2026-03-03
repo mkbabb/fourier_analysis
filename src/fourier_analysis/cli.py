@@ -6,10 +6,10 @@ animation rendering.
 
 Usage::
 
-    fourier-analysis figures [--only F02 F19 ...]
-    fourier-analysis epicycles IMAGE [-n 200] [-o out.png] [--strategy auto]
-    fourier-analysis series FILE [-n 50] [-o out.png]
-    fourier-analysis animate IMAGE [-n 200] [--duration 30] [-o out.mp4]
+    fourier figures [--only F02 F19 ...]
+    fourier epicycles IMAGE [-n 200] [-o out.png] [--strategy auto]
+    fourier series FILE [-n 50] [-o out.png]
+    fourier animate IMAGE [-n 200] [--duration 30] [-o out.mp4]
 """
 
 from __future__ import annotations
@@ -246,7 +246,7 @@ def _plot_reconstruction(
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="fourier-analysis",
+        prog="fourier",
         description="Companion CLI for 'An Introduction to Fourier Analysis'.",
     )
     sub = parser.add_subparsers(dest="command", required=True)
