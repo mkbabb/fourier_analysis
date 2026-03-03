@@ -10,6 +10,7 @@ import sys
 import traceback
 
 from fourier_analysis.figures import (
+    f01_title_epicycle,
     f02_partial_sums,
     f03_projection,
     f04_function_as_vector,
@@ -33,6 +34,7 @@ from fourier_analysis.figures import (
 )
 
 GENERATORS = [
+    ("F01", f01_title_epicycle),
     ("F02", f02_partial_sums),
     ("F03", f03_projection),
     ("F04", f04_function_as_vector),

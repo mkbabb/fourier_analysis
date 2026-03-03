@@ -17,7 +17,7 @@ from fourier_analysis.epicycles import EpicycleChain
 from fourier_analysis.figures.style import BLUE, save_figure, setup_style
 from fourier_analysis.shortest_tour import order_contours
 
-PORTRAIT_PATH = Path(__file__).resolve().parents[3] / "assets" / "portraits" / "joseph-fourier.jpg"
+PORTRAIT_PATH = Path(__file__).resolve().parents[3] / "assets" / "portraits" / "joseph-fourier.png"
 
 
 def _load_contour(n_points: int = 1024) -> np.ndarray:

@@ -61,15 +61,17 @@
 \date{}
 
 \begin{document}
-\maketitle
 
-\begin{figure}
+\begin{titlepage}
     \centering
-    \includegraphics[width=0.5\textwidth]{../assets/fourier.png}
-\end{figure}
-
-
-\newpage
+    \vspace*{\stretch{2}}
+    {\LARGE An Introduction to Fourier Analysis\par}
+    \vspace{1.5em}
+    {\large Michael Babb\par}
+    \vspace{\stretch{1}}
+    \includegraphics[width=0.55\textwidth]{../assets/f01_title_epicycle.png}
+    \vspace{\stretch{2}}
+\end{titlepage}
 
 \tableofcontents{}
 \newpage
@@ -1580,53 +1582,7 @@ The key observations per radix:
 
 A generic fallback handles arbitrary prime factors within a composite $N$ via $O(n^2)$ direct DFT. Since $n$ is small---just one factor in the decomposition---the quadratic cost is acceptable.
 
-\section{Bluestein's Algorithm and Dispatch}
-\label{sec:bluestein_dispatch}
-
-\subsection{Bluestein's Chirp-Z Transform}
-
-The staged mixed-radix algorithm requires $N$ to be composite. When $N$ itself is prime (and $N > 4$), Bluestein's chirp-z algorithm \cite{bluestein_chirp} reduces the problem to a circular convolution, achieving $O(N \log N)$ even for prime lengths. The identity
-\begin{equation}
-    kn = -\dfrac{(k-n)^2}{2} + \dfrac{k^2}{2} + \dfrac{n^2}{2}
-\end{equation}
-transforms the DFT sum into
-\begin{equation}
-    X_k = \chi_k \sum_{n=0}^{N-1} \bigl(x_n \chi_n\bigr)\, \overline{\chi_{k-n}}
-\end{equation}
-where $\chi_n = e^{-i\pi n^2/N}$ is the chirp sequence. The inner sum is a \textit{convolution} of the modulated input with the conjugate chirp kernel. This convolution is computed via FFT of a power-of-two length $M \geq 2N - 1$:
-\begin{enumerate}
-    \item \textbf{Modulate}: $a_n = x_n \chi_n$, zero-padded to length $M$.
-    \item \textbf{Build kernel}: $b_0 = \overline{\chi_0}$; for $n \geq 1$, $b_n = b_{M-n} = \overline{\chi_n}$ (symmetric wrap).
-    \item \textbf{Convolve}: $c = \mathrm{IDFT}\bigl(\mathrm{DFT}(a) \cdot \mathrm{DFT}(b)\bigr)$.
-    \item \textbf{Post-multiply}: $X_k = \chi_k \cdot c_k$.
-\end{enumerate}
-
-Since $M$ is a power of two, the staged algorithm handles the inner FFTs efficiently (all radix-2 butterflies). Phase reduction ($n^2 \bmod 2N$) keeps exponents small for numerical stability.
-
-An important structural note: Bluestein's algorithm calls the staged FFT on power-of-two lengths (always composite). The staged FFT dispatches to the generic quadratic butterfly for prime factors \textit{within} a composite $N$---it never calls Bluestein. There is no circular dependency.
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.85\textwidth]{../assets/f16_bluestein.pdf}
-    \caption{Left: the chirp signal $\omega^{n^2/2}$ for $N = 32$. Right: verification that the Bluestein identity $nk = -(k-n)^2/2 + n^2/2 + k^2/2$ holds exactly.}
-    \label{fig:bluestein}
-\end{figure}
-
-\subsection{1-D FFT Dispatch}
-
-The complete 1-D dispatch logic is straightforward:
-\begin{equation}
-    \mathrm{FFT}(x) = \begin{cases}
-        \mathrm{identity}             & N \leq 1 \\
-        \mathrm{DFT}_{\mathrm{naive}} & N \leq 4 \\
-        \mathrm{Bluestein}            & N \text{ prime},\; N > 4 \\
-        \mathrm{staged}               & N \text{ composite}
-    \end{cases}
-\end{equation}
-
-The na\"ive base case handles $N \leq 4$ directly at $O(N^2)$ cost---cheap enough that the overhead of factorization and twiddle precomputation isn't worth it. For $N > 4$, the algorithm bifurcates: composite lengths enter the Temperton staged pipeline; prime lengths are routed through Bluestein.
-
-\section{The $N$-Dimensional FFT}
+\section{The $N$-Dimensional FFT via Hypercube Dimensional Gliding}
 \label{sec:nd_fft}
 
 \subsection{Separability}
@@ -1659,6 +1615,48 @@ The dimensional gliding algorithm proceeds as follows. For each axis $a$ with si
 No reshaping. No transposing. No intermediate buffers. The stride system that powers element access and iteration is the same system that enables fiber extraction for the $N$-D transform. This is the architectural through-line: the strided hypercube is the universal data structure, and dimensional gliding is the universal traversal primitive.
 
 The inverse $N$-D transform uses the conjugate trick: $\mathrm{IDFT}(\vec{X}) = \overline{\mathrm{DFT}(\overline{\vec{X}})} / N$, inheriting the same dimensional gliding algorithm from the forward transform.
+
+\subsection{1-D FFT Dispatch and Bluestein's Algorithm}
+\label{sec:bluestein_dispatch}
+
+Each fiber extracted by dimensional gliding is transformed by the 1-D FFT. The complete dispatch logic is straightforward:
+\begin{equation}
+    \mathrm{FFT}(x) = \begin{cases}
+        \mathrm{identity}             & N \leq 1 \\
+        \mathrm{DFT}_{\mathrm{naive}} & N \leq 4 \\
+        \mathrm{Bluestein}            & N \text{ prime},\; N > 4 \\
+        \mathrm{staged}               & N \text{ composite}
+    \end{cases}
+\end{equation}
+
+The na\"ive base case handles $N \leq 4$ directly at $O(N^2)$ cost---cheap enough that the overhead of factorization and twiddle precomputation isn't worth it. For $N > 4$, the algorithm bifurcates: composite lengths enter the Temperton staged pipeline; prime lengths are routed through Bluestein.
+
+The staged mixed-radix algorithm requires $N$ to be composite. When $N$ itself is prime (and $N > 4$), Bluestein's chirp-z algorithm \cite{bluestein_chirp} reduces the problem to a circular convolution, achieving $O(N \log N)$ even for prime lengths. The identity
+\begin{equation}
+    kn = -\dfrac{(k-n)^2}{2} + \dfrac{k^2}{2} + \dfrac{n^2}{2}
+\end{equation}
+transforms the DFT sum into
+\begin{equation}
+    X_k = \chi_k \sum_{n=0}^{N-1} \bigl(x_n \chi_n\bigr)\, \overline{\chi_{k-n}}
+\end{equation}
+where $\chi_n = e^{-i\pi n^2/N}$ is the chirp sequence. The inner sum is a \textit{convolution} of the modulated input with the conjugate chirp kernel. This convolution is computed via FFT of a power-of-two length $M \geq 2N - 1$:
+\begin{enumerate}
+    \item \textbf{Modulate}: $a_n = x_n \chi_n$, zero-padded to length $M$.
+    \item \textbf{Build kernel}: $b_0 = \overline{\chi_0}$; for $n \geq 1$, $b_n = b_{M-n} = \overline{\chi_n}$ (symmetric wrap).
+    \item \textbf{Convolve}: $c = \mathrm{IDFT}\bigl(\mathrm{DFT}(a) \cdot \mathrm{DFT}(b)\bigr)$.
+    \item \textbf{Post-multiply}: $X_k = \chi_k \cdot c_k$.
+\end{enumerate}
+
+Since $M$ is a power of two, the staged algorithm handles the inner FFTs efficiently (all radix-2 butterflies). Phase reduction ($n^2 \bmod 2N$) keeps exponents small for numerical stability.
+
+An important structural note: Bluestein's algorithm calls the staged FFT on power-of-two lengths (always composite). The staged FFT dispatches to the generic quadratic butterfly for prime factors \textit{within} a composite $N$---it never calls Bluestein. There is no circular dependency.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{../assets/f16_bluestein.pdf}
+    \caption{Left: the chirp signal $\omega^{n^2/2}$ for $N = 32$. Right: verification that the Bluestein identity $nk = -(k-n)^2/2 + n^2/2 + k^2/2$ holds exactly.}
+    \label{fig:bluestein}
+\end{figure}
 
 \medskip
 

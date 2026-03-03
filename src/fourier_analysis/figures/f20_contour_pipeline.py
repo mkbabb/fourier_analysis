@@ -22,7 +22,7 @@ from fourier_analysis.epicycles import EpicycleChain
 from fourier_analysis.figures.style import BLUE, RED, save_figure, setup_style
 from fourier_analysis.shortest_tour import order_contours
 
-PORTRAIT_PATH = Path(__file__).resolve().parents[3] / "assets" / "portraits" / "joseph-fourier.jpg"
+PORTRAIT_PATH = Path(__file__).resolve().parents[3] / "assets" / "portraits" / "joseph-fourier.png"
 
 
 def generate(image_path: str | Path | None = None) -> None:
@@ -39,13 +39,19 @@ def generate(image_path: str | Path | None = None) -> None:
         path = resample_arc_length(path, 1024)
 
         # (a) Original image
-        img = Image.open(image_path).convert("L")
-        axes[0, 0].imshow(np.array(img), cmap="gray")
+        img_orig = Image.open(image_path)
+        if img_orig.mode == "RGBA":
+            axes[0, 0].imshow(np.array(img_orig))
+        else:
+            axes[0, 0].imshow(np.array(img_orig.convert("L")), cmap="gray")
         axes[0, 0].set_title("(a) Original image")
         axes[0, 0].axis("off")
 
         # (b) Otsu threshold visualization
-        img_resized = img.resize((256, 256), Image.Resampling.LANCZOS)
+        img = img_orig.convert("L")
+        ratio = 256 / max(img.size)
+        new_size = (int(img.size[0] * ratio), int(img.size[1] * ratio))
+        img_resized = img.resize(new_size, Image.Resampling.LANCZOS)
         arr = np.array(img_resized, dtype=np.float64)
         arr = arr / arr.max() if arr.max() > 0 else arr
         thresh = filters.threshold_otsu(arr)

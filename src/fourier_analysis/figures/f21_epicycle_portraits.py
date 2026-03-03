@@ -26,8 +26,8 @@ from fourier_analysis.shortest_tour import order_contours
 PORTRAITS_DIR = Path(__file__).resolve().parents[3] / "assets" / "portraits"
 
 SUBJECTS = [
-    ("Joseph Fourier", "joseph-fourier.jpg", 200),
-    ("Augustin-Louis Cauchy", "cauchy.jpg", 200),
+    ("Joseph Fourier", "joseph-fourier.png", 200),
+    ("Augustin-Louis Cauchy", "cauchy.png", 200),
     ("NES R.O.B.", "NES-ROB.png", 200),
 ]
 
@@ -41,8 +41,12 @@ def _process_portrait(
 
     Returns (original_image_array, contour_path, reconstruction).
     """
-    img = Image.open(image_path).convert("L")
-    img_arr = np.array(img)
+    img = Image.open(image_path)
+    # Keep RGBA for transparent-background portraits; fall back to RGB
+    if img.mode == "RGBA":
+        img_arr = np.array(img)
+    else:
+        img_arr = np.array(img.convert("L"))
 
     contours = extract_contours(image_path, resize=256)
     path = order_contours(contours)
@@ -81,7 +85,7 @@ def generate() -> None:
 
         # Inset: original image
         inset = ax.inset_axes([0.02, 0.02, 0.28, 0.28])
-        inset.imshow(img_arr, cmap="gray")
+        inset.imshow(img_arr, **({} if img_arr.ndim == 3 else {"cmap": "gray"}))
         inset.axis("off")
 
     fig.suptitle("Epicycle portrait reconstructions", fontsize=14)
