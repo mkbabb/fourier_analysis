@@ -140,6 +140,13 @@ Translated symbolically, both the boundary conditions and partial differential e
 \end{align}
 
 Starting from the general heat equation $u_t = \Delta u$ where $u = u(x, y, t)$, the steady-state condition $u_t = 0$ yields:
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{assets/f08_heat_plate.pdf}
+    \caption{Steady-state heat distribution on Fourier's rectangular plate with boundary conditions: $u(0, y) = 1$ and $u(x, \pm\pi/2) = 0$.}
+    \label{fig:heat_plate}
+\end{figure}
 \begin{equation}
     \dfrac{\partial^2 u(x, y)}{\partial x^2} + \dfrac{\partial^2 u(x, y)}{\partial y^2} = 0
     \label{eq:f1}
@@ -289,7 +296,7 @@ Let's prove it:
     \end{equation}
 \end{proof}
 
-A natural question arises: do the eigenfunctions of a Sturm-Liouville problem form a \textit{complete} set? That is, can any sufficiently well-behaved function be represented as a series of these eigenfunctions? The answer is affirmative:
+A natural question then: do the eigenfunctions of a Sturm-Liouville problem form a \textit{complete} set? That is, can any sufficiently well-behaved function be represented as a series of these eigenfunctions? The answer is yes:
 
 \begin{theorem}[Completeness of Sturm-Liouville Eigenfunctions]
     Let $\{y_n\}_{n=1}^{\infty}$ be the eigenfunctions of a regular Sturm-Liouville problem on $[a, b]$ with weight function $w(x) > 0$. Then the set $\{y_n\}$ is complete in $\mathbf{L}^2_w[a, b]$: for any square-integrable function $f$ on $[a, b]$,
@@ -300,7 +307,7 @@ A natural question arises: do the eigenfunctions of a Sturm-Liouville problem fo
     \label{thm:sturm_completeness}
 \end{theorem}
 
-The proof of this theorem is beyond the scope of this paper; the interested reader is directed to \cite{courant_hilbert} for a thorough treatment. This completeness result is precisely what justifies the Fourier series representation: the trigonometric functions that emerge from our particular Sturm-Liouville problem form a complete orthogonal system.
+The proof of this theorem is beyond the scope of this paper; the interested reader is directed to \cite{courant_hilbert} for a thorough treatment. This completeness result is precisely what justifies the entire Fourier series enterprise: the trigonometric functions that emerge from our particular Sturm-Liouville problem form a complete orthogonal system.
 
 Indeed, equation \eqref{eq:sturm1} does not satisfy this form, as the original boundary conditions given by Fourier were specified an interval only for $y$. However, equation \eqref{eq:sturm2} \textit{does}: thus, the solution of \eqref{eq:sturm2} must produce a linearly independent set of orthogonal eigen basis functions. This will be key insight into our solution to the original PDE given by Fourier. Let us return now to Fourier's original path.
 
@@ -362,8 +369,9 @@ Wonderful, a general solution! But what of the constants $c_n$? Fourier uses a s
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.8\textwidth]{assets/partial_sums_of_1.png}
+    \includegraphics[width=0.8\textwidth]{assets/f02_partial_sums.pdf}
     \caption{The partial sums of the above equation converging to 1}
+    \label{fig:partial_sums}
 \end{figure}
 
 If we multiply both sides of \eqref{eq:f4} by $\cos((2m+1)y)$, and then integrate over our original boundary interval, we achieve the following:
@@ -428,7 +436,7 @@ The above two assertions will be explained formally in the proceeding chapters. 
 \chapter{Lens I: Linear Algebra}
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.6\textwidth]{assets/projection.png}
+    \includegraphics[width=0.6\textwidth]{assets/f03_projection.pdf}
     \caption{Vector Projection of vectors $\vec{u}$ and $\vec{v}$. Recall that vector or subspace projection can be viewed as a way to discern "how much" of one vector is represented in another.}
     \label{fig:proj}
 \end{figure}
@@ -495,7 +503,7 @@ Notice the vector space that one is operating in is $\mathbb{R}^N$. The above lo
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.6\textwidth]{assets/f_as_vec.png}
+    \includegraphics[width=0.6\textwidth]{assets/f04_function_as_vector.pdf}
     \caption{Vector representation of a given $f$. The intensity of the vector is proportional to the value of $f$ at that point.}
 \end{figure}
 
@@ -503,7 +511,7 @@ Before we can extend the concept of vectors to continuous functions (vectors of 
 
 Metric spaces $\rightarrow$ Normed vector spaces $\rightarrow$ Banach spaces $\rightarrow$ Inner product spaces $\rightarrow$ Hilbert space\\
 
-A Banach space is a complete normed vector space: one in which every Cauchy sequence converges. A Hilbert space additionally requires an inner product that induces the norm. This distinction is important: $\mathbf{L}^p$ for $p \neq 2$ is Banach but not Hilbert.
+A Banach space is a complete normed vector space---one in which every Cauchy sequence converges. A Hilbert space additionally requires an inner product that induces the norm. The distinction matters: $\mathbf{L}^p$ for $p \neq 2$ is Banach but not Hilbert.
 
 \begin{aside}
     It is assumed that the reader is aware of the definition of an inner product space, thereby the definition is implicit therein.
@@ -1112,10 +1120,10 @@ Which is fantastic! For further reading regarding metric spaces and normed vecto
 \section{Convergence of Fourier Series}
 \label{sec:convergence}
 
-Having derived the Fourier series representation of a function, a natural question arises: under what conditions does this series actually converge to $f$? The answer is more subtle than one might expect, and has occupied mathematicians from Fourier's time through the twentieth century.
+Having derived the Fourier series representation of a function, a rather pressing question emerges: under what conditions does this series actually converge to $f$? The answer is subtler than one might expect, and it's a question that occupied mathematicians from Fourier's era through the better part of the twentieth century.
 
 \subsection*{Pointwise Convergence}
-The first rigorous convergence result was given by Dirichlet \cite{dirichlet_convergence}:
+The first rigorous convergence result is due to Dirichlet \cite{dirichlet_convergence}:
 
 \begin{theorem}[Dirichlet's Convergence Theorem]
     If $f$ is piecewise continuously differentiable on $[-\pi, \pi]$, then the Fourier series of $f$ converges pointwise. At each point $x$ where $f$ is continuous, the series converges to $f(x)$. At each point $x$ where $f$ has a jump discontinuity, the series converges to the average of the left and right limits:
@@ -1126,12 +1134,12 @@ The first rigorous convergence result was given by Dirichlet \cite{dirichlet_con
 \end{theorem}
 
 \subsection*{$\mathbf{L}^2$ Convergence}
-From the Hilbert space perspective, the appropriate notion of convergence is convergence in the $\mathbf{L}^2$ norm. This is guaranteed by the completeness of the trigonometric system (Theorem \ref{thm:sturm_completeness}): for any $f \in \mathbf{L}^2[-\pi, \pi]$,
+From our Hilbert space perspective, the more natural notion of convergence is convergence in the $\mathbf{L}^2$ norm---guaranteed by the completeness of the trigonometric system (Theorem \ref{thm:sturm_completeness}): for any $f \in \mathbf{L}^2[-\pi, \pi]$,
 \begin{equation}
     \lim_{N\to\infty} \left|\left| f - \sum_{n=-N}^{N} c_n e^{inx} \right|\right|^2 = 0
 \end{equation}
 
-An important consequence of $\mathbf{L}^2$ convergence is Parseval's identity:
+A particularly important consequence of $\mathbf{L}^2$ convergence is Parseval's identity:
 
 \begin{theorem}[Parseval's Identity]
     For $f \in \mathbf{L}^2[-\pi, \pi]$ with Fourier coefficients $\{c_n\}$:
@@ -1142,28 +1150,49 @@ An important consequence of $\mathbf{L}^2$ convergence is Parseval's identity:
     \label{thm:parseval}
 \end{theorem}
 
-This is the infinite-dimensional analogue of the Pythagorean theorem: the ``energy'' of $f$ (its squared norm) equals the sum of the squared magnitudes of its Fourier coefficients. One may also view this as a statement of energy conservation: no energy is lost or gained in the passage between the time and frequency domains.
+This is the infinite-dimensional analogue of the Pythagorean theorem: the ``energy'' of $f$ (its squared norm) equals the sum of the squared magnitudes of its Fourier coefficients. One can also view this as a statement of energy conservation---no energy is lost or gained in the passage between time and frequency domains. A rather satisfying bookkeeping identity.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.7\textwidth]{assets/f11_parseval.pdf}
+    \caption{Parseval's identity: the squared magnitudes $|c_n|^2$ of the Fourier coefficients sum to the energy of $f$ in the time domain.}
+    \label{fig:parseval}
+\end{figure}
 
 \subsection*{The Gibbs Phenomenon}
-At jump discontinuities, the partial sums of a Fourier series exhibit a curious behavior known as the Gibbs phenomenon: the overshoots near the discontinuity do not vanish as $N \to \infty$, but instead converge to approximately $9\%$ of the jump height. More precisely, if $f$ has a jump of size $J$ at $x_0$, then:
+At jump discontinuities, the partial sums of a Fourier series exhibit a rather curious misbehavior known as the Gibbs phenomenon: the overshoots near the discontinuity don't vanish as $N \to \infty$, but instead converge to approximately $9\%$ of the jump height. More precisely, if $f$ has a jump of size $J$ at $x_0$, then:
 \begin{equation}
     \lim_{N\to\infty} \max_{x \text{ near } x_0} |S_N(x) - f(x)| \approx 0.0895 \cdot J
 \end{equation}
 
-This phenomenon was first observed by Wilbraham in 1848 and later rediscovered by Gibbs in 1899. It is an inherent feature of pointwise convergence of Fourier series at discontinuities, and cannot be eliminated by simply taking more terms.
+This was first observed by Wilbraham in 1848 and later rediscovered by Gibbs in 1899. It's an inherent feature of pointwise convergence at discontinuities---one can't simply throw more terms at the problem and expect it to go away.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{assets/f09_gibbs.pdf}
+    \caption{The Gibbs phenomenon: partial sums of a square wave for $N = 5, 10, 25, 100$. The $\approx 9\%$ overshoot at each discontinuity persists regardless of $N$.}
+    \label{fig:gibbs}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{assets/f10_fejer_vs_partial.pdf}
+    \caption{Fej\'{e}r summation (Ces\`{a}ro means) versus partial sums: the Ces\`{a}ro means converge smoothly without the Gibbs overshoot.}
+    \label{fig:fejer}
+\end{figure}
 
 \subsection*{Almost Everywhere Convergence}
-The deepest result in this direction was obtained by Carleson \cite{carleson_convergence} in 1966:
+The deepest result in this direction is due to Carleson \cite{carleson_convergence}, obtained in 1966:
 
 \begin{theorem}[Carleson's Theorem]
     If $f \in \mathbf{L}^2[-\pi, \pi]$, then the Fourier series of $f$ converges to $f(x)$ for almost every $x$.
     \label{thm:carleson}
 \end{theorem}
 
-This landmark theorem settled a conjecture that had been open for over a century. The proof is highly non-trivial and remains one of the great achievements of twentieth-century harmonic analysis. For further reading regarding convergence of Fourier series, see \cite{stein_fourier}.
+This landmark theorem settled a conjecture that had been open for over a century. The proof is famously difficult---it remains one of the great achievements of twentieth-century harmonic analysis. For further reading regarding convergence of Fourier series, see \cite{stein_fourier}.
 
 \chapter{Lens II: Complex Analysis}
-Recall that if a function, $f$, is relatively "\textit{well behaved}" about a point, $x_0$, it may thereby be represented by a Taylor series about $x_0$. "\textit{well behaved}" in this sense means that if $f$ is expanded about $x_0$, then $x_0$ must \textbf{not} be a singularity of $f$. If the above holds for $f$, $f$ is then called analytic:
+Recall that if a function, $f$, is relatively ``\textit{well behaved}'' about a point, $x_0$, it may thereby be represented by a Taylor series about $x_0$. ``\textit{Well behaved}'' in this sense means that if $f$ is expanded about $x_0$, then $x_0$ must \textbf{not} be a singularity of $f$. If the above holds, $f$ is then called analytic:
 
 \begin{theorem}[Analyticity of a Function]
     If a function, $f(x)$, is given by a convergent power series about $x_0$:
@@ -1180,9 +1209,9 @@ Recall that if a function, $f$, is relatively "\textit{well behaved}" about a po
     A uniformly convergent series of continuous functions is continuous. Moreover, the derived series $\sum_{n=1}^{\infty} na_n(x-x_0)^{n-1}$ has the same radius of convergence $R$ (since $\limsup |na_n|^{1/n} = \limsup |a_n|^{1/n}$), and thus also converges uniformly on compact subsets. By the theorem on term-by-term differentiation of uniformly convergent series, $f$ is differentiable and $f'(x) = \sum_{n=1}^{\infty} na_n(x-x_0)^{n-1}$. Repeating this argument shows $f$ is infinitely differentiable within $S$, and therefore analytic. See \cite{ahlfors_complex} for a thorough treatment.
 \end{proof}
 
-In practice, there are two differing types of analytic functions: complex-analytic, or holomorphic and real-analytic. A given function may be any combination of the two. This will become important shortly.
+In practice, there are two differing types of analytic functions: complex-analytic (holomorphic) and real-analytic. A given function may be any combination of the two. This distinction will become important shortly.
 
-A nice consequence of this is the following: if $g$ is real-analytic, $g$ is then infinitely real-differentiable on $S$. An example of this can be seen when computing the coefficients of $g$'s power series. We'll expand $g$ about $x_0$:
+A nice consequence of this: if $g$ is real-analytic, $g$ is then infinitely real-differentiable on $S$. One can see this directly when computing the coefficients of $g$'s power series. We'll expand $g$ about $x_0$:
 
 \begin{align}
     g(x)    & = \sum_{n=0}^{\infty} a_nx^n                                                            \\
@@ -1214,12 +1243,12 @@ The above example is trivial, but demonstrates two key concepts:
     \item the process by which $a_n$ was obtained.
 \end{itemize}
 
-If $x_0$ is then a singularity of $g$, one may be quick to assume that $g$ is not analytic about $x_0$. Indeed, it is not real-analytic about this point; notwithstanding, $g$ may still be complex-analytic, or holomorphic, about $x_0$. If $g$ is indeed holomorphic on some annulus (more on this later) about $x_0$, we must reformulate our above derivation of the coefficients $a_n$.
+If $x_0$ is then a singularity of $g$, one may be quick to assume that $g$ isn't analytic about $x_0$. Indeed, it's not real-analytic about this point; notwithstanding, $g$ may still be complex-analytic---holomorphic---about $x_0$. If $g$ is indeed holomorphic on some annulus (more on this later) about $x_0$, we must reformulate the above derivation of the coefficients $a_n$.
 
 \subsection{Holomorphism}
-Thereinbefore the section above, a function, $f$ was real-analytic on some disk, $S$, if $f$ had a valid Taylor expansion on $S$. This implied $f$ was infinitely \textit{real}-differentiable on $S$ (see \eqref{eq:taylord}). One may conclude thus, if $f$ was instead holomorphic on $S$, this would imply that $f$ is then infinitely \textit{complex}-differentiable on $S$. This is what we hope to find, because if $f$ is holomorphic on $S$, then there is hope for a valid power series representation of $f$ about some point within $S$.
+Thereinbefore the section above, a function, $f$, was real-analytic on some disk, $S$, if $f$ had a valid Taylor expansion on $S$. This implied $f$ was infinitely \textit{real}-differentiable on $S$ (see \eqref{eq:taylord}). One may conclude thus: if $f$ were instead holomorphic on $S$, this would imply that $f$ is infinitely \textit{complex}-differentiable on $S$. This is precisely what we're after, because if $f$ is holomorphic on $S$, there's hope for a valid power series representation of $f$ about some point within $S$.
 
-Recall, that the holomorphism of a function is a much more stringent requirement than its real counterpart. For a function to be holomorphic, (therein complex differentiable), it must satisfy the Cauchy-Riemann equations.
+Recall that holomorphism is a much more stringent requirement than its real counterpart. For a function to be holomorphic (therein complex differentiable), it must satisfy the Cauchy-Riemann equations.
 
 \begin{theorem}[Cauchy-Riemann Equations]
     Let $f(z) = u(x, y) + iv(x, y)$ where $z = x + iy$. Then $f$ is holomorphic (complex differentiable) at $z_0 = x_0 + iy_0$ if and only if $u$ and $v$ have continuous partial derivatives at $(x_0, y_0)$ satisfying:
@@ -1234,11 +1263,11 @@ Recall, that the holomorphism of a function is a much more stringent requirement
     The complex derivative $f'(z_0) = \lim_{h\to 0} \frac{f(z_0+h) - f(z_0)}{h}$ must yield the same value regardless of the direction from which $h \to 0$. Taking $h$ to be real ($h = \Delta x$) yields $f'(z_0) = u_x + iv_x$. Taking $h$ to be purely imaginary ($h = i\Delta y$) yields $f'(z_0) = v_y - iu_y$. Equating the real and imaginary parts gives the Cauchy-Riemann equations. See \cite{brown_churchill} for the complete proof.
 \end{proof}
 
-As an example: consider $f(z) = e^z = e^x(\cos y + i\sin y)$. Here $u = e^x\cos y$ and $v = e^x\sin y$. One may verify that $u_x = e^x\cos y = v_y$ and $u_y = -e^x\sin y = -v_x$, confirming that $e^z$ is entire (holomorphic on all of $\mathbb{C}$). This will be relevant shortly, as the complex exponentials $e^{inz}$ that form the basis of Fourier series are themselves entire functions.
+As an example: consider $f(z) = e^z = e^x(\cos y + i\sin y)$. Here $u = e^x\cos y$ and $v = e^x\sin y$. One can verify that $u_x = e^x\cos y = v_y$ and $u_y = -e^x\sin y = -v_x$, confirming that $e^z$ is entire (holomorphic on all of $\mathbb{C}$). This'll be relevant shortly---the complex exponentials $e^{inz}$ that form the basis of Fourier series are themselves entire functions.
 
 \section{Laurent Series}
 \label{sec:laurent}
-The Taylor series representation requires $f$ to be holomorphic on a disk centered at $z_0$. But what if $f$ has an isolated singularity at $z_0$? In this case, $f$ may still be holomorphic on an \textit{annulus} $r_1 < |z - z_0| < r_2$ surrounding the singularity. The appropriate generalization of the Taylor series is then the Laurent series:
+The Taylor series representation requires $f$ to be holomorphic on a disk centered at $z_0$. But what if $f$ has an isolated singularity at $z_0$? In such a case, $f$ may still be holomorphic on an \textit{annulus} $r_1 < |z - z_0| < r_2$ surrounding the singularity. The appropriate generalization is then the Laurent series:
 
 \begin{theorem}[Laurent Series]
     If $f$ is holomorphic on the annulus $A = \{z \in \mathbb{C} : r_1 < |z - z_0| < r_2\}$, then $f$ has a unique representation:
@@ -1255,32 +1284,46 @@ The Taylor series representation requires $f$ to be holomorphic on a disk center
     \label{thm:laurent}
 \end{theorem}
 
-Notice the striking similarity between \eqref{eq:laurent} and the Taylor series: the Laurent series simply extends the summation to include negative powers of $(z - z_0)$. The terms with $n \geq 0$ form the \textit{analytic part}, while those with $n < 0$ form the \textit{principal part} of the Laurent series. When $f$ has no singularity at $z_0$ (i.e., $r_1 = 0$), all coefficients with $n < 0$ vanish, and we recover the Taylor series.
+Notice the striking similarity between \eqref{eq:laurent} and the Taylor series: the Laurent series simply extends the summation to include negative powers of $(z - z_0)$. The terms with $n \geq 0$ form the \textit{analytic part}, while those with $n < 0$ form the \textit{principal part}. When $f$ has no singularity at $z_0$ (i.e., $r_1 = 0$), all coefficients with $n < 0$ vanish, and we recover the Taylor series---a tidy elision of the more general case.
 
-For a proof of this theorem, including the derivation of the coefficient formula via Cauchy's integral formula, see \cite{ahlfors_complex}.
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.5\textwidth]{assets/f12_laurent_annulus.pdf}
+    \caption{The annulus of convergence $A = \{z : r_1 < |z - z_0| < r_2\}$ for the Laurent series. The unit circle $|z| = 1$ (highlighted) lies within the annulus, and $z_0$ is an isolated singularity at the origin.}
+    \label{fig:laurent_annulus}
+\end{figure}
+
+For a proof of this theorem---including the derivation of the coefficient formula via Cauchy's integral formula---see \cite{ahlfors_complex}.
 
 \section{From Laurent Series to Fourier Series}
 \label{sec:laurent_to_fourier}
-We now arrive at the central connection between complex analysis and Fourier analysis. Consider a function $f$ that is holomorphic on an annulus containing the unit circle $|z| = 1$. By the Laurent series theorem, $f$ has the representation:
+We now arrive at the central connection---the bridge between complex analysis and Fourier analysis. Consider a function $f$ that's holomorphic on an annulus containing the unit circle $|z| = 1$. By the Laurent series theorem, $f$ has the representation:
 \begin{equation}
     f(z) = \sum_{n=-\infty}^{\infty} c_n z^n
 \end{equation}
 
-Now, parametrize the unit circle by $z = e^{i\theta}$, where $\theta \in [0, 2\pi)$:
+Now, parametrize the unit circle via $z = e^{i\theta}$, where $\theta \in [0, 2\pi)$:
 \begin{equation}
     f(e^{i\theta}) = \sum_{n=-\infty}^{\infty} c_n e^{in\theta}
 \end{equation}
 
-This is exactly the complex Fourier series! The Laurent coefficients \eqref{eq:laurent_coeff}, evaluated on the unit circle ($\gamma: \zeta = e^{i\phi}$, $\deriv{\zeta} = ie^{i\phi}\deriv{\phi}$), become:
+And there it is---exactly the complex Fourier series! The Laurent coefficients \eqref{eq:laurent_coeff}, evaluated on the unit circle ($\gamma: \zeta = e^{i\phi}$, $\deriv{\zeta} = ie^{i\phi}\deriv{\phi}$), become:
 \begin{align}
     c_n & = \dfrac{1}{2\pi i}\oint_{|\zeta|=1} \dfrac{f(\zeta)}{\zeta^{n+1}}\deriv{\zeta}                           \\
         & = \dfrac{1}{2\pi i}\int_0^{2\pi} \dfrac{f(e^{i\phi})}{e^{i(n+1)\phi}} ie^{i\phi}\deriv{\phi}              \\
         & = \dfrac{1}{2\pi}\int_0^{2\pi} f(e^{i\phi})e^{-in\phi}\deriv{\phi}
 \end{align}
 
-Which is precisely the formula for the Fourier coefficients! This reveals the deep connection: the Fourier series of a periodic function is nothing more than the Laurent series of the corresponding function on the unit circle. The substitution $z = e^{i\theta}$ is the bridge between the two theories.
+Which is precisely the formula for the Fourier coefficients! The Fourier series of a periodic function is, in the end, nothing more than the Laurent series of the corresponding function restricted to the unit circle. The substitution $z = e^{i\theta}$ is the connective tissue between the two theories.
 
-This perspective also clarifies \textit{why} the Fourier series works: the completeness of the Fourier system $\{e^{in\theta}\}$ is a consequence of the completeness of the Laurent series on the annulus. The linear algebra viewpoint of chapter II and the complex analysis viewpoint of this chapter are thus two facets of the same underlying structure.
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{assets/f13_laurent_to_fourier.pdf}
+    \caption{The substitution $z = e^{i\theta}$ maps the unit circle in $\mathbb{C}$ (left) to a periodic function on $[0, 2\pi)$ (right), converting the Laurent series into a Fourier series.}
+    \label{fig:laurent_to_fourier}
+\end{figure}
+
+This perspective also clarifies \textit{why} the Fourier series works: the completeness of the Fourier system $\{e^{in\theta}\}$ follows from the completeness of the Laurent series on the annulus. The linear algebra viewpoint of chapter II and the complex analysis viewpoint heretofore are thus two facets of the same underlying structure---two lenses, as promised, trained on a single object.
 
 For further reading regarding Laurent series and their connection to Fourier analysis, see \cite{ahlfors_complex} and \cite{brown_churchill}.
 
@@ -1315,7 +1358,7 @@ Though this may look different in comparison to standard vector projection in $\
     With 1000 vectors representing $f$, here is what it looks like:
     \begin{figure}[h]
         \centering
-        \includegraphics[width=0.8\textwidth]{assets/example1.png}
+        \includegraphics[width=0.8\textwidth]{assets/f05_inner_product_1.pdf}
         \label{fig:example1}
         \caption{On the left, $f$ is represented with 1000 sample vectors. On the right $f$ is shown fully.}
     \end{figure}
@@ -1331,7 +1374,7 @@ Though this may look different in comparison to standard vector projection in $\
 
     \begin{figure}[h]
         \centering
-        \includegraphics[width=0.8\textwidth]{assets/example2.png}
+        \includegraphics[width=0.8\textwidth]{assets/f06_inner_product_2.pdf}
         \label{fig:example2}
 
         \caption{On the left, $f \cdot g$ is represented with $40,000$ sample vectors. On the right, the sum of this vector product, multiplied by a factor of $\Delta x = \dfrac{b - a}{N}$ is shown. Notice the error using this approximation is $-1.5\cdot 10^{-3}$.}
@@ -1347,7 +1390,7 @@ Though this may look different in comparison to standard vector projection in $\
 
     \begin{figure}[h]
         \centering
-        \includegraphics[width=0.8\textwidth]{assets/example3.png}
+        \includegraphics[width=0.8\textwidth]{assets/f07_fourier_projection.pdf}
         \label{fig:example3}
         \caption{}
     \end{figure}
@@ -1397,45 +1440,218 @@ The DFT matrix $F_N$ is symmetric and, up to scaling, unitary: $F_N^{-1} = \frac
 
 The connection to the continuous Fourier transform is immediate: as the sampling rate increases ($N \to \infty$ with fixed duration), the DFT converges to samples of the continuous Fourier transform.
 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{assets/f14_dft_matrix.pdf}
+    \caption{The DFT matrix $F_N$ for $N = 8$: real part, imaginary part, and magnitude. The structured pattern of roots of unity is plainly visible.}
+    \label{fig:dft_matrix}
+\end{figure}
+
+
 \section{The Fast Fourier Transform}
 \label{sec:fft}
 
 A direct computation of the DFT requires $O(N^2)$ operations. The Fast Fourier Transform (FFT), discovered by Cooley and Tukey in 1965 \cite{cooley_tukey}, reduces this to $O(N \log N)$ by exploiting the algebraic structure of $\omega_N$.
 
-The key observation is that the DFT of length $N = 2M$ can be decomposed into two DFTs of length $M$:
+\subsection{The Radix-2 Idea}
+
+The simplest case is $N = 2M$. Split the input into even- and odd-indexed subsequences:
 \begin{align}
     X_k & = \sum_{n=0}^{N-1} x_n \omega_N^{kn}                                                                               \\
-        & = \sum_{m=0}^{M-1} x_{2m} \omega_N^{k(2m)} + \sum_{m=0}^{M-1} x_{2m+1} \omega_N^{k(2m+1)}                          \\
         & = \sum_{m=0}^{M-1} x_{2m} \omega_M^{km} + \omega_N^k \sum_{m=0}^{M-1} x_{2m+1} \omega_M^{km}                       \\
         & = E_k + \omega_N^k \cdot O_k
 \end{align}
 
-where $E_k$ and $O_k$ are the DFTs of the even-indexed and odd-indexed subsequences, respectively, and $\omega_N^k$ is called the \textit{twiddle factor}. Since $E_k$ and $O_k$ are periodic with period $M$, the ``butterfly'' operation:
+where $E_k$ and $O_k$ are the length-$M$ DFTs of the even and odd samples, and $\omega_N^k$ is the \textit{twiddle factor}. Since $E_k$ and $O_k$ are periodic with period $M$, the ``butterfly'' operation
 \begin{align}
     X_k     & = E_k + \omega_N^k O_k \\
     X_{k+M} & = E_k - \omega_N^k O_k
 \end{align}
-computes two outputs from each pair. Applying this recursively yields $\log_2 N$ stages of $N/2$ butterflies each, for a total of $O(N \log N)$ operations.
+computes two outputs from each pair. Applying this recursively yields $\log_2 N$ stages of $N/2$ butterflies each, for a total of $O(N \log N)$ operations. This is the Cooley--Tukey radix-2 decimation-in-time (DIT) algorithm---elegant, but limited to power-of-two lengths. We'll now generalize.
 
-\section{Mixed-Radix and Bluestein's Algorithm}
-\label{sec:mixed_radix}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{assets/f15_butterfly.pdf}
+    \caption{Butterfly diagram for the radix-2 Cooley--Tukey FFT with $N = 8$. Bit-reversed input on the left, natural-order output on the right, with twiddle factors $W^k_N$ annotated at each stage.}
+    \label{fig:butterfly}
+\end{figure}
 
-The Cooley-Tukey FFT as presented above requires $N$ to be a power of 2. For arbitrary $N$, two important generalizations exist:
+\subsection{The Mixed-Radix Decomposition}
 
-\textbf{Mixed-radix FFT.} If $N = p_1 p_2 \cdots p_k$, the DFT can be decomposed into DFTs of sizes $p_1, p_2, \ldots, p_k$. The most common case is $N = 2^a 3^b 5^c$, supported by FFTW and similar libraries \cite{temperton_mixed}. The complexity remains $O(N \log N)$ provided the prime factors are small.
+When $N = N_1 \cdot N_2$, a 1-D index $n$ can be decomposed via mixed-radix representation as
+\begin{equation}
+    n = n_1 + n_2 N_1, \quad k = k_1 N_2 + k_2
+\end{equation}
+where $n_1 \in [0, N_1)$, $n_2 \in [0, N_2)$, $k_1 \in [0, N_1)$, $k_2 \in [0, N_2)$. Substituting into the DFT and separating the exponential:
+\begin{equation}
+    X[k_1 N_2 + k_2] = \sum_{n_2=0}^{N_2-1} \left[\sum_{n_1=0}^{N_1-1} x[n_1 + n_2 N_1]\, \omega_{N_1}^{n_1 k_1}\right] \omega_N^{n_1 k_2}\, \omega_{N_2}^{n_2 k_2}
+\end{equation}
 
-\textbf{Bluestein's algorithm.} For arbitrary $N$ (including prime $N$), Bluestein's chirp-z transform \cite{bluestein_chirp} converts the DFT into a circular convolution by using the identity:
+This decomposes the length-$N$ DFT into three phases:
+\begin{enumerate}
+    \item \textbf{Column FFTs}: $N_2$ independent length-$N_1$ DFTs (the inner sum over $n_1$).
+    \item \textbf{Twiddle multiplication}: pointwise multiplication by $\omega_N^{n_1 k_2}$.
+    \item \textbf{Row FFTs}: $N_1$ independent length-$N_2$ DFTs (the outer sum over $n_2$).
+\end{enumerate}
+
+For a general factorization $N = f_1 \cdot f_2 \cdots f_k$, the process recurses through each factor, yielding a total operation count of $O\bigl(N \sum_i f_i\bigr)$---hence the preference for small prime factors.
+
+\subsection{Kronecker Product Formulation}
+
+Following Van Loan \cite{van_loan_fft}, the two-factor decomposition admits a clean matrix factorization:
+\begin{equation}
+    F_N = \bigl(F_{N_1} \otimes I_{N_2}\bigr)\, T\, \bigl(I_{N_1} \otimes F_{N_2}\bigr)\, L
+    \label{eq:kron_fft}
+\end{equation}
+where $L$ is a stride permutation (the ``perfect shuffle'' that reindexes between column and row phases), $T = \mathrm{diag}(\omega_N^{jk})$ is the twiddle diagonal for the appropriate index pairs, $\otimes$ denotes the Kronecker product, and $I_m$ is the $m \times m$ identity. The left factor applies $N_2$-point DFTs across $N_1$ groups, the right factor applies $N_1$-point DFTs across $N_2$ groups, and the twiddle diagonal mediates between stages.
+
+This formulation makes the recursive structure of the FFT algebraically explicit: the full $N$-point DFT matrix is a product of sparse, structured factors---Kronecker products with identities and diagonal twiddle matrices---rather than a single dense $N \times N$ multiply.
+
+\subsection{Temperton's Self-Sorting Algorithm}
+
+The permutation matrices $L$ in \eqref{eq:kron_fft} are an inconvenience: a na\"ive implementation would require a separate digit-reversal pass to reorder the output. Temperton's (1983) contribution \cite{temperton_self_sorting} is a \textit{self-sorting} formulation that absorbs these permutations into the indexing scheme. The input is pre-permuted via mixed-radix digit-reversal; then $k$ butterfly stages are applied (one per prime factor), building up from small DFTs to the full transform. The output lands in natural order without any post-processing.
+
+The cost of this elision is two arrays that swap roles at each stage---ping-pong buffers---so that each butterfly reads from one and writes to the other. In practice, the ping-pong swap is absorbed into the indexing, so the algorithm operates on a single working array.
+
+Concretely, at stage $s$ with factor $f_s$ and cumulative product $p_{\mathrm{div}} = f_1 \cdot f_2 \cdots f_{s-1}$:
+\begin{enumerate}
+    \item $p_{\mathrm{mul}} = f_s \cdot p_{\mathrm{div}}$ is the current DFT size being assembled.
+    \item $\mathrm{groups} = N / p_{\mathrm{mul}}$ independent groups are processed.
+    \item Within each group, $p_{\mathrm{div}}$ independent $f_s$-point butterflies are performed, reading elements at stride $p_{\mathrm{div}}$.
+\end{enumerate}
+
+The index for element $k$ of the butterfly at group $m$, block $j$ is:
+\begin{equation}
+    m \cdot p_{\mathrm{mul}} + j + k \cdot p_{\mathrm{div}}
+    \label{eq:butterfly_index}
+\end{equation}
+
+Each butterfly operates on a disjoint set of indices, so the computation is fully in-place. The DIT butterflies premultiply their inputs by twiddle factors drawn from a precomputed flat table (described below), then apply the short $f_s$-point DFT.
+
+\subsection{Twiddle Factor Precomputation}
+
+The twiddle factors are the diagonal matrices in Temperton's factorization. They encode the complex exponentials needed between butterfly stages:
+\begin{equation}
+    \mathrm{tw}[j, k] = \exp\!\left(\frac{-2\pi i \cdot j \cdot k}{f_s \cdot p_{\mathrm{div}}}\right)
+\end{equation}
+where $j$ indexes the block element ($0$ to $p_{\mathrm{div}} - 1$), $k$ indexes the butterfly input ($1$ to $f_s - 1$), and $p_{\mathrm{div}}$ is the cumulative product of all previous factors.
+
+These are precomputed into a flat list, laid out by stage, then by block element, then by twiddle index within the butterfly. For stage $s$ with factor $f_s$ and cumulative product $p_{\mathrm{div}}$, the table contains $p_{\mathrm{div}} \cdot (f_s - 1)$ entries. At $j = 0$ (the first block element), all twiddles are $1$, so the butterfly reduces to an untwiddled short DFT. The offset into the flat table for stage $s$ is the sum of entries from all previous stages.
+
+This precomputation strategy avoids recomputing transcendentals inside the innermost loop---a nontrivial savings when $N$ is large.
+
+\subsection{Optimized Butterflies}
+
+Hand-optimized radix-$2$, $3$, $4$, $5$, and $7$ butterflies exploit the algebraic structure of the roots of unity at each radix to minimize the real operation count. These match Temperton's Table~I \cite{temperton_self_sorting}:
+
+\begin{center}
+\begin{tabular}{c c c}
+    \hline
+    Radix & Real multiplications & Real additions \\
+    \hline
+    2 & 0  & 4  \\
+    3 & 4  & 12 \\
+    4 & 0  & 16 \\
+    5 & 12 & 24 \\
+    7 & 36 & 48 \\
+    \hline
+\end{tabular}
+\end{center}
+
+The key observations per radix:
+\begin{itemize}
+    \item \textbf{Radix 2}: The 2nd root of unity is $-1$; no multiplications needed---just add/subtract.
+    \item \textbf{Radix 3}: Uses $\cos(2\pi/3) = -1/2$ and $\sin(2\pi/3) = \sqrt{3}/2$.
+    \item \textbf{Radix 4}: Powers of $i$ (the 4th root of unity) are $\{1, -i, -1, i\}$, eliminating all real multiplications.
+    \item \textbf{Radix 5}: Precomputed $\sin/\cos$ constants for the 5th roots, with careful grouping of symmetric and antisymmetric terms.
+    \item \textbf{Radix 7}: Same symmetric structure, using precomputed $\cos(2k\pi/7)$ and $\sin(2k\pi/7)$ for $k = 1, 2, 3$.
+\end{itemize}
+
+A generic fallback handles arbitrary prime factors within a composite $N$ via $O(n^2)$ direct DFT. Since $n$ is small---just one factor in the decomposition---the quadratic cost is acceptable.
+
+\section{Bluestein's Algorithm and Dispatch}
+\label{sec:bluestein_dispatch}
+
+\subsection{Bluestein's Chirp-Z Transform}
+
+The staged mixed-radix algorithm requires $N$ to be composite. When $N$ itself is prime (and $N > 4$), Bluestein's chirp-z algorithm \cite{bluestein_chirp} reduces the problem to a circular convolution, achieving $O(N \log N)$ even for prime lengths. The identity
 \begin{equation}
     kn = -\dfrac{(k-n)^2}{2} + \dfrac{k^2}{2} + \dfrac{n^2}{2}
 \end{equation}
-
-Substituting into the DFT:
+transforms the DFT sum into
 \begin{equation}
-    X_k = \omega_N^{k^2/2} \sum_{n=0}^{N-1} \left(x_n \omega_N^{n^2/2}\right) \omega_N^{-(k-n)^2/2}
+    X_k = \chi_k \sum_{n=0}^{N-1} \bigl(x_n \chi_n\bigr)\, \overline{\chi_{k-n}}
+\end{equation}
+where $\chi_n = e^{-i\pi n^2/N}$ is the chirp sequence. The inner sum is a \textit{convolution} of the modulated input with the conjugate chirp kernel. This convolution is computed via FFT of a power-of-two length $M \geq 2N - 1$:
+\begin{enumerate}
+    \item \textbf{Modulate}: $a_n = x_n \chi_n$, zero-padded to length $M$.
+    \item \textbf{Build kernel}: $b_0 = \overline{\chi_0}$; for $n \geq 1$, $b_n = b_{M-n} = \overline{\chi_n}$ (symmetric wrap).
+    \item \textbf{Convolve}: $c = \mathrm{IDFT}\bigl(\mathrm{DFT}(a) \cdot \mathrm{DFT}(b)\bigr)$.
+    \item \textbf{Post-multiply}: $X_k = \chi_k \cdot c_k$.
+\end{enumerate}
+
+Since $M$ is a power of two, the staged algorithm handles the inner FFTs efficiently (all radix-2 butterflies). Phase reduction ($n^2 \bmod 2N$) keeps exponents small for numerical stability.
+
+An important structural note: Bluestein's algorithm calls the staged FFT on power-of-two lengths (always composite). The staged FFT dispatches to the generic quadratic butterfly for prime factors \textit{within} a composite $N$---it never calls Bluestein. There is no circular dependency.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{assets/f16_bluestein.pdf}
+    \caption{Left: the chirp signal $\omega^{n^2/2}$ for $N = 32$. Right: verification that the Bluestein identity $nk = -(k-n)^2/2 + n^2/2 + k^2/2$ holds exactly.}
+    \label{fig:bluestein}
+\end{figure}
+
+\subsection{1-D FFT Dispatch}
+
+The complete 1-D dispatch logic is straightforward:
+\begin{equation}
+    \mathrm{FFT}(x) = \begin{cases}
+        \mathrm{identity}             & N \leq 1 \\
+        \mathrm{DFT}_{\mathrm{naive}} & N \leq 4 \\
+        \mathrm{Bluestein}            & N \text{ prime},\; N > 4 \\
+        \mathrm{staged}               & N \text{ composite}
+    \end{cases}
 \end{equation}
 
-This is a convolution of the ``chirped'' signal $x_n \omega_N^{n^2/2}$ with the chirp kernel $\omega_N^{-k^2/2}$, which can be computed via zero-padded FFT of length $\geq 2N-1$ (choosing the next power of 2). The total cost is $O(N \log N)$ regardless of $N$'s factorization.
+The na\"ive base case handles $N \leq 4$ directly at $O(N^2)$ cost---cheap enough that the overhead of factorization and twiddle precomputation isn't worth it. For $N > 4$, the algorithm bifurcates: composite lengths enter the Temperton staged pipeline; prime lengths are routed through Bluestein.
 
+\section{The $N$-Dimensional FFT}
+\label{sec:nd_fft}
+
+\subsection{Separability}
+
+The $N$-dimensional DFT of an array with shape $(s_0, s_1, \ldots, s_{d-1})$ is separable: it decomposes as a Kronecker product of 1-D transforms,
+\begin{equation}
+    F_{s_0 \times s_1 \times \cdots \times s_{d-1}} = F_{s_0} \otimes F_{s_1} \otimes \cdots \otimes F_{s_{d-1}}
+\end{equation}
+This means independent 1-D DFTs along each axis produce the full $N$-D result. The order in which axes are processed doesn't matter; each pass transforms one dimension while leaving the others untouched.
+
+\subsection{Hypercube Dimensional Gliding}
+
+The question is how to implement this identity on a flat contiguous buffer without reshaping, transposing, or allocating intermediate arrays. The answer is \textit{hypercube dimensional gliding}: stride-based fiber extraction on the flat buffer, treating it as an $N$-dimensional array via a stride vector.
+
+An $N$-dimensional array of shape $(s_0, s_1, \ldots, s_{d-1})$ is stored as a flat buffer. The stride vector $(\sigma_0, \sigma_1, \ldots, \sigma_{d-1})$ maps multi-indices to flat offsets:
+\begin{equation}
+    \mathrm{offset}(i_0, i_1, \ldots, i_{d-1}) = \sum_k i_k \cdot \sigma_k
+\end{equation}
+
+For row-major layout, $\sigma_0 = 1$ and $\sigma_k = s_0 \cdot s_1 \cdots s_{k-1}$. This stride system provides $O(1)$ random access along any axis of the hypercube.
+
+The dimensional gliding algorithm proceeds as follows. For each axis $a$ with size $n_a$ and stride $\sigma_a$:
+\begin{enumerate}
+    \item Enumerate all \textit{fibers}---1-D slices along axis $a$---by iterating over all coordinates in the orthogonal $(d-1)$-dimensional hyperplane.
+    \item For each fiber, compute the base offset from the orthogonal coordinates, then extract $n_a$ elements at positions $\mathrm{base} + k \cdot \sigma_a$ for $k \in [0, n_a)$.
+    \item Apply the 1-D FFT (staged or Bluestein, as appropriate) to the fiber.
+    \item Write results back to the same positions.
+\end{enumerate}
+
+No reshaping. No transposing. No intermediate buffers. The stride system that powers element access and iteration is the same system that enables fiber extraction for the $N$-D transform. This is the architectural through-line: the strided hypercube is the universal data structure, and dimensional gliding is the universal traversal primitive.
+
+The inverse $N$-D transform uses the conjugate trick: $\mathrm{IDFT}(\vec{X}) = \overline{\mathrm{DFT}(\overline{\vec{X}})} / N$, inheriting the same dimensional gliding algorithm from the forward transform.
+
+\medskip
+
+The companion implementation of the algorithms described in this section can be found in the author's \texttt{mdarray} library.
 
 \chapter{Applications}
 \label{ch:applications}
@@ -1443,7 +1659,7 @@ This is a convolution of the ``chirped'' signal $x_n \omega_N^{n^2/2}$ with the 
 \section{The Convolution Theorem}
 \label{sec:convolution}
 
-One of the most powerful results in Fourier analysis is the convolution theorem, which states that convolution in the time domain corresponds to pointwise multiplication in the frequency domain:
+One of the most useful results in all of Fourier analysis is the convolution theorem: convolution in the time domain corresponds to pointwise multiplication in the frequency domain. An operation that's expensive in one domain becomes trivial in the other---a recurring theme.
 
 \begin{theorem}[Convolution Theorem]
     Let $f, g \in \mathbf{L}^1(\mathbb{R})$. Then:
@@ -1464,18 +1680,25 @@ One of the most powerful results in Fourier analysis is the convolution theorem,
     where the second line follows from Fubini's theorem (interchanging the order of integration), and the third line uses the substitution $u = x - y$.
 \end{proof}
 
-The discrete analogue holds for the DFT: circular convolution in the time domain corresponds to pointwise multiplication of DFTs. This is the basis for FFT-based filtering, correlation, and polynomial multiplication.
+The discrete analogue holds for the DFT: circular convolution in the time domain corresponds to pointwise multiplication of DFTs. This fact underpins FFT-based filtering, correlation, and polynomial multiplication---essentially any setting where one needs to convolve efficiently.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{assets/f17_convolution_theorem.pdf}
+    \caption{The convolution theorem visualized: a Gaussian $f$ and a rectangular pulse $g$ in the time domain (top), their Fourier transforms multiplied pointwise in the frequency domain (bottom left), and the resulting convolution $(f * g)(x)$ (bottom right).}
+    \label{fig:convolution_theorem}
+\end{figure}
 
 \section{Image Reconstruction via Epicycles}
 \label{sec:epicycles_app}
 
-A striking visual application of Fourier series is the reconstruction of arbitrary closed curves using epicycles---chains of rotating vectors in the complex plane. Given a closed curve $\gamma(t)$, $t \in [0, 1)$, parametrized as a complex-valued function, its Fourier series:
+Perhaps the most visually arresting application of Fourier series is the reconstruction of arbitrary closed curves using epicycles---chains of rotating vectors in the complex plane. Given a closed curve $\gamma(t)$, $t \in [0, 1)$, parametrized as a complex-valued function, its Fourier series:
 \begin{equation}
     \gamma(t) = \sum_{n=-N}^{N} c_n e^{2\pi int}
 \end{equation}
-represents $\gamma$ as a sum of $2N + 1$ rotating vectors. Each term $c_n e^{2\pi int}$ traces a circle of radius $|c_n|$ at frequency $n$ rotations per period. Chaining these vectors tip-to-tail, the tip of the last vector traces the reconstructed curve.
+represents $\gamma$ as a sum of $2N + 1$ rotating vectors. Each term $c_n e^{2\pi int}$ traces a circle of radius $|c_n|$ at frequency $n$ rotations per period. Chaining these vectors tip-to-tail, the tip of the outermost vector traces the reconstructed curve.
 
-The pipeline for reconstructing an arbitrary image as epicycles is:
+The pipeline for reconstructing an arbitrary image via epicycles is as follows:
 \begin{enumerate}
     \item \textbf{Edge detection}: extract edges using the Canny algorithm.
     \item \textbf{Contour ordering}: order the edge points into a continuous path via nearest-neighbor traversal.
@@ -1483,27 +1706,48 @@ The pipeline for reconstructing an arbitrary image as epicycles is:
     \item \textbf{Epicycle rendering}: animate the rotating vectors, tracing the reconstruction.
 \end{enumerate}
 
-As $N$ increases, the reconstruction converges to the original contour (by the completeness results of Chapter II). In practice, $N \approx 100\text{--}500$ harmonics suffices for visually faithful reproductions of most images.
+As $N$ increases, the reconstruction converges to the original contour---a direct consequence of the completeness results from Chapter II. In practice, $N \approx 100\text{--}500$ harmonics suffices for visually faithful reproductions of most images, which is rather remarkable.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{assets/f18_epicycle_annotated.pdf}
+    \caption{Epicycle decomposition: individual rotating vectors chained tip-to-tail. Each vector $c_n e^{2\pi int}$ traces a circle of radius $|c_n|$ at frequency $n$.}
+    \label{fig:epicycle_annotated}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{assets/f19_epicycle_convergence.pdf}
+    \caption{Epicycle reconstruction with increasing numbers of harmonics. As $N$ grows, the reconstruction converges to the original shape.}
+    \label{fig:epicycle_convergence}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{assets/f20_contour_pipeline.pdf}
+    \caption{The contour tracing pipeline: (a) target shape, (b) ordered contour points, (c) contour path, (d) Fourier reconstruction from the extracted contour.}
+    \label{fig:contour_pipeline}
+\end{figure}
 
 \section{Spectral Analysis}
 \label{sec:spectral}
 
-The Fourier transform reveals the frequency content of a signal: each coefficient $c_n$ (or $\hat{f}(k)$) encodes the amplitude and phase of the corresponding frequency component. This decomposition is the foundation of spectral analysis.
+The Fourier transform lays bare the frequency content of a signal: each coefficient $c_n$ (or $\hat{f}(k)$) encodes the amplitude and phase of its corresponding frequency component. This decomposition is the foundation of spectral analysis.
 
-The \textit{power spectrum} of a signal $f$ is defined as $|c_n|^2$ (discrete) or $|\hat{f}(k)|^2$ (continuous). By Parseval's identity (Theorem \ref{thm:parseval}), the total power is conserved:
+The \textit{power spectrum} of a signal $f$ is defined as $|c_n|^2$ (discrete) or $|\hat{f}(k)|^2$ (continuous). By Parseval's identity (Theorem \ref{thm:parseval}), total power is conserved:
 \begin{equation}
     \sum_{n=-\infty}^{\infty} |c_n|^2 = \dfrac{1}{2\pi}\int_{-\pi}^{\pi} |f(x)|^2 \deriv{x}
 \end{equation}
 
-Applications of spectral analysis include:
+Corporeal applications of spectral analysis abound:
 \begin{itemize}
     \item \textbf{Audio processing}: identifying the fundamental frequency and harmonics of a musical note.
-    \item \textbf{Signal filtering}: removing unwanted frequency components by zeroing their coefficients.
-    \item \textbf{Data compression}: retaining only the largest coefficients (lossy compression).
+    \item \textbf{Signal filtering}: excising unwanted frequency components by zeroing their coefficients.
+    \item \textbf{Data compression}: retaining only the largest coefficients---a form of lossy compression, but an effective one.
     \item \textbf{Tidal analysis}: decomposing tidal height data into constituent frequencies to predict future tides.
 \end{itemize}
 
-In each case, the Fourier transform provides the passage between the time (or spatial) domain and the frequency domain, enabling analysis and manipulation that would be difficult or impossible in the original domain.
+In each case, the Fourier transform furnishes the passage between the time (or spatial) domain and the frequency domain, enabling analysis and manipulation that would be difficult---or outright impossible---in the original domain.
 
 
 \bibliographystyle{plain}

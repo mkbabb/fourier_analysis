@@ -22,8 +22,12 @@ def generate() -> None:
     # Chirp signal: w^{n²/2} where w = e^{-2πi/N}
     chirp = np.exp(-1j * np.pi * n**2 / N)
 
-    ax1.stem(n, chirp.real, linefmt=f"{BLUE}-", markerfmt=f"{BLUE}o", basefmt="k-", label="Real")
-    ax1.stem(n, chirp.imag, linefmt=f"{RED}--", markerfmt=f"{RED}s", basefmt="k-", label="Imag")
+    markerline, stemlines, baseline = ax1.stem(n, chirp.real, linefmt="-", markerfmt="o", basefmt="k-", label="Real")
+    stemlines.set_color(BLUE)
+    markerline.set_color(BLUE)
+    markerline, stemlines, baseline = ax1.stem(n, chirp.imag, linefmt="--", markerfmt="s", basefmt="k-", label="Imag")
+    stemlines.set_color(RED)
+    markerline.set_color(RED)
     ax1.set_xlabel(r"$n$")
     ax1.set_ylabel(r"Amplitude")
     ax1.set_title(rf"Chirp signal $\omega^{{n^2/2}}$, $N = {N}$")

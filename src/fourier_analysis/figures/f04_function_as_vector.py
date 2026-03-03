@@ -9,7 +9,7 @@ from __future__ import annotations
 import matplotlib.pyplot as plt
 import numpy as np
 
-from fourier_analysis.figures.style import save_figure, setup_style
+from fourier_analysis.figures.style import BLUE, save_figure, setup_style
 
 
 def generate() -> None:
@@ -30,8 +30,8 @@ def generate() -> None:
     ax1.invert_yaxis()
 
     # Right: the continuous function
-    ax2.plot(x, f, color="#2171b5", linewidth=1.5)
-    ax2.fill_between(x, f, alpha=0.15, color="#2171b5")
+    ax2.plot(x, f, color=BLUE, linewidth=1.5)
+    ax2.fill_between(x, f, alpha=0.15, color=BLUE)
     ax2.set_xlabel(r"$x$")
     ax2.set_ylabel(r"$f(x)$")
     ax2.set_title(r"$f(x) = \sin(3\pi x) + \frac{1}{2}\cos(5\pi x)$")

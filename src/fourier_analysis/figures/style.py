@@ -12,16 +12,27 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 # Output directory for generated figures
-ASSETS_DIR = Path(__file__).resolve().parents[3] / "assets"
+ASSETS_DIR = Path(__file__).resolve().parents[3] / "paper" / "assets"
 
-# Color palette
-BLUE = "#2171b5"
-RED = "#cb181d"
-GREEN = "#238b45"
-ORANGE = "#d94801"
-PURPLE = "#6a51a3"
-GRAY = "#636363"
-COLORS = [BLUE, RED, GREEN, ORANGE, PURPLE, GRAY]
+# Color palette — vibrant, bold, Memphis/mid-century modern
+PURPLE = "#7B2D8E"      # Deep royal purple
+PINK = "#E91E8C"         # Hot pink / magenta
+WOLFRAM_RED = "#DD1100"  # Wolfram red (the author's specified preference)
+TEAL = "#00B4D8"         # Vibrant teal
+AMBER = "#F5A623"        # Warm amber/gold
+SLATE = "#3D4F5F"        # Dark slate (for axes, text)
+CREAM = "#FAF3E0"        # Warm cream (for backgrounds where needed)
+LIME = "#7ED321"         # Bright lime green
+
+# Primary sequence for multi-line plots
+COLORS = [PURPLE, WOLFRAM_RED, TEAL, PINK, AMBER, LIME, SLATE]
+
+# Backward-compatible aliases
+BLUE = TEAL
+RED = WOLFRAM_RED
+GREEN = LIME
+ORANGE = AMBER
+GRAY = SLATE
 
 
 def setup_style() -> None:
@@ -29,6 +40,7 @@ def setup_style() -> None:
     mpl.rcParams.update(
         {
             "text.usetex": True,
+            "text.latex.preamble": r"\usepackage{amsfonts}\usepackage{amssymb}",
             "font.family": "serif",
             "font.serif": ["Computer Modern Roman"],
             "font.size": 11,
