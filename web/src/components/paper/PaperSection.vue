@@ -7,13 +7,43 @@ defineProps<{
 </script>
 
 <template>
-    <section :id="id" class="mb-12 scroll-mt-20">
-        <h2 class="fraunces mb-4 text-2xl font-bold tracking-tight">
-            <span class="text-muted-foreground fira-code text-lg">{{ number }}.</span>
-            {{ title }}
+    <section :id="id" class="paper-section mb-14 scroll-mt-20">
+        <h2 class="section-heading fraunces mb-5 text-[1.625rem] font-bold tracking-tight leading-tight">
+            <span class="section-number fira-code text-base font-normal text-muted-foreground/70 mr-2 select-none">{{ number }}.</span>
+            <span class="section-title">{{ title }}</span>
         </h2>
-        <div class="text-[0.95rem] leading-[1.75] text-foreground/90">
+        <div class="section-divider mb-6" />
+        <div class="section-body text-[0.938rem] leading-[1.8] text-foreground/90">
             <slot />
         </div>
     </section>
 </template>
+
+<style scoped>
+/* Decorative divider below section heading */
+.section-divider {
+    height: 1px;
+    background: linear-gradient(
+        to right,
+        hsl(var(--border)),
+        hsl(var(--border) / 0.3),
+        transparent
+    );
+}
+
+/* Section number gets a subtle underline on heading hover */
+.section-heading:hover .section-number {
+    color: hsl(var(--muted-foreground));
+    transition: color 0.2s ease;
+}
+
+/* Prose rhythm within sections */
+.section-body :deep(p + p) {
+    margin-top: 1rem;
+}
+
+.section-body :deep(em) {
+    font-style: italic;
+    color: hsl(var(--foreground));
+}
+</style>

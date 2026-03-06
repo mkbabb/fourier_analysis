@@ -35,25 +35,25 @@
     --radius-md: calc(var(--radius) - 2px);
     --radius-sm: calc(var(--radius) - 4px);
 
-    /* Paper textures */
-    --paper-clean-texture: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.18'/%3E%3C/svg%3E");
-    --paper-aged-texture: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.25'/%3E%3C/svg%3E");
+    /* Paper textures — SVG noise as data URI, matching words project */
+    --paper-clean-texture: url("data:image/svg+xml,%3Csvg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    --paper-aged-texture: url("data:image/svg+xml,%3Csvg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
 }
 
 @layer base {
     :root {
         color-scheme: light;
-        /* Warm paper-like tones from words project */
+        /* Warm paper-like tones — shared with words + CSC411 projects */
         --background: 48 15% 98%;
-        --foreground: 0 0% 3.9%;
+        --foreground: 24 10% 10%;
         --muted: 48 8% 96.1%;
-        --muted-foreground: 0 0% 45.1%;
+        --muted-foreground: 24 5% 45%;
         --popover: 48 10% 98.5%;
-        --popover-foreground: 0 0% 3.9%;
+        --popover-foreground: 24 10% 10%;
         --card: 48 12% 99%;
-        --card-foreground: 0 0% 3.9%;
-        --border: 48 5% 89.8%;
-        --input: 48 5% 89.8%;
+        --card-foreground: 24 10% 10%;
+        --border: 48 8% 88%;
+        --input: 48 8% 88%;
         --primary: 222.2 47.4% 11.2%;
         --primary-foreground: 210 40% 98%;
         --secondary: 48 8% 96.1%;
@@ -63,31 +63,31 @@
         --destructive: 0 84.2% 60.2%;
         --destructive-foreground: 210 40% 98%;
         --ring: 222.2 84% 4.9%;
-        --radius: 0.5rem;
+        --radius: 0.625rem;
         --accent-red: 0 72% 63%;
     }
 
     .dark {
         color-scheme: dark;
-        /* Warm dark tones from words project */
+        /* Warm dark tones — shared with words + CSC411 projects */
         --background: 24 8% 6%;
-        --foreground: 48 10% 92%;
-        --muted: 24 5% 15%;
-        --muted-foreground: 48 5% 64%;
+        --foreground: 48 10% 90%;
+        --muted: 24 5% 13%;
+        --muted-foreground: 48 5% 55%;
         --popover: 24 7% 6.5%;
-        --popover-foreground: 48 10% 92%;
-        --card: 24 6% 7%;
-        --card-foreground: 48 10% 92%;
+        --popover-foreground: 48 10% 90%;
+        --card: 24 6% 8%;
+        --card-foreground: 48 10% 90%;
         --border: 24 4% 16%;
         --input: 24 4% 16%;
-        --primary: 48 10% 92%;
-        --primary-foreground: 0 0% 9%;
-        --secondary: 24 5% 15%;
-        --secondary-foreground: 48 10% 92%;
-        --accent: 24 5% 15%;
-        --accent-foreground: 48 10% 92%;
+        --primary: 48 10% 90%;
+        --primary-foreground: 24 8% 6%;
+        --secondary: 24 5% 13%;
+        --secondary-foreground: 48 10% 90%;
+        --accent: 24 5% 13%;
+        --accent-foreground: 48 10% 90%;
         --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 48 10% 92%;
+        --destructive-foreground: 48 10% 90%;
         --ring: 48 8% 83%;
         --accent-red: 5 55% 50%;
     }
@@ -105,54 +105,65 @@
     }
 }
 
-/* Fraunces utility */
+/* ── Typography utilities ───────────────────────────────────── */
+
 .fraunces {
-    font-family: "Fraunces", serif;
+    font-family: "Fraunces", Georgia, serif;
+    font-feature-settings: "ss01", "ss03";
 }
 
 .fira-code {
     font-family: "Fira Code", monospace;
+    font-feature-settings: "liga", "calt";
 }
 
-/* Paper texture background */
+/* ── Paper texture backgrounds ──────────────────────────────── */
+
 .paper-texture {
     background-image: var(--paper-clean-texture);
     background-repeat: repeat;
-    background-size: 60px 60px;
+    background-size: 200px 200px;
     background-blend-mode: multiply;
 }
 
 .paper-texture-aged {
     background-image: var(--paper-aged-texture);
     background-repeat: repeat;
-    background-size: 80px 80px;
+    background-size: 200px 200px;
     background-blend-mode: multiply;
 }
 
-/* Depth text effect */
+.dark .paper-texture,
+.dark .paper-texture-aged {
+    background-blend-mode: screen;
+}
+
+/* ── Depth text effect (title emboss) ───────────────────────── */
+
 .depth-text {
     position: relative;
     display: inline-block;
     text-shadow:
-        1px 1px 0 hsl(0 0% 65%),
-        2px 2px 0 hsl(0 0% 65%),
-        3px 3px 0 hsl(0 0% 65%),
-        3px 3px 1px rgba(0, 0, 0, 0.1),
-        1px 1px 3px rgba(0, 0, 0, 0.1),
-        2px 2px 3px rgba(0, 0, 0, 0.15);
+        1px 1px 0 hsl(48 10% 72%),
+        2px 2px 0 hsl(48 8% 68%),
+        3px 3px 0 hsl(48 5% 62%),
+        3px 3px 1px rgba(0, 0, 0, 0.08),
+        1px 1px 4px rgba(0, 0, 0, 0.06),
+        2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .dark .depth-text {
     text-shadow:
-        1px 1px 0 hsl(24 5% 20%),
-        2px 2px 0 hsl(24 5% 18%),
-        3px 3px 0 hsl(24 5% 15%),
-        3px 3px 1px rgba(0, 0, 0, 0.2),
-        1px 1px 3px rgba(0, 0, 0, 0.2),
-        2px 2px 3px rgba(0, 0, 0, 0.3);
+        1px 1px 0 hsl(24 5% 18%),
+        2px 2px 0 hsl(24 5% 15%),
+        3px 3px 0 hsl(24 5% 12%),
+        3px 3px 1px rgba(0, 0, 0, 0.25),
+        1px 1px 4px rgba(0, 0, 0, 0.2),
+        2px 2px 4px rgba(0, 0, 0, 0.35);
 }
 
-/* Apple-inspired easings from words project */
+/* ── Apple-inspired easings ─────────────────────────────────── */
+
 .ease-apple {
     transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
 }
@@ -160,24 +171,10 @@
     transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* Tab panel slide-in */
-[data-state="active"][role="tabpanel"] {
-    animation: tab-slide-in 0.18s ease-out;
-}
-
-@keyframes tab-slide-in {
-    from {
-        opacity: 0;
-        transform: translateX(8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
+/* ── Keyframe animations ────────────────────────────────────── */
 
 @keyframes fade-in {
-    from { opacity: 0; transform: translateY(4px); }
+    from { opacity: 0; transform: translateY(6px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
@@ -187,23 +184,33 @@
 }
 
 @keyframes slide-up {
-    from { opacity: 0; transform: translateY(12px); }
+    from { opacity: 0; transform: translateY(16px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes tab-slide-in {
+    from { opacity: 0; transform: translateX(8px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
 .animate-fade-in {
-    animation: fade-in 0.3s ease-out both;
+    animation: fade-in 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) both;
 }
 
 .animate-scale-in {
-    animation: scale-in 0.25s ease-out both;
+    animation: scale-in 0.3s cubic-bezier(0.25, 0.1, 0.25, 1) both;
 }
 
 .animate-slide-up {
-    animation: slide-up 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) both;
+    animation: slide-up 0.5s cubic-bezier(0.25, 0.1, 0.25, 1) both;
 }
 
-/* Custom range slider */
+[data-state="active"][role="tabpanel"] {
+    animation: tab-slide-in 0.18s ease-out;
+}
+
+/* ── Range slider ───────────────────────────────────────────── */
+
 input[type="range"] {
     -webkit-appearance: none;
     appearance: none;
@@ -218,36 +225,49 @@ input[type="range"] {
 input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     background: hsl(var(--primary));
     cursor: pointer;
-    transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                box-shadow 0.15s ease;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
 input[type="range"]::-webkit-slider-thumb:hover {
     transform: scale(1.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
 input[type="range"]::-webkit-slider-thumb:active {
     transform: scale(0.95);
 }
 
-/* Rainbow trail color for accent */
-.trail-color {
-    color: #ff3412;
+/* ── KaTeX styling — LaTeX-faithful rendering ───────────────── */
+
+.katex {
+    font-size: 1.08em;
 }
 
-/* KaTeX overrides */
 .katex-display {
     overflow-x: auto;
     overflow-y: hidden;
-    padding: 0.5rem 0;
+    padding: 0.75rem 0;
+    margin: 1rem 0;
 }
 
-/* Scrollbar styling */
+.katex-display > .katex {
+    font-size: 1.15em;
+}
+
+/* Match LaTeX document color in dark mode */
+.dark .katex {
+    color: hsl(48 10% 90%);
+}
+
+/* ── Scrollbar styling ──────────────────────────────────────── */
+
 .scrollbar-hidden {
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -258,6 +278,7 @@ input[type="range"]::-webkit-slider-thumb:active {
 
 .scrollbar-thin {
     scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted-foreground) / 0.25) transparent;
 }
 .scrollbar-thin::-webkit-scrollbar {
     width: 6px;
@@ -266,14 +287,15 @@ input[type="range"]::-webkit-slider-thumb:active {
     background: transparent;
 }
 .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: hsl(var(--muted-foreground) / 0.3);
+    background: hsl(var(--muted-foreground) / 0.25);
     border-radius: 3px;
 }
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--muted-foreground) / 0.5);
+    background: hsl(var(--muted-foreground) / 0.4);
 }
 
-/* Button press animation */
+/* ── Interactive utilities ──────────────────────────────────── */
+
 .btn-press {
     transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
@@ -281,21 +303,35 @@ input[type="range"]::-webkit-slider-thumb:active {
     transform: scale(0.95);
 }
 
-/* Card hover lift */
 .card-hover {
-    transition: transform 0.25s cubic-bezier(0.25, 0.1, 0.25, 1),
-                box-shadow 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+    transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1),
+                box-shadow 0.3s cubic-bezier(0.25, 0.1, 0.25, 1),
+                border-color 0.3s ease;
 }
 .card-hover:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06),
+                0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .dark .card-hover:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35),
+                0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Reduced motion */
+/* ── Selection color ────────────────────────────────────────── */
+
+::selection {
+    background: hsl(var(--primary) / 0.12);
+    color: inherit;
+}
+
+.dark ::selection {
+    background: hsl(var(--primary) / 0.2);
+}
+
+/* ── Reduced motion ─────────────────────────────────────────── */
+
 @media (prefers-reduced-motion: reduce) {
     .animate-fade-in,
     .animate-scale-in,
@@ -307,5 +343,8 @@ input[type="range"]::-webkit-slider-thumb:active {
     }
     .card-hover:hover {
         transform: none;
+    }
+    [data-state="active"][role="tabpanel"] {
+        animation: none;
     }
 }

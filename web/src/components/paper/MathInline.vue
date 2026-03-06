@@ -8,5 +8,12 @@ const html = computed(() => renderInline(props.tex));
 </script>
 
 <template>
-    <span v-html="html" />
+    <span class="math-inline" v-html="html" />
 </template>
+
+<style scoped>
+.math-inline {
+    /* Prevent line-break inside inline math */
+    white-space: nowrap;
+}
+</style>

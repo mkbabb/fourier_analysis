@@ -10,15 +10,62 @@ const labels: Record<string, string> = {
     lemma: "Lemma",
     proposition: "Proposition",
 };
+
+const accentColors: Record<string, string> = {
+    theorem: "border-primary",
+    definition: "border-accent-red",
+    lemma: "border-muted-foreground",
+    proposition: "border-primary",
+};
 </script>
 
 <template>
-    <div class="my-6 rounded-xl border-l-4 border-primary bg-card paper-texture p-5 transition-colors duration-200 card-hover">
-        <p class="mb-2 text-xs font-bold uppercase tracking-widest text-primary fraunces">
-            {{ labels[type] }}<template v-if="name"> — {{ name }}</template>
+    <div
+        class="theorem-block my-8 rounded-lg border-l-[3px] bg-card paper-texture px-6 py-5 transition-all duration-300 card-hover"
+        :class="accentColors[type]"
+    >
+        <p class="theorem-label mb-3 text-[0.7rem] font-bold uppercase tracking-[0.18em] fraunces"
+           :class="{
+               'text-primary': type === 'theorem' || type === 'proposition',
+               'text-[hsl(var(--accent-red))]': type === 'definition',
+               'text-muted-foreground': type === 'lemma',
+           }"
+        >
+            {{ labels[type] }}<template v-if="name">&ensp;&mdash;&ensp;{{ name }}</template>
         </p>
-        <div class="text-[0.95rem] leading-[1.7]">
+        <div class="theorem-body text-[0.938rem] leading-[1.75] text-foreground/90">
             <slot />
         </div>
     </div>
 </template>
+
+<style scoped>
+.theorem-block {
+    position: relative;
+}
+
+/* Faint top-right ornament for theorems */
+.theorem-block::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 3rem;
+    height: 3rem;
+    border-top: 1px solid hsl(var(--border));
+    border-right: 1px solid hsl(var(--border));
+    border-radius: 0 0.5rem 0 0;
+    opacity: 0.5;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.theorem-block:hover::before {
+    opacity: 0.8;
+}
+
+/* Slightly indent math blocks within theorems */
+.theorem-body :deep(.math-block) {
+    margin-left: 0.5rem;
+}
+</style>
