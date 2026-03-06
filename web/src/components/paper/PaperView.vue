@@ -3,7 +3,7 @@ import MathBlock from "./MathBlock.vue";
 import MathInline from "./MathInline.vue";
 import PaperSection from "./PaperSection.vue";
 import Theorem from "./Theorem.vue";
-import { ArrowRight, Sparkles } from "lucide-vue-next";
+import { ArrowRight } from "lucide-vue-next";
 import { paperSections } from "@/lib/paperContent";
 import { computed } from "vue";
 import { useKatex } from "@/composables/useKatex";
@@ -22,28 +22,28 @@ const sections = computed(() => paperSections);
 
 <template>
     <article class="paper-article mx-auto max-w-3xl px-6 py-14 leading-relaxed animate-fade-in">
-        <!-- Title block — Fraunces display with boil effect -->
+        <!-- Title block -->
         <header class="mb-20 text-center">
             <h1
-                class="fraunces text-4xl font-bold tracking-tight sm:text-5xl md:text-[3.25rem] depth-text leading-[1.15]"
-                style="filter: url(#title-boil)"
+                class="cm-serif text-4xl font-bold tracking-tight sm:text-5xl md:text-[3.25rem] depth-text leading-[1.15]"
             >
                 An Introduction to<br />Fourier Analysis
             </h1>
             <p class="mt-5 text-lg tracking-wide text-muted-foreground cm-serif" style="font-variant: small-caps;">
                 From Heat Equations to Epicycles — An Interactive Companion
             </p>
-            <div class="mt-8 flex items-center justify-center gap-3">
-                <router-link
-                    to="/visualize"
-                    class="group inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium font-mono text-primary-foreground shadow-sm transition-all duration-200 hover:shadow-md hover:opacity-90 btn-press"
-                >
-                    <Sparkles class="h-4 w-4" />
-                    Try the Demo
-                    <ArrowRight class="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
-                </router-link>
-            </div>
         </header>
+
+        <!-- Table of Contents -->
+        <nav class="mb-14 cm-serif text-sm text-muted-foreground">
+            <ol class="list-none space-y-1.5 pl-0">
+                <li v-for="section in sections" :key="section.id">
+                    <a :href="'#' + section.id" class="hover:text-foreground transition-colors duration-150">
+                        {{ section.number }}. {{ section.title }}
+                    </a>
+                </li>
+            </ol>
+        </nav>
 
         <!-- Dynamic sections from paperContent.ts -->
         <PaperSection

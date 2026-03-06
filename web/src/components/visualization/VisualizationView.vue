@@ -8,7 +8,6 @@ import BasisCanvas from "./BasisCanvas.vue";
 import BasisSelector from "./BasisSelector.vue";
 import AnimationControls from "./AnimationControls.vue";
 import CoefficientsPanel from "./CoefficientsPanel.vue";
-import { Loader2 } from "lucide-vue-next";
 
 const route = useRoute();
 const store = useSessionStore();
@@ -26,22 +25,18 @@ onMounted(async () => {
 <template>
     <div class="mx-auto max-w-[1400px] px-4 py-6 sm:px-6">
         <!-- Loading -->
-        <Transition name="fade">
-            <div v-if="store.loading && !store.session" class="flex flex-col items-center justify-center py-24 gap-3">
-                <Loader2 class="h-8 w-8 animate-spin text-primary" />
-                <p class="text-sm text-muted-foreground fira-code">Initializing session...</p>
-            </div>
-        </Transition>
+        <div v-if="store.loading && !store.session" class="flex flex-col items-center justify-center py-24 gap-3">
+            <div class="loading-spinner" />
+            <p class="text-sm text-muted-foreground fira-code">Initializing session...</p>
+        </div>
 
         <!-- Error -->
-        <Transition name="fade">
-            <div
-                v-if="store.error && !store.session"
-                class="mx-auto max-w-md rounded-lg border border-accent-red/30 bg-accent-red/5 p-6 text-center animate-fade-in"
-            >
-                <p class="text-sm text-accent-red">{{ store.error }}</p>
-            </div>
-        </Transition>
+        <div
+            v-if="store.error && !store.session"
+            class="mx-auto max-w-md rounded-lg border border-accent-red/30 bg-accent-red/5 p-6 text-center"
+        >
+            <p class="text-sm text-accent-red">{{ store.error }}</p>
+        </div>
 
         <!-- Main workspace -->
         <template v-if="store.session">
@@ -73,13 +68,16 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.25s ease;
+.loading-spinner {
+    width: 2rem;
+    height: 2rem;
+    border: 2.5px solid hsl(var(--border));
+    border-top-color: hsl(var(--primary));
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
 }
-.fade-enter-from,
-.fade-leave-to {
-    opacity: 0;
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
 .slide-down-enter-active {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

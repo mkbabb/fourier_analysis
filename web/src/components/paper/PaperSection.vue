@@ -8,18 +8,32 @@ defineProps<{
 
 <template>
     <section :id="id" class="paper-section mb-14 scroll-mt-20">
-        <h2 class="section-heading cm-serif mb-5 text-[1.5rem] font-bold tracking-normal leading-tight">
-            <span class="section-number fira-code text-[0.9rem] font-normal text-muted-foreground/70 mr-1.5 select-none">{{ number }}.</span>
-            <span class="section-title">{{ title }}</span>
-        </h2>
-        <div class="section-divider mb-6" />
-        <div class="section-body text-[0.938rem] leading-[1.8] text-foreground/90">
+        <div class="section-sticky-header">
+            <h2 class="section-heading cm-serif mb-0 text-[1.5rem] font-bold tracking-normal leading-tight">
+                <span class="section-number fira-code text-[0.9rem] font-normal text-muted-foreground/70 mr-1.5 select-none">{{ number }}.</span>
+                <span class="section-title">{{ title }}</span>
+            </h2>
+            <div class="section-divider mt-5" />
+        </div>
+        <div class="section-body mt-6 text-[0.938rem] leading-[1.8] text-foreground/90">
             <slot />
         </div>
     </section>
 </template>
 
 <style scoped>
+/* Sticky header wrapping heading + divider */
+.section-sticky-header {
+    position: sticky;
+    top: 3.5rem;
+    z-index: 10;
+    background: hsl(var(--background));
+    padding-top: 0.75rem;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+}
+
 /* Decorative divider below section heading */
 .section-divider {
     height: 1px;

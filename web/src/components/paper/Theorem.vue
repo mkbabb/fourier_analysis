@@ -13,7 +13,7 @@ const labels: Record<string, string> = {
 
 const accentColors: Record<string, string> = {
     theorem: "border-primary",
-    definition: "border-accent-red",
+    definition: "border-accent-pink",
     lemma: "border-muted-foreground",
     proposition: "border-primary",
 };
@@ -27,7 +27,7 @@ const accentColors: Record<string, string> = {
         <p class="theorem-label mb-3 cm-serif"
            :class="{
                'text-primary': type === 'theorem' || type === 'proposition',
-               'text-[hsl(var(--accent-red))]': type === 'definition',
+               'text-[hsl(var(--accent-pink))]': type === 'definition',
                'text-muted-foreground': type === 'lemma',
            }"
         >

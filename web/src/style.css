@@ -31,6 +31,7 @@
     --color-card: hsl(var(--card));
     --color-card-foreground: hsl(var(--card-foreground));
     --color-accent-red: hsl(var(--accent-red));
+    --color-accent-pink: hsl(var(--accent-pink));
 
     --radius-xl: calc(var(--radius) + 4px);
     --radius-lg: var(--radius);
@@ -67,6 +68,7 @@
         --ring: 222.2 84% 4.9%;
         --radius: 0.625rem;
         --accent-red: 0 72% 63%;
+        --accent-pink: 330 65% 55%;
     }
 
     .dark {
@@ -92,6 +94,7 @@
         --destructive-foreground: 48 10% 90%;
         --ring: 48 8% 83%;
         --accent-red: 5 55% 50%;
+        --accent-pink: 335 55% 65%;
     }
 }
 

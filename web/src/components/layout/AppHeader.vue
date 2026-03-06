@@ -1,18 +1,20 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
 import { useSessionStore } from "@/stores/session";
-import { Copy, Check, FileText, Sparkles } from "lucide-vue-next";
+import { Copy, Check } from "lucide-vue-next";
 import DarkModeToggle from "./DarkModeToggle.vue";
+import { generateEpicycleLogoPath } from "@/lib/logo";
 
 const route = useRoute();
 const store = useSessionStore();
 
 const copied = ref(false);
+const logoPath = computed(() => generateEpicycleLogoPath());
 
 const tabs = [
-    { name: "Paper", path: "/paper", icon: FileText },
-    { name: "Visualize", path: "/visualize", icon: Sparkles },
+    { name: "Paper", path: "/paper" },
+    { name: "Visualize", path: "/visualize" },
 ] as const;
 
 function isActive(path: string) {
@@ -34,8 +36,8 @@ async function copySlug() {
             <!-- Logo / Title -->
             <router-link to="/" class="flex items-center gap-2.5 group">
                 <div class="logo-icon flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm transition-all duration-300 group-hover:scale-105 group-hover:shadow-md">
-                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-                        <path d="M2 12c2-4 4-8 6-8s4 8 6 8 4-8 6-8 2 4 2 8" />
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path :d="logoPath" />
                     </svg>
                 </div>
                 <span class="cm-serif text-lg font-semibold tracking-tight">
@@ -55,7 +57,6 @@ async function copySlug() {
                         'text-muted-foreground hover:text-foreground hover:bg-muted/50': !isActive(tab.path),
                     }"
                 >
-                    <component :is="tab.icon" class="h-3.5 w-3.5" />
                     {{ tab.name }}
                     <!-- Active indicator dot -->
                     <span

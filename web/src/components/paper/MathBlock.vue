@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { computed } from "vue";
 import { useKatex } from "@/composables/useKatex";
 
 const props = defineProps<{ tex: string }>();
 const { renderDisplay } = useKatex();
-const html = computed(() => renderDisplay(props.tex));
+// Render once eagerly — the tex prop is static content that never changes,
+// so a computed/reactive wrapper adds overhead with no benefit.
+const html = renderDisplay(props.tex);
 </script>
 
 <template>
-    <div class="math-block" v-html="html" />
+    <div class="math-block" v-once v-html="html" />
 </template>
 
 <style scoped>

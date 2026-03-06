@@ -13,8 +13,9 @@ const containerRef = ref<HTMLDivElement>();
 const maxCircles = ref(80);
 
 let ctx: CanvasRenderingContext2D | null = null;
-let width = 800;
-let height = 800;
+let width = 0;
+let height = 0;
+let resizeObserver: ResizeObserver | null = null;
 
 function spectrumColor(i: number, total: number): string {
     const hue = (1 - i / Math.max(total - 1, 1)) * 300;
@@ -24,6 +25,7 @@ function spectrumColor(i: number, total: number): string {
 function setupCanvas() {
     if (!canvasRef.value || !containerRef.value) return;
     const rect = containerRef.value.getBoundingClientRect();
+    if (rect.width === 0) return; // Not laid out yet
     const dpr = window.devicePixelRatio || 1;
     const size = Math.min(rect.width, 800);
     width = size;
@@ -34,6 +36,13 @@ function setupCanvas() {
     canvasRef.value.style.height = `${size}px`;
     ctx = canvasRef.value.getContext("2d")!;
     ctx.scale(dpr, dpr);
+
+    // After setup, draw the appropriate frame
+    if (store.epicycleData) {
+        drawFrame();
+    } else {
+        drawPlaceholder();
+    }
 }
 
 /* Offset epicycles to bottom-left on desktop (wide viewports) */
@@ -217,8 +226,9 @@ function drawPlaceholder() {
 
 // keyframes.js drives the animation loop via the store's reactive t
 watch(() => anim.t, () => {
+    if (!ctx || width === 0) return;
     drawFrame();
-}, { flush: "sync" });
+});
 
 watch(() => store.epicycleData, () => {
     trailX.length = 0;
@@ -228,13 +238,12 @@ watch(() => store.epicycleData, () => {
 });
 
 onMounted(() => {
-    setupCanvas();
-    drawPlaceholder();
-    window.addEventListener("resize", setupCanvas);
+    resizeObserver = new ResizeObserver(() => setupCanvas());
+    if (containerRef.value) resizeObserver.observe(containerRef.value);
 });
 
 onUnmounted(() => {
-    window.removeEventListener("resize", setupCanvas);
+    resizeObserver?.disconnect();
 });
 
 defineExpose({ anim });
@@ -244,6 +253,7 @@ defineExpose({ anim });
     <div
         ref="containerRef"
         class="overflow-hidden rounded-xl border border-border bg-card transition-all duration-200 hover:shadow-sm"
+        style="aspect-ratio: 1; min-height: 200px"
     >
         <canvas ref="canvasRef" class="block w-full" />
     </div>
