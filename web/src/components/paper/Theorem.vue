@@ -24,14 +24,14 @@ const accentColors: Record<string, string> = {
         class="theorem-block my-8 rounded-lg border-l-[3px] bg-card paper-texture px-6 py-5 transition-all duration-300 card-hover"
         :class="accentColors[type]"
     >
-        <p class="theorem-label mb-3 text-[0.7rem] font-bold uppercase tracking-[0.18em] fraunces"
+        <p class="theorem-label mb-3 cm-serif"
            :class="{
                'text-primary': type === 'theorem' || type === 'proposition',
                'text-[hsl(var(--accent-red))]': type === 'definition',
                'text-muted-foreground': type === 'lemma',
            }"
         >
-            {{ labels[type] }}<template v-if="name">&ensp;&mdash;&ensp;{{ name }}</template>
+            <span class="font-bold" style="font-variant: small-caps;">{{ labels[type] }}</span><template v-if="name"> — <em class="font-normal">{{ name }}</em></template>
         </p>
         <div class="theorem-body text-[0.938rem] leading-[1.75] text-foreground/90">
             <slot />

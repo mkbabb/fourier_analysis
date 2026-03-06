@@ -8,8 +8,8 @@ defineProps<{
 
 <template>
     <section :id="id" class="paper-section mb-14 scroll-mt-20">
-        <h2 class="section-heading fraunces mb-5 text-[1.625rem] font-bold tracking-tight leading-tight">
-            <span class="section-number fira-code text-base font-normal text-muted-foreground/70 mr-2 select-none">{{ number }}.</span>
+        <h2 class="section-heading cm-serif mb-5 text-[1.5rem] font-bold tracking-normal leading-tight">
+            <span class="section-number fira-code text-[0.9rem] font-normal text-muted-foreground/70 mr-1.5 select-none">{{ number }}.</span>
             <span class="section-title">{{ title }}</span>
         </h2>
         <div class="section-divider mb-6" />

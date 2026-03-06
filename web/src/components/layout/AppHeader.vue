@@ -49,7 +49,7 @@ async function copySlug() {
                     v-for="tab in tabs"
                     :key="tab.path"
                     :to="tab.path"
-                    class="nav-tab relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-200 btn-press"
+                    class="nav-tab relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium font-mono transition-all duration-200 btn-press"
                     :class="{
                         'bg-muted text-foreground shadow-sm': isActive(tab.path),
                         'text-muted-foreground hover:text-foreground hover:bg-muted/50': !isActive(tab.path),
