@@ -1,0 +1,16 @@
+web/node_modules
+web/dist
+.venv
+__pycache__
+*.pyc
+.git
+.DS_Store
+mongo_data
+uploads
+paper
+assets/portraits
+*.egg-info
+dist
+build
+.pytest_cache
+.mypy_cache

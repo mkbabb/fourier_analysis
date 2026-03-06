@@ -36,3 +36,18 @@ Thumbs.db
 
 # mypy
 .mypy_cache/
+
+# Web frontend
+web/node_modules/
+web/dist/
+
+# Uploads
+uploads/
+
+# Environment
+.env
+
+# Docker
+mongo_data/
+.playwright-mcp/
+.vite/

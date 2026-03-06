@@ -291,7 +291,89 @@ def build_parser() -> argparse.ArgumentParser:
     p_anim.add_argument("--fps", type=int, default=30, help="Frames per second (default: 30)")
     p_anim.add_argument("--max-circles", type=int, default=80, help="Max visible epicycles (default: 80)")
 
+    # -- bases --
+    p_bases = sub.add_parser("bases", help="Compare basis approximations for an image")
+    p_bases.add_argument("image", help="Input image (PNG, JPG, BMP, TIFF)")
+    p_bases.add_argument("-n", "--harmonics", type=int, default=200, help="Number of harmonics (default: 200)")
+    p_bases.add_argument("-p", "--points", type=int, default=1024, help="Resampled contour points (default: 1024)")
+    p_bases.add_argument("-o", "--output", help="Output image path (PNG/PDF)")
+    p_bases.add_argument("--degrees", default="3,10,50,200", help="Comma-separated degrees (default: 3,10,50,200)")
+    p_bases.add_argument("--strategy", default="auto", choices=["auto", "threshold", "multi_threshold", "canny"])
+    p_bases.add_argument("--resize", type=int, default=512)
+    p_bases.add_argument("--blur", type=float, default=1.0)
+    p_bases.add_argument("--min-length", type=int, default=40)
+
     return parser
+
+
+def _cmd_bases(args: argparse.Namespace) -> int:
+    """Compare basis approximations for an image contour."""
+    from fourier_analysis.bases import approximate_curve, evaluate_partial_sum
+    from fourier_analysis.contours import extract_contours, resample_arc_length
+    from fourier_analysis.shortest_tour import order_contours
+
+    image_path = Path(args.image)
+    if not image_path.exists():
+        print(f"Image not found: {image_path}")
+        return 1
+
+    contours = extract_contours(
+        image_path,
+        strategy=args.strategy,
+        resize=args.resize,
+        blur_sigma=args.blur,
+        min_contour_length=args.min_length,
+    )
+
+    if not contours:
+        print("No contours extracted.")
+        return 1
+
+    print(f"Extracted {len(contours)} contour(s)")
+    path = order_contours(contours)
+    path = resample_arc_length(path, args.points)
+
+    degrees = [int(d) for d in args.degrees.split(",")]
+    approx = approximate_curve(path, max_degree=max(degrees), n_harmonics=max(degrees))
+
+    import matplotlib.pyplot as plt
+    from fourier_analysis.figures.style import BLUE, WOLFRAM_RED, setup_style
+
+    setup_style()
+    n_deg = len(degrees)
+    fig, axes = plt.subplots(n_deg, 3, figsize=(15, 5 * n_deg))
+    if n_deg == 1:
+        axes = axes[np.newaxis, :]
+
+    bases = ["fourier", "chebyshev", "legendre"]
+    colors = [BLUE, WOLFRAM_RED, "#2ca02c"]
+
+    for row, deg in enumerate(degrees):
+        for col, (basis_name, color) in enumerate(zip(bases, colors)):
+            ax = axes[row, col]
+            ax.plot(path.real, path.imag, color="gray", linewidth=0.4, alpha=0.4)
+
+            if basis_name == "fourier":
+                vals = evaluate_partial_sum(approx.fourier, deg, len(path))
+                ax.plot(vals.real, vals.imag, color=color, linewidth=0.8)
+            else:
+                x_vals = evaluate_partial_sum(approx.x[basis_name], deg, len(path))
+                y_vals = evaluate_partial_sum(approx.y[basis_name], deg, len(path))
+                ax.plot(x_vals, y_vals, color=color, linewidth=0.8)
+
+            ax.set_aspect("equal")
+            ax.set_title(f"{basis_name.title()}, $N = {deg}$")
+            ax.grid(True, alpha=0.2)
+
+    fig.tight_layout()
+    if args.output:
+        fig.savefig(args.output)
+        plt.close(fig)
+        print(f"Saved: {args.output}")
+    else:
+        plt.show()
+
+    return 0
 
 
 DISPATCH = {
@@ -299,6 +381,7 @@ DISPATCH = {
     "epicycles": _cmd_epicycles,
     "series": _cmd_series,
     "animate": _cmd_animate,
+    "bases": _cmd_bases,
 }
 
 

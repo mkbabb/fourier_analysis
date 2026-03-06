@@ -1,0 +1,39 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+      target: development
+    volumes:
+      - ./src:/app/src
+      - ./api:/app/api
+      - ./assets:/app/assets
+    environment:
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:5173
+      - MONGO_URI=mongodb://mongo:27017/fourier
+      - UPLOAD_DIR=/app/uploads
+    ports: ["${BACKEND_PORT:-8000}:8000"]
+    depends_on: [mongo]
+    networks: [app-network]
+
+  frontend:
+    build:
+      context: ./web
+      target: development
+    volumes:
+      - ./web/src:/app/src
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    networks: [app-network]
+
+  mongo:
+    image: mongo:7
+    volumes: ["mongo_data:/data/db"]
+    networks: [app-network]
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongo_data:
