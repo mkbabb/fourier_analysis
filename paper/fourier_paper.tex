@@ -93,7 +93,7 @@ Though the above are decidedly straightforward, and comparatively accurate repre
 
 The concepts mentioned heretofore may thus be accurately described from many mathematical perspectives: it is then the aim of this paper to focalize on two of the aforementioned perspectives: from both the lens of linear algebra, and then complex analysis.
 
-To do so, we'll first motivate Fourier analysis with a concrete example: this is achieved by looking back directly to its inception: using a published work by Fourier himself, we will derive Fourier series using Fourier's "Théorie analytique de la chaleur". The outline of the proceeding paper will be thusly described as: Chapter~\ref{ch:origin} will contain this derivation, including the Wronskian and Green's functions; Chapters~\ref{ch:linear_algebra}--\ref{ch:complex_analysis} will expand on this derivation, revealing its connection to linear algebra, orthogonal polynomials, and complex analysis; Chapter~\ref{ch:dft} develops the discrete Fourier transform and its siblings (DCT, DST, Chebyshev and Legendre transforms); Chapter~\ref{ch:eigentheory} unifies the eigentheoretic threads via PCA, SVD, and image compression; and finally, Chapter~\ref{ch:applications} is dedicated to corporeal applications of Fourier analysis. The programmatic examples are implemented in both Python and C++ and utilize algorithms developed by the author.
+To do so, we'll first motivate Fourier analysis with a concrete example: this is achieved by looking back directly to its inception: using a published work by Fourier himself, we will derive Fourier series using Fourier's \textit{``Théorie analytique de la chaleur''}. The outline of the proceeding paper will be thusly described as: Chapter~\ref{ch:origin} will contain this derivation, including the Wronskian and Green's functions; Chapters~\ref{ch:linear_algebra}--\ref{ch:complex_analysis} will expand on this derivation, revealing its connection to linear algebra, orthogonal polynomials, and complex analysis; Chapter~\ref{ch:dft} develops the discrete Fourier transform and its siblings (DCT, DST, Chebyshev and Legendre transforms); Chapter~\ref{ch:eigentheory} unifies the eigentheoretic threads via PCA, SVD, and image compression; and finally, Chapter~\ref{ch:applications} is dedicated to corporeal applications of Fourier analysis. The programmatic examples are implemented in both Python and C++ and utilize algorithms developed by the author.
 
 It is a frustration of the author that, whereupon reading mathematical texts and one comes across some arbitrarily complex theorem, it is often the case that the proof of said theorem is then "left as an exercise to the reader". To counter this minor annoyance, it will then be the effort of the author to, whenever a theorem is offered, either provide a proof directly, or direct the reader to a proof of said theorem in another text. This will be done in an attempt to make the paper as inclusive as possible, with all the necessary knowledge of each concept built upon the former.
 
@@ -115,9 +115,9 @@ For theorems involving said prerequisite material, they will be labeled then as 
 \chapter{Origin and Derivation}
 \label{ch:origin}
 
-Jean-Baptiste Joseph Fourier (21 March 1768 – 16 May 1830), was a pioneer in the fields of harmonic analysis and heat propagation, and creator of the field which bears his name: Fourier analysis. Throughout his colorful career as mathematician and Prefect, Fourier published many revolutionary mathematical treatises; but it is however his 1822 publication, "Théorie analytique de la chaleur", or "The Analytic Theory of Heat", that is indubitably one his most important: for it is in this publication that Fourier introduces the notion that \textit{any} well-behaved function can be thereby expanded into a series of sinusoidal waves. Though this has proven to not be a general truth; notwithstanding, many functions, provided certain conditions are met, can be expanded into an infinite sum of sinusoids.
+Jean-Baptiste Joseph Fourier (21 March 1768 – 16 May 1830), was a pioneer in the fields of harmonic analysis and heat propagation, and creator of the field which bears his name: Fourier analysis. Throughout his colorful career as mathematician and Prefect, Fourier published many revolutionary mathematical treatises; but it is however his 1822 publication, \textit{``Théorie analytique de la chaleur''}, or \textit{``The Analytic Theory of Heat''}, that is indubitably one his most important: for it is in this publication that Fourier introduces the notion that \textit{any} well-behaved function can be thereby expanded into a series of sinusoidal waves. Though this has proven to not be a general truth; notwithstanding, many functions, provided certain conditions are met, can be expanded into an infinite sum of sinusoids.
 
-Utilizing excerpts from Fourier's, "Théorie analytique de la chaleur", we shall derive Fourier series in a manner quite similar to Fourier himself. Before this, however, let's take a peek at the end result we so desire:
+Utilizing excerpts from Fourier's, \textit{``Théorie analytique de la chaleur''}, we shall derive Fourier series in a manner quite similar to Fourier himself. Before this, however, let's take a peek at the end result we so desire:
 
 Given a well behaved function, $f(x)$, $f$, can thereby be expanded into the following infinite series:
 \begin{theorem}[Fourier Series of a well-behaved $f$]
@@ -129,7 +129,7 @@ Given a well behaved function, $f(x)$, $f$, can thereby be expanded into the fol
 This will be proved in Chapter~\ref{ch:linear_algebra}.
 
 \section{Fourier's Problem}
-All of the content introduced in Fourier's "Théorie analytique de la chaleur" is fascinating, however it is Chapter III, "Propagation of Heat in an infinite rectangular solid", that is of most relevance to us; the first section, Fourier states the problem at hand:
+All of the content introduced in Fourier's \textit{``Théorie analytique de la chaleur''} is fascinating, however it is Chapter III, \textit{``Propagation of Heat in an infinite rectangular solid''}, that is of most relevance to us; the first section, Fourier states the problem at hand:
 
 \begin{quote}"Suppose a rectangular plate $BAC$, of infinite length, to be heated at its base $A$, and to preserve at all points of the base a constant temperature 1, whilst each of the two infinite sides $B$ and $C$, perpendicular to $A$, is submitted also at every point to a constant temperature 0; it is then required to determine what must be the stationary temperature at any point of the plate." \cite{heat_fourier}
 \end{quote}
@@ -463,7 +463,7 @@ As $\lambda$ can take on any integer value greater than one, a general solution 
 
 Notice the values of $B_n$ and $C_n$ were combined into one ultimate constant, $c_n$.\\
 
-Wonderful, a general solution! But what of the constants $c_n$? Fourier uses a series (no pun intended) of ingenious and rather complicated steps to calculate a closed form expression for them. Notwithstanding the above, we can bypass much of the tedious calculation by using the results of our detour into Sturm-Liouville theory. Recall that the solution to equation \eqref{eq:sturm2} was guaranteed to be orthogonal on the interval from $[-\dfrac{\pi}{2}, \dfrac{\pi}{2}]$. We'll exploit this orthogonality using the following technique, which was subsequently used later by Fourier himself; "Fourier's trick", see chapter III, section IV of "Théorie analytique de la chaleur". First, we will impose the boundary condition of $u(0, y) = 1, y \in [-\dfrac{\pi}{2}, \dfrac{\pi}{2}]$:
+Wonderful, a general solution! But what of the constants $c_n$? Fourier uses a series (no pun intended) of ingenious and rather complicated steps to calculate a closed form expression for them. Notwithstanding the above, we can bypass much of the tedious calculation by using the results of our detour into Sturm-Liouville theory. Recall that the solution to equation \eqref{eq:sturm2} was guaranteed to be orthogonal on the interval from $[-\dfrac{\pi}{2}, \dfrac{\pi}{2}]$. We'll exploit this orthogonality using the following technique, which was subsequently used later by Fourier himself; "Fourier's trick", see chapter III, section IV of \textit{``Théorie analytique de la chaleur''}. First, we will impose the boundary condition of $u(0, y) = 1, y \in [-\dfrac{\pi}{2}, \dfrac{\pi}{2}]$:
 
 \begin{equation}
     1 = \sum_{n=0}^{\infty} c_n\cos((2n+1)y)
@@ -494,7 +494,7 @@ If the $m \neq n$, the integral on the right vanishes, which is exactly what was
     c_m                   & = \dfrac{4(-1)^m}{(2m + 1)\pi}
 \end{align}
 
-Which is simply fantastic: we've found a closed form expression for all values of $c$. Notice that the same result was achieved by Fourier on page 144 in "Théorie analytique de la chaleur", but took Fourier nearly six pages of complicated arithmetic to prove. What a time save!
+Which is simply fantastic: we've found a closed form expression for all values of $c$. Notice that the same result was achieved by Fourier on page 144 in \textit{``Théorie analytique de la chaleur''}, but took Fourier nearly six pages of complicated arithmetic to prove. What a time save!
 
 Putting this together, we now have the following Fourier cosine series representation for the constant 1:
 \begin{equation}
@@ -526,7 +526,7 @@ Finally, our solution for $u(x, y)$, satisfying all of the boundary conditions i
 
 \section{Potentially Generalizing The Result}
 
-Fourier continues onward and generalizes the results of Chapter III, section IV of, "Théorie analytique de la chaleur", but his methodology is exceedingly arithmetically complex and rather terse. We shall then again for the final time diverge from Fourier's path, and rather view the notion of Fourier Analysis from two separate viewpoints: linear algebra and complex analysis.\\
+Fourier continues onward and generalizes the results of Chapter III, section IV of, \textit{``Théorie analytique de la chaleur''}, but his methodology is exceedingly arithmetically complex and rather terse. We shall then again for the final time diverge from Fourier's path, and rather view the notion of Fourier Analysis from two separate viewpoints: linear algebra and complex analysis.\\
 
 Upon cursory examination of the above material, one may notice straight away similarities with several topics from each respective discipline:
 
