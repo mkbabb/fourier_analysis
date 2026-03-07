@@ -17,8 +17,8 @@ ENV VITE_BASE_URL=${VITE_BASE_URL}
 COPY web/ .
 # Assets needed by the paper figures (symlink won't resolve in Docker)
 COPY assets/ public/assets/
-# Paper .tex needed by vite-plugin-latex-paper at build time
-COPY paper/fourier_paper.tex /paper/fourier_paper.tex
+# Paper .tex and .bib needed by vite-plugin-latex-paper at build time
+COPY paper/fourier_paper.tex paper/fourier_paper.bib /paper/
 RUN npm run build
 
 FROM nginx:alpine AS production
