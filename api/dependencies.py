@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 
 from fastapi import HTTPException
+from motor.motor_asyncio import AsyncIOMotorGridFSBucket
 
 from api.services.database import get_db
 
@@ -24,3 +25,8 @@ async def get_session(slug: str) -> dict:
     if session is None:
         raise HTTPException(status_code=404, detail="Session not found")
     return session
+
+
+def get_gridfs() -> AsyncIOMotorGridFSBucket:
+    """Return a GridFS bucket backed by the application database."""
+    return AsyncIOMotorGridFSBucket(get_db())

@@ -18,7 +18,7 @@ CMD ["uv", "run", "uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "800
 FROM deps AS production
 RUN adduser --disabled-password --no-create-home app
 COPY . .
-RUN mkdir -p /app/uploads && chown -R app:app /app/.venv /app/uploads
+RUN chown -R app:app /app/.venv
 ENV UV_CACHE_DIR=/tmp/uv-cache
 USER app
 CMD ["uv", "run", "--no-sync", "uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4", "--proxy-headers", "--forwarded-allow-ips", "*"]

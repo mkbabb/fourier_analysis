@@ -7,7 +7,6 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     mongo_uri: str = "mongodb://localhost:27017/fourier"
-    upload_dir: str = "./uploads"
     cors_origins: str = "http://localhost:3000,http://localhost:5173"
     max_upload_mb: int = 10
     session_ttl_days: int = 30

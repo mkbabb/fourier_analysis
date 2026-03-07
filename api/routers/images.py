@@ -1,34 +1,40 @@
-"""Image upload and retrieval endpoints."""
+"""Image upload and retrieval endpoints (GridFS-backed)."""
 
 from __future__ import annotations
 
 import hashlib
+import io
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-import aiofiles
+from bson import ObjectId
 from fastapi import APIRouter, HTTPException, UploadFile
-from fastapi.responses import FileResponse
+from fastapi.responses import StreamingResponse
 
 from api.config import settings
-from api.dependencies import get_session, validate_slug
+from api.dependencies import get_gridfs, get_session
 from api.services.database import get_db
 
 router = APIRouter(prefix="/api/sessions/{slug}", tags=["images"])
 
 ALLOWED_EXTENSIONS = {".png", ".jpg", ".jpeg", ".bmp", ".tiff", ".tif", ".webp"}
 
-
-def _upload_dir() -> Path:
-    p = Path(settings.upload_dir)
-    p.mkdir(parents=True, exist_ok=True)
-    return p
+CONTENT_TYPE_MAP = {
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".bmp": "image/bmp",
+    ".tiff": "image/tiff",
+    ".tif": "image/tiff",
+    ".webp": "image/webp",
+}
 
 
 @router.post("/upload")
 async def upload_image(slug: str, file: UploadFile):
     session = await get_session(slug)
     db = get_db()
+    bucket = get_gridfs()
 
     if file.content_type and not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="File must be an image")
@@ -39,7 +45,9 @@ async def upload_image(slug: str, file: UploadFile):
 
     content = await file.read()
     if len(content) > settings.max_upload_mb * 1024 * 1024:
-        raise HTTPException(status_code=400, detail=f"File too large (max {settings.max_upload_mb}MB)")
+        raise HTTPException(
+            status_code=400, detail=f"File too large (max {settings.max_upload_mb}MB)"
+        )
 
     sha = hashlib.sha256(content).hexdigest()
 
@@ -49,25 +57,38 @@ async def upload_image(slug: str, file: UploadFile):
         return {
             "status": "ok",
             "slug": existing["slug"],
-            "filename": existing["image"]["filename"],
+            "filename": existing["image"]["original_name"],
             "sha256": sha,
             "existing": True,
         }
 
+    content_type = CONTENT_TYPE_MAP.get(ext, "image/png")
     filename = f"{slug}_{sha[:12]}{ext}"
-    filepath = _upload_dir() / filename
 
-    async with aiofiles.open(filepath, "wb") as f:
-        await f.write(content)
+    # Check if a GridFS file with same sha256 already exists (orphaned dedup)
+    existing_cursor = bucket.find({"metadata.sha256": sha})
+    existing_gridfs = await existing_cursor.to_list(length=1)
+    if existing_gridfs:
+        file_id = existing_gridfs[0]._id
+    else:
+        file_id = await bucket.upload_from_stream(
+            filename,
+            content,
+            metadata={
+                "sha256": sha,
+                "content_type": content_type,
+                "original_name": file.filename,
+            },
+        )
 
     await db.sessions.update_one(
         {"slug": slug},
         {
             "$set": {
                 "image": {
-                    "filename": filename,
-                    "path": str(filepath),
+                    "file_id": file_id,
                     "sha256": sha,
+                    "content_type": content_type,
                     "original_name": file.filename,
                 },
                 "results": None,  # Invalidate cached results
@@ -87,8 +108,21 @@ async def get_image(slug: str):
     if not session.get("image"):
         raise HTTPException(status_code=404, detail="No image uploaded")
 
-    filepath = Path(session["image"]["path"])
-    if not filepath.exists():
-        raise HTTPException(status_code=404, detail="Image file not found")
+    bucket = get_gridfs()
+    file_id = session["image"]["file_id"]
 
-    return FileResponse(filepath, media_type="image/png")
+    try:
+        grid_out = await bucket.open_download_stream(ObjectId(file_id))
+    except Exception:
+        raise HTTPException(status_code=404, detail="Image file not found in storage")
+
+    data = await grid_out.read()
+    content_type = session["image"].get("content_type", "image/png")
+
+    return StreamingResponse(
+        io.BytesIO(data),
+        media_type=content_type,
+        headers={
+            "Cache-Control": "public, max-age=86400",
+        },
+    )

@@ -4,10 +4,11 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 
+from bson import ObjectId
 from fastapi import APIRouter, HTTPException
 
 from api.config import settings
-from api.dependencies import get_session, validate_slug
+from api.dependencies import get_gridfs, get_session, validate_slug
 from api.models.session import (
     AnimationSettings,
     ContourSettings,
@@ -93,7 +94,19 @@ async def update_session(slug: str, update: SessionUpdate):
 async def delete_session(slug: str):
     validate_slug(slug)
     db = get_db()
-    result = await db.sessions.delete_one({"slug": slug})
-    if result.deleted_count == 0:
+
+    # Retrieve session first so we can clean up its GridFS file
+    session = await db.sessions.find_one({"slug": slug})
+    if session is None:
         raise HTTPException(status_code=404, detail="Session not found")
+
+    # Delete the associated GridFS image file if present
+    if session.get("image") and session["image"].get("file_id"):
+        bucket = get_gridfs()
+        try:
+            await bucket.delete(ObjectId(session["image"]["file_id"]))
+        except Exception:
+            pass  # Best-effort cleanup; don't fail the deletion
+
+    await db.sessions.delete_one({"slug": slug})
     return {"status": "deleted"}
