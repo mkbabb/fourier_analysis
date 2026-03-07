@@ -3,8 +3,17 @@ import PaperSectionContent from "./PaperSectionContent.vue";
 import { paperSections } from "@/lib/paperContent";
 import type { PaperSectionData } from "@/lib/paperContent";
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from "vue";
+import { useKatex } from "@/composables/useKatex";
+import { ChevronDown } from "lucide-vue-next";
 
+const { renderInline } = useKatex();
 const sections = computed(() => paperSections);
+
+function renderTitle(text: string): string {
+    return text.replace(/\$([^$]+)\$/g, (_, tex) => {
+        return `<span class="math-inline">${renderInline(tex)}</span>`;
+    });
+}
 
 // ── Progressive loading: mount sections as they approach viewport ──
 const visibleCount = ref(2); // start with first 2 sections rendered
@@ -181,22 +190,37 @@ watch(activeId, (id) => {
 });
 
 function scrollToSection(id: string) {
-    // Ensure the section is loaded before scrolling
-    const entry = tocIndex.get(id);
-    if (entry) {
-        const topIdx = paperSections.indexOf(
-            paperSections.find(s => s.id === entry.parentId) ?? paperSections[0]
-        );
-        if (topIdx >= 0 && topIdx >= visibleCount.value) {
-            visibleCount.value = Math.min(topIdx + 2, paperSections.length);
-        }
-    }
-    nextTick(() => {
+    // Load all sections so the target is guaranteed to be in the DOM
+    visibleCount.value = paperSections.length;
+
+    // Wait for Vue to finish mounting all sections, then scroll.
+    // We poll until the target element is in the DOM and its position
+    // has stabilized (stops shifting as sections above it render).
+    let attempts = 0;
+    let lastY = -1;
+
+    function tryScroll() {
         const el = document.getElementById(id);
-        if (el) {
-            el.scrollIntoView({ behavior: "smooth", block: "start" });
+        const scroller = document.querySelector('.paper-scroll');
+        if (!el || !scroller) {
+            if (attempts++ < 60) requestAnimationFrame(tryScroll);
+            return;
         }
-    });
+
+        const scrollerRect = scroller.getBoundingClientRect();
+        const elRect = el.getBoundingClientRect();
+        const absoluteTop = elRect.top - scrollerRect.top + scroller.scrollTop;
+
+        if (Math.abs(absoluteTop - lastY) < 1 && attempts > 2) {
+            // Position stabilized — jump instantly
+            scroller.scrollTo({ top: Math.max(0, absoluteTop - 16), behavior: "instant" });
+            return;
+        }
+        lastY = absoluteTop;
+        attempts++;
+        requestAnimationFrame(tryScroll);
+    }
+    nextTick(() => requestAnimationFrame(tryScroll));
 }
 
 function getPreview(section: PaperSectionData): string {
@@ -204,11 +228,75 @@ function getPreview(section: PaperSectionData): string {
     const clean = text.replace(/\$[^$]+\$/g, '…').replace(/<[^>]+>/g, '');
     return clean.length > 120 ? clean.slice(0, 120) + '…' : clean;
 }
+
+// ── Mobile floating TOC ─────────────────────────────────────
+const mobileNavRef = ref<HTMLElement | null>(null);
+const mobileTocVisible = ref(true);
+const floatingTocOpen = ref(false);
+let mobileTocObserver: IntersectionObserver | null = null;
+
+const currentSection = computed(() => {
+    if (!activeTopId.value) return null;
+    const entry = tocIndex.get(activeTopId.value);
+    if (!entry) return null;
+    return entry.section;
+});
+
+onMounted(() => {
+    mobileTocObserver = new IntersectionObserver(
+        (entries) => {
+            for (const entry of entries) {
+                mobileTocVisible.value = entry.isIntersecting;
+            }
+        },
+        { threshold: 0 },
+    );
+    nextTick(() => {
+        if (mobileNavRef.value) mobileTocObserver!.observe(mobileNavRef.value);
+    });
+});
+
+onUnmounted(() => {
+    mobileTocObserver?.disconnect();
+});
+
+// Close the floating dropdown when user scrolls to a new section
+watch(activeTopId, () => {
+    floatingTocOpen.value = false;
+});
 </script>
 
 <template>
     <div class="paper-scroll">
-        <div class="paper-layout mx-auto max-w-5xl px-2 py-14 pb-32 sm:px-6">
+        <!-- Mobile floating TOC bar -->
+        <Transition name="slide-down">
+            <div v-if="!mobileTocVisible" class="floating-toc lg:hidden">
+                <button class="floating-toc-bar" @click="floatingTocOpen = !floatingTocOpen">
+                    <span class="floating-toc-section cm-serif">
+                        <span class="fira-code text-xs opacity-50">{{ currentSection?.number }}.</span>
+                        {{ currentSection?.title }}
+                    </span>
+                    <ChevronDown class="floating-toc-chevron" :class="{ 'rotate-180': floatingTocOpen }" />
+                </button>
+                <Transition name="toc-expand">
+                    <div v-if="floatingTocOpen" class="floating-toc-dropdown">
+                        <button
+                            v-for="(section, si) in sections"
+                            :key="section.id"
+                            class="floating-toc-item cm-serif"
+                            :class="{ 'is-active': activeTopId === section.id }"
+                            :style="activeTopId === section.id ? { color: `var(--section-color-${si})` } : {}"
+                            @click="scrollToSection(section.id); floatingTocOpen = false"
+                        >
+                            <span class="fira-code text-xs opacity-50">{{ section.number }}.</span>
+                            {{ section.title }}
+                        </button>
+                    </div>
+                </Transition>
+            </div>
+        </Transition>
+
+        <div class="paper-layout mx-auto max-w-5xl px-2 py-14 pb-4 sm:px-6">
             <div class="paper-grid">
                 <!-- Desktop sidebar TOC -->
                 <aside class="paper-sidebar">
@@ -225,7 +313,7 @@ function getPreview(section: PaperSectionData): string {
                                     :title="getPreview(section)"
                                 >
                                     <span class="sidebar-number fira-code">{{ section.number }}.</span>
-                                    {{ section.title }}
+                                    <span v-html="renderTitle(section.title)" />
                                 </button>
                                 <!-- Subsections (animated expand) -->
                                 <div
@@ -250,7 +338,7 @@ function getPreview(section: PaperSectionData): string {
                                                 :title="getPreview(sub)"
                                             >
                                                 <span class="sidebar-number fira-code">{{ sub.number }}.</span>
-                                                {{ sub.title }}
+                                                <span v-html="renderTitle(sub.title)" />
                                             </button>
                                             <!-- Sub-subsections -->
                                             <ol v-if="sub.subsections && isInActiveChain(sub.id)" class="sidebar-subsublist">
@@ -264,7 +352,7 @@ function getPreview(section: PaperSectionData): string {
                                                             : { color: `color-mix(in srgb, var(--section-color-${si}) 40%, hsl(var(--muted-foreground)))` }"
                                                     >
                                                         <span class="sidebar-number fira-code">{{ subsub.number }}.</span>
-                                                        {{ subsub.title }}
+                                                        <span v-html="renderTitle(subsub.title)" />
                                                     </button>
                                                 </li>
                                             </ol>
@@ -287,14 +375,14 @@ function getPreview(section: PaperSectionData): string {
                     </header>
 
                     <!-- Mobile-only inline TOC -->
-                    <nav class="mb-14 cm-serif text-sm text-muted-foreground lg:hidden">
+                    <nav ref="mobileNavRef" class="mb-14 cm-serif text-sm text-muted-foreground lg:hidden">
                         <ol class="list-none space-y-1.5 pl-0">
                             <li v-for="section in sections" :key="section.id">
                                 <button
                                     @click="scrollToSection(section.id)"
                                     class="text-left hover:text-foreground transition-colors duration-150 cursor-pointer"
                                 >
-                                    {{ section.number }}. {{ section.title }}
+                                    <span>{{ section.number }}. </span><span v-html="renderTitle(section.title)" />
                                 </button>
                             </li>
                         </ol>
@@ -491,5 +579,120 @@ function getPreview(section: PaperSectionData): string {
     display: flex;
     justify-content: center;
     padding: 2rem 0;
+}
+
+/* ── Mobile floating TOC bar ───────────────────────────────── */
+.floating-toc {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    padding: 0 0.5rem;
+}
+
+.floating-toc-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.625rem 1rem;
+    background: hsl(var(--background) / 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: none;
+    border-bottom: 1px solid hsl(var(--border) / 0.5);
+    cursor: pointer;
+    text-align: left;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: hsl(var(--foreground));
+}
+
+.floating-toc-section {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
+}
+
+.floating-toc-chevron {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+    opacity: 0.5;
+    transition: transform 0.2s ease;
+}
+
+.floating-toc-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: hsl(var(--background) / 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid hsl(var(--border));
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    max-height: 60vh;
+    overflow-y: auto;
+    padding: 0.5rem;
+}
+
+.floating-toc-item {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+    text-align: left;
+    font-size: 0.8125rem;
+    color: hsl(var(--muted-foreground));
+    transition: all 0.15s;
+}
+
+.floating-toc-item:hover,
+.floating-toc-item.is-active {
+    background: hsl(var(--muted) / 0.5);
+    color: hsl(var(--foreground));
+}
+
+.floating-toc-item.is-active {
+    font-weight: 600;
+}
+
+/* ── Transition: slide-down ──────────────────────────────── */
+.slide-down-enter-active,
+.slide-down-leave-active {
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.slide-down-enter-from {
+    transform: translateY(-100%);
+    opacity: 0;
+}
+
+.slide-down-leave-to {
+    transform: translateY(-100%);
+    opacity: 0;
+}
+
+/* ── Transition: toc-expand ──────────────────────────────── */
+.toc-expand-enter-active,
+.toc-expand-leave-active {
+    transition: opacity 0.2s ease,
+                transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.toc-expand-enter-from {
+    opacity: 0;
+    transform: translateY(-0.5rem);
+}
+
+.toc-expand-leave-to {
+    opacity: 0;
+    transform: translateY(-0.5rem);
 }
 </style>
