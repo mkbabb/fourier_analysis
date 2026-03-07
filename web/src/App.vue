@@ -6,29 +6,13 @@ import SvgFilters from "@/components/decorative/SvgFilters.vue";
 
 <template>
     <SvgFilters />
-    <div class="min-h-screen flex flex-col bg-background text-foreground paper-texture">
+    <div class="h-dvh flex flex-col bg-background text-foreground paper-texture overflow-hidden">
         <AppHeader />
-        <main class="flex-1">
-            <RouterView v-slot="{ Component }">
-                <Transition name="page" mode="out-in">
-                    <component :is="Component" />
-                </Transition>
-            </RouterView>
+        <main class="flex-1 min-h-0 flex flex-col">
+            <RouterView />
         </main>
     </div>
 </template>
 
 <style scoped>
-.page-enter-active,
-.page-leave-active {
-    transition: opacity 0.2s ease, transform 0.2s ease;
-}
-.page-enter-from {
-    opacity: 0;
-    transform: translateY(6px);
-}
-.page-leave-to {
-    opacity: 0;
-    transform: translateY(-4px);
-}
 </style>

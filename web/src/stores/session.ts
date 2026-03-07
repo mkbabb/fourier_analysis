@@ -9,6 +9,7 @@ import type {
     ContourData,
 } from "@/lib/types";
 import * as api from "@/lib/api";
+import { router } from "@/router";
 
 export const useSessionStore = defineStore("session", () => {
     const session = ref<SessionData | null>(null);
@@ -16,6 +17,7 @@ export const useSessionStore = defineStore("session", () => {
     const basesData = ref<AnimationData | null>(null);
     const contourData = ref<ContourData | null>(null);
     const loading = ref(false);
+    const computing = ref(false);
     const error = ref<string | null>(null);
 
     const slug = computed(() => session.value?.slug ?? null);
@@ -26,6 +28,8 @@ export const useSessionStore = defineStore("session", () => {
         error.value = null;
         try {
             session.value = await api.createSession();
+            localStorage.setItem("fourier_last_slug", session.value.slug);
+            router.replace(`/s/${session.value.slug}`);
         } catch (e: any) {
             error.value = e.message;
         } finally {
@@ -38,6 +42,8 @@ export const useSessionStore = defineStore("session", () => {
         error.value = null;
         try {
             session.value = await api.getSession(sessionSlug);
+            localStorage.setItem("fourier_last_slug", sessionSlug);
+            router.replace(`/s/${sessionSlug}`);
         } catch (e: any) {
             error.value = e.message;
         } finally {
@@ -58,13 +64,29 @@ export const useSessionStore = defineStore("session", () => {
     }
 
     async function uploadImage(file: File) {
-        if (!slug.value) return;
         loading.value = true;
         error.value = null;
         try {
-            await api.uploadImage(slug.value, file);
+            // Create a new session per image upload for a fresh slug
+            const newSession = await api.createSession();
+            session.value = newSession;
+
+            const uploadResult = await api.uploadImage(newSession.slug, file);
+
+            // If the image already exists, switch to the existing session
+            const activeSlug = uploadResult.existing && uploadResult.slug
+                ? uploadResult.slug
+                : newSession.slug;
+
             // Refresh session to get has_image=true
-            session.value = await api.getSession(slug.value);
+            session.value = await api.getSession(activeSlug);
+            localStorage.setItem("fourier_last_slug", activeSlug);
+            router.replace(`/s/${activeSlug}`);
+
+            // Clear old computation data
+            epicycleData.value = null;
+            basesData.value = null;
+            contourData.value = null;
         } catch (e: any) {
             error.value = e.message;
         } finally {
@@ -127,6 +149,7 @@ export const useSessionStore = defineStore("session", () => {
         basesData,
         contourData,
         loading,
+        computing,
         error,
         create,
         load,

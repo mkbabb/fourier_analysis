@@ -32,6 +32,7 @@
     --color-card-foreground: hsl(var(--card-foreground));
     --color-accent-red: hsl(var(--accent-red));
     --color-accent-pink: hsl(var(--accent-pink));
+    --color-section-heading: hsl(var(--section-heading));
 
     --radius-xl: calc(var(--radius) + 4px);
     --radius-lg: var(--radius);
@@ -69,6 +70,17 @@
         --radius: 0.625rem;
         --accent-red: 0 72% 63%;
         --accent-pink: 330 65% 55%;
+        --section-heading: 328 60% 46%;
+
+        /* Per-section color palette (light) — easy to customize */
+        --section-color-0: hsl(328 60% 46%);  /* magenta-pink */
+        --section-color-1: hsl(260 50% 50%);  /* purple */
+        --section-color-2: hsl(220 55% 48%);  /* blue */
+        --section-color-3: hsl(190 60% 38%);  /* teal */
+        --section-color-4: hsl(160 50% 38%);  /* green */
+        --section-color-5: hsl(30 65% 45%);   /* amber */
+        --section-color-6: hsl(0 55% 50%);    /* red */
+        --section-color-7: hsl(290 45% 48%);  /* violet */
     }
 
     .dark {
@@ -95,6 +107,17 @@
         --ring: 48 8% 83%;
         --accent-red: 5 55% 50%;
         --accent-pink: 335 55% 65%;
+        --section-heading: 330 55% 68%;
+
+        /* Per-section color palette (dark) — lighter for contrast */
+        --section-color-0: hsl(330 65% 68%);  /* magenta-pink */
+        --section-color-1: hsl(265 55% 72%);  /* purple */
+        --section-color-2: hsl(220 60% 70%);  /* blue */
+        --section-color-3: hsl(190 55% 60%);  /* teal */
+        --section-color-4: hsl(160 50% 58%);  /* green */
+        --section-color-5: hsl(35 60% 65%);   /* amber */
+        --section-color-6: hsl(5 55% 65%);    /* red */
+        --section-color-7: hsl(290 50% 70%);  /* violet */
     }
 }
 
@@ -115,12 +138,6 @@
 /* Computer Modern — the LaTeX body font. Default for all prose. */
 .cm-serif {
     font-family: "Computer Modern Serif", "Latin Modern Roman", "CMU Serif", Georgia, serif;
-}
-
-/* Fraunces — display/decorative only (title, logo, special headings) */
-.fraunces {
-    font-family: "Fraunces", Georgia, serif;
-    font-feature-settings: "ss01", "ss03";
 }
 
 .fira-code {
@@ -149,29 +166,16 @@
     background-blend-mode: screen;
 }
 
-/* ── Depth text effect (title emboss) ───────────────────────── */
+/* ── Fancy Fourier ℱ ──────────────────────────────────────── */
 
-.depth-text {
-    position: relative;
+.fourier-f {
+    font-size: 1.35em;
+    line-height: 1;
+    vertical-align: -0.05em;
+    font-weight: 700;
     display: inline-block;
-    text-shadow:
-        1px 1px 0 hsl(48 10% 72%),
-        2px 2px 0 hsl(48 8% 68%),
-        3px 3px 0 hsl(48 5% 62%),
-        3px 3px 1px rgba(0, 0, 0, 0.08),
-        1px 1px 4px rgba(0, 0, 0, 0.06),
-        2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.dark .depth-text {
-    text-shadow:
-        1px 1px 0 hsl(24 5% 18%),
-        2px 2px 0 hsl(24 5% 15%),
-        3px 3px 0 hsl(24 5% 12%),
-        3px 3px 1px rgba(0, 0, 0, 0.25),
-        1px 1px 4px rgba(0, 0, 0, 0.2),
-        2px 2px 4px rgba(0, 0, 0, 0.35);
-}
 
 /* ── Apple-inspired easings ─────────────────────────────────── */
 
@@ -306,6 +310,32 @@ input[type="range"]::-webkit-slider-thumb:active {
     background: hsl(var(--muted-foreground) / 0.4);
 }
 
+/* ── Cartoon card (keyframes.js-inspired thick border + hard shadow) ── */
+
+.cartoon-card {
+    border-radius: 0.75rem;
+    border: 2px solid hsl(var(--foreground) / 0.15);
+    background: hsl(var(--card));
+    color: hsl(var(--card-foreground));
+    box-shadow: 3px 3px 0px 0px hsl(var(--foreground) / 0.08);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.dark .cartoon-card {
+    border-color: hsl(var(--foreground) / 0.12);
+    box-shadow: 3px 3px 0px 0px hsl(var(--foreground) / 0.06);
+}
+
+.cartoon-card:hover {
+    border-color: hsl(var(--foreground) / 0.25);
+    box-shadow: 4px 4px 0px 0px hsl(var(--foreground) / 0.1);
+}
+
+.dark .cartoon-card:hover {
+    border-color: hsl(var(--foreground) / 0.18);
+    box-shadow: 4px 4px 0px 0px hsl(var(--foreground) / 0.08);
+}
+
 /* ── Interactive utilities ──────────────────────────────────── */
 
 .btn-press {
@@ -321,14 +351,14 @@ input[type="range"]::-webkit-slider-thumb:active {
                 border-color 0.3s ease;
 }
 .card-hover:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06),
-                0 2px 8px rgba(0, 0, 0, 0.04);
+    transform: translateX(2px);
+    box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.06),
+                2px 2px 6px rgba(0, 0, 0, 0.04);
 }
 
 .dark .card-hover:hover {
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35),
-                0 2px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.35),
+                2px 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 /* ── Selection color ────────────────────────────────────────── */

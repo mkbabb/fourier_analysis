@@ -1,97 +1,90 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
-import { useRoute } from "vue-router";
-import { useSessionStore } from "@/stores/session";
-import { Copy, Check } from "lucide-vue-next";
+import { computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useHoverCard } from "@/composables/useHoverCard";
 import DarkModeToggle from "./DarkModeToggle.vue";
-import { generateEpicycleLogoPath } from "@/lib/logo";
+import BouncyToggle from "@/components/ui/BouncyToggle.vue";
 
 const route = useRoute();
-const store = useSessionStore();
+const router = useRouter();
 
-const copied = ref(false);
-const logoPath = computed(() => generateEpicycleLogoPath());
+const { isOpen: cardOpen, toggle: toggleCard, onHoverEnter, onHoverLeave } = useHoverCard();
 
-const tabs = [
-    { name: "Paper", path: "/paper" },
-    { name: "Visualize", path: "/visualize" },
-] as const;
+const tabOptions = [
+    { label: "Paper", value: "/paper" },
+    { label: "Visualize", value: "/visualize" },
+];
 
-function isActive(path: string) {
-    return route.path === path || (path === "/visualize" && route.path.startsWith("/s/"));
-}
+const activeTab = computed(() => {
+    if (route.path === "/paper") return "/paper";
+    if (route.path === "/visualize" || route.path.startsWith("/s/")) return "/visualize";
+    return "/paper";
+});
 
-async function copySlug() {
-    if (!store.slug) return;
-    const url = `${window.location.origin}/s/${store.slug}`;
-    await navigator.clipboard.writeText(url);
-    copied.value = true;
-    setTimeout(() => (copied.value = false), 2000);
+function onTabChange(path: string) {
+    router.push(path);
 }
 </script>
 
 <template>
-    <header class="app-header sticky top-0 z-50 border-b border-border/80 bg-background/90 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
-        <div class="mx-auto flex h-14 max-w-7xl items-center gap-4 px-4 sm:px-6">
-            <!-- Logo / Title -->
-            <router-link to="/" class="flex items-center gap-2.5 group">
-                <div class="logo-icon flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm transition-all duration-300 group-hover:scale-105 group-hover:shadow-md">
-                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path :d="logoPath" />
-                    </svg>
-                </div>
-                <span class="cm-serif text-lg font-semibold tracking-tight">
-                    Fourier Analysis
+    <header class="app-header sticky top-0 z-50 bg-background/90 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
+        <div class="flex h-14 items-center gap-4 px-4 sm:px-6">
+            <!-- Logo with attribution hover card -->
+            <div
+                class="logo-trigger relative"
+                role="button"
+                tabindex="0"
+                aria-label="Show project info"
+                @click.stop="toggleCard"
+                @keydown.enter="toggleCard"
+                @mouseenter="onHoverEnter"
+                @mouseleave="onHoverLeave"
+            >
+                <span class="cm-serif text-lg font-semibold tracking-tight cursor-pointer select-none">
+                    <span class="fourier-f">&#x2131;</span><span class="logo-text">ourier analysis</span>
                 </span>
-            </router-link>
 
-            <!-- Nav tabs -->
-            <nav class="ml-4 flex items-center gap-1">
-                <router-link
-                    v-for="tab in tabs"
-                    :key="tab.path"
-                    :to="tab.path"
-                    class="nav-tab relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium font-mono transition-all duration-200 btn-press"
-                    :class="{
-                        'bg-muted text-foreground shadow-sm': isActive(tab.path),
-                        'text-muted-foreground hover:text-foreground hover:bg-muted/50': !isActive(tab.path),
-                    }"
-                >
-                    {{ tab.name }}
-                    <!-- Active indicator dot -->
-                    <span
-                        v-if="isActive(tab.path)"
-                        class="absolute -bottom-[3px] left-1/2 h-[3px] w-4 -translate-x-1/2 rounded-full bg-primary transition-all duration-300"
-                    />
-                </router-link>
-            </nav>
-
-            <div class="flex-1" />
-
-            <!-- Session slug with copy -->
-            <Transition name="fade">
-                <div
-                    v-if="store.slug"
-                    class="flex items-center gap-1.5 rounded-md bg-muted/50 px-2.5 py-1"
-                >
-                    <span class="fira-code text-xs text-muted-foreground">
-                        {{ store.slug }}
-                    </span>
-                    <button
-                        class="flex h-6 w-6 items-center justify-center rounded text-muted-foreground transition-all duration-200 hover:bg-muted hover:text-foreground btn-press"
-                        title="Copy session URL"
-                        @click="copySlug"
-                    >
-                        <Transition name="icon-swap" mode="out-in">
-                            <Check v-if="copied" class="h-3 w-3 text-green-500" />
-                            <Copy v-else class="h-3 w-3" />
-                        </Transition>
-                    </button>
+                <!-- Hover card -->
+                <div class="hover-card" :class="{ 'is-open': cardOpen }">
+                    <div class="flex items-center gap-3">
+                        <img
+                            src="https://avatars.githubusercontent.com/u/2848617?v=4"
+                            alt="mkbabb"
+                            class="h-10 w-10 rounded-full shrink-0"
+                        />
+                        <div class="flex-1 min-w-0">
+                            <a
+                                href="https://github.com/mkbabb"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="fira-code text-sm font-semibold text-foreground hover:underline"
+                                @click.stop
+                            >@mbabb</a>
+                            <p class="mt-0.5 text-xs italic text-muted-foreground">Fourier analysis &amp; orthogonal decomposition</p>
+                        </div>
+                    </div>
+                    <hr class="my-2 border-border/50" />
+                    <a
+                        href="https://github.com/mkbabb/fourier-analysis"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="block text-sm text-foreground hover:underline"
+                        @click.stop
+                    >View project on GitHub 🎉</a>
                 </div>
-            </Transition>
+            </div>
 
-            <!-- Dark mode toggle -->
-            <DarkModeToggle style="--toggle-size: 2.25rem" />
+            <div class="h-5 w-px bg-foreground/15" />
+
+            <BouncyToggle
+                :options="tabOptions"
+                :model-value="activeTab"
+                @update:model-value="onTabChange"
+            />
+
+            <div class="ml-auto flex items-center gap-1.5">
+                <DarkModeToggle style="--toggle-size: 2.75rem" />
+            </div>
         </div>
     </header>
 </template>
@@ -101,42 +94,64 @@ async function copySlug() {
     font-feature-settings: "liga", "kern";
 }
 
-/* Subtle paper texture on header in light mode */
-.app-header::after {
-    content: "";
+.fourier-f {
+    font-size: 1.35em;
+    line-height: 1;
+    vertical-align: -0.05em;
+    font-weight: 700;
+}
+
+/* Mobile: hide "ourier analysis" text */
+.logo-text {
+    display: none;
+}
+@media (min-width: 640px) {
+    .logo-text {
+        display: inline;
+    }
+}
+
+/* ── Attribution hover card ── */
+.logo-trigger {
+    cursor: pointer;
+}
+
+.hover-card {
     position: absolute;
-    inset: 0;
-    background-image: var(--paper-clean-texture);
-    background-repeat: repeat;
-    background-size: 200px 200px;
-    background-blend-mode: multiply;
+    top: 100%;
+    left: 0;
+    margin-top: 0.25rem;
+    padding: 0.875rem 1rem;
+    background: color-mix(in srgb, hsl(var(--popover)) 85%, transparent);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 1.5px solid hsl(var(--border) / 0.4);
+    border-radius: 0.75rem;
+    opacity: 0;
     pointer-events: none;
-    opacity: 0.5;
+    transform: scale(0.92) translateY(6px);
+    transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 60;
+    min-width: 17rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
-:where(.dark) .app-header::after {
-    background-blend-mode: screen;
-    opacity: 0.3;
+/* Bridge gap so hover doesn't drop */
+.hover-card::before {
+    content: '';
+    position: absolute;
+    top: -0.75rem;
+    left: 0;
+    right: 0;
+    height: 0.75rem;
 }
 
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.25s ease;
+.hover-card.is-open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: scale(1) translateY(0);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
 }
-.fade-enter-from,
-.fade-leave-to {
-    opacity: 0;
-}
-.icon-swap-enter-active,
-.icon-swap-leave-active {
-    transition: all 0.15s ease;
-}
-.icon-swap-enter-from {
-    opacity: 0;
-    transform: scale(0.8);
-}
-.icon-swap-leave-to {
-    opacity: 0;
-    transform: scale(0.8);
-}
+
 </style>

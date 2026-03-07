@@ -51,7 +51,7 @@ export async function deleteSession(slug: string): Promise<void> {
 export async function uploadImage(
     slug: string,
     file: File,
-): Promise<{ status: string; filename: string; sha256: string }> {
+): Promise<{ status: string; filename: string; sha256: string; slug?: string; existing?: boolean }> {
     const form = new FormData();
     form.append("file", file);
     const res = await fetch(`${BASE}/api/sessions/${slug}/upload`, {
