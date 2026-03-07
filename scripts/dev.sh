@@ -1,27 +1,27 @@
 #!/usr/bin/env bash
+# Start API + frontend dev servers, auto-finding free ports.
 set -euo pipefail
-
-# Smart dev script: starts mongo via docker, runs backend + frontend locally
 cd "$(dirname "$0")/.."
 
-echo "Starting MongoDB..."
-docker compose up mongo -d 2>/dev/null || echo "MongoDB already running or docker not available"
+find_free_port() {
+    local port=${1:-8000}
+    while lsof -iTCP:"$port" -sTCP:LISTEN -t &>/dev/null; do
+        ((port++))
+    done
+    echo "$port"
+}
 
-echo "Starting backend..."
-uv run uvicorn api.main:app --reload --port 8000 &
-BACKEND_PID=$!
+API_PORT=$(find_free_port 8000)
+WEB_PORT=$(find_free_port 3000)
 
-echo "Starting frontend..."
-cd web
-npm run dev -- --port 3000 &
-FRONTEND_PID=$!
-
-trap "kill $BACKEND_PID $FRONTEND_PID 2>/dev/null; exit" SIGINT SIGTERM
-
+echo "Starting API  → http://localhost:$API_PORT"
+echo "Starting Web  → http://localhost:$WEB_PORT"
 echo ""
-echo "Backend:  http://localhost:8000"
-echo "Frontend: http://localhost:3000"
-echo "Press Ctrl+C to stop"
-echo ""
+
+trap 'kill 0' EXIT
+
+(cd web && VITE_PROXY_API="http://localhost:$API_PORT" npx vite --port "$WEB_PORT") &
+
+uv run uvicorn api.main:app --host 0.0.0.0 --port "$API_PORT" --reload &
 
 wait
