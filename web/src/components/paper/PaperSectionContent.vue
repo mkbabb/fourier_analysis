@@ -21,6 +21,11 @@ function renderParagraph(text: string): string {
         return `<span class="math-inline">${renderInline(tex)}</span>`;
     });
 }
+
+/** Block-level HTML can't be nested inside <p> tags */
+function isBlockHtml(text: string): boolean {
+    return /^<(ol|ul|dl|blockquote|div)\b/.test(text.trim());
+}
 </script>
 
 <template>
@@ -32,12 +37,18 @@ function renderParagraph(text: string): string {
         :section-index="sectionIndex"
     >
         <!-- Paragraphs with inline math -->
-        <p
-            v-for="(para, pi) in section.paragraphs"
-            :key="pi"
-            :class="{ 'mt-4': pi > 0 }"
-            v-html="renderParagraph(para)"
-        />
+        <template v-for="(para, pi) in section.paragraphs" :key="pi">
+            <div
+                v-if="isBlockHtml(para)"
+                :class="{ 'mt-4': pi > 0 }"
+                v-html="renderParagraph(para)"
+            />
+            <p
+                v-else
+                :class="{ 'mt-4': pi > 0 }"
+                v-html="renderParagraph(para)"
+            />
+        </template>
 
         <!-- Figures -->
         <template v-if="section.figures">
@@ -49,7 +60,8 @@ function renderParagraph(text: string): string {
                 <img
                     :src="`${baseUrl}assets/${fig.filename}`"
                     :alt="fig.caption"
-                    class="max-w-full rounded-lg border border-border/50 shadow-sm"
+                    class="max-w-full rounded-lg shadow-sm"
+                    :class="fig.filename.includes('portrait') ? 'paper-portrait' : 'paper-figure'"
                     style="max-height: 400px"
                     loading="lazy"
                 />
@@ -65,7 +77,7 @@ function renderParagraph(text: string): string {
                 :type="thm.type"
                 :name="thm.name"
             >
-                <p v-html="renderParagraph(thm.body)" />
+                <p v-if="thm.body.trim()" v-html="renderParagraph(thm.body)" />
                 <MathBlock
                     v-for="(eq, ei) in thm.math"
                     :key="ei"
@@ -87,14 +99,69 @@ function renderParagraph(text: string): string {
 
         <!-- Interactive callout -->
         <div v-if="section.callout" class="interactive-callout">
-            <p class="font-medium text-foreground mb-2">Interactive: {{ section.callout.text }}</p>
+            <p class="cm-serif text-sm text-muted-foreground mb-3">{{ section.callout.text }}</p>
             <router-link
                 :to="section.callout.link"
-                class="inline-flex items-center gap-1.5 text-sm text-primary hover:underline transition-colors"
+                class="callout-btn"
             >
-                Open in Visualize tab
-                <ArrowRight class="h-3.5 w-3.5" />
+                <span class="fourier-f">ℱ</span>
+                <span>Open Visualizer</span>
+                <ArrowRight class="h-4 w-4" />
             </router-link>
         </div>
     </PaperSection>
 </template>
+
+<style scoped>
+.paper-figure {
+    border: 1px solid hsl(var(--border) / 0.5);
+    background: white;
+    border-radius: 0.5rem;
+}
+
+/* Dark mode: invert the figure colors, then hue-rotate to fix color shifts */
+:where(.dark) .paper-figure {
+    filter: invert(1) hue-rotate(180deg);
+    background: transparent;
+    border-color: hsl(var(--border) / 0.3);
+}
+
+.paper-portrait {
+    border: 1px solid hsl(var(--border) / 0.5);
+    border-radius: 0.5rem;
+}
+
+.interactive-callout {
+    margin: 1.5rem 0;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.75rem;
+    background: hsl(var(--muted) / 0.25);
+    text-align: center;
+}
+
+.callout-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.5rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: hsl(var(--primary-foreground));
+    background: hsl(var(--primary));
+    border-radius: 9999px;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 8px hsl(var(--primary) / 0.25);
+}
+
+.callout-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px hsl(var(--primary) / 0.35);
+}
+
+.callout-btn .fourier-f {
+    font-size: 1.1em;
+    opacity: 0.85;
+}
+</style>

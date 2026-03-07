@@ -44,7 +44,7 @@ function renderTitle(text: string): string {
             </component>
             <div v-if="(depth ?? 0) === 0" class="section-divider mt-4" />
         </div>
-        <div class="section-body mt-5 text-[1rem] leading-[1.8] text-foreground/90">
+        <div class="section-body mt-5 text-base lg:text-lg leading-[1.8] text-foreground/90">
             <slot />
         </div>
     </section>
@@ -119,5 +119,62 @@ function renderTitle(text: string): string {
 .section-body :deep(em) {
     font-style: italic;
     color: hsl(var(--foreground));
+}
+
+.section-body :deep(strong) {
+    font-weight: 700;
+    color: hsl(var(--foreground));
+}
+
+.section-body :deep(.paper-code) {
+    font-family: "Fira Code", monospace;
+    font-size: 0.85em;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    background: hsl(var(--muted) / 0.5);
+    color: hsl(var(--foreground));
+}
+
+.section-body :deep(.paper-cite) {
+    font-style: normal;
+    font-size: 0.8em;
+    color: hsl(var(--primary));
+    cursor: default;
+    font-family: "Fira Code", monospace;
+    vertical-align: super;
+    line-height: 0;
+}
+
+.section-body :deep(.paper-quote) {
+    border-left: 3px solid hsl(var(--border));
+    margin: 1rem 0;
+    padding: 0.75rem 1.25rem;
+    color: hsl(var(--muted-foreground));
+    font-style: italic;
+    background: hsl(var(--muted) / 0.2);
+    border-radius: 0 0.375rem 0.375rem 0;
+}
+
+.section-body :deep(.paper-list) {
+    margin: 0.75rem 0;
+    padding-left: 1.5rem;
+}
+
+.section-body :deep(.paper-list li) {
+    margin: 0.25rem 0;
+}
+
+.section-body :deep(.paper-description) {
+    margin: 0.75rem 0;
+}
+
+.section-body :deep(.paper-description dt) {
+    font-weight: 700;
+    margin-top: 0.5rem;
+}
+
+.section-body :deep(.paper-description dd) {
+    margin-left: 1.5rem;
+    margin-top: 0.125rem;
 }
 </style>

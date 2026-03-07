@@ -16,8 +16,8 @@ const html = renderDisplay(props.tex);
 .math-block {
     overflow-x: auto;
     overflow-y: hidden;
-    padding: 1rem 0;
-    margin: 1.25rem 0;
+    padding: 0.5rem 0;
+    margin: 0.75rem 0;
     text-align: center;
 }
 

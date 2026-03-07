@@ -37,10 +37,10 @@ function renderName(text: string): string {
 
 <template>
     <div
-        class="theorem-block my-5 rounded-lg border-l-[3px] bg-card paper-texture px-5 py-4 transition-all duration-300"
+        class="theorem-block my-4 rounded-lg border-l-[3px] bg-card paper-texture px-5 py-3 transition-all duration-300"
         :class="accentColors[type]"
     >
-        <p class="theorem-label mb-2 cm-serif"
+        <p class="theorem-label mb-1 cm-serif"
            :class="{
                'text-primary': type === 'theorem' || type === 'proposition' || type === 'corollary',
                'text-[hsl(var(--accent-pink))]': type === 'definition' || type === 'example',
@@ -49,7 +49,9 @@ function renderName(text: string): string {
         >
             <span class="font-bold" style="font-variant: small-caps;">{{ labels[type] }}</span><template v-if="name"> — <em class="font-normal" v-html="renderName(name)" /></template>
         </p>
-        <div class="theorem-body text-[0.938rem] leading-[1.75] text-foreground/90">
+        <div class="theorem-body text-[0.938rem] leading-[1.75] text-foreground/90"
+             :class="{ 'italic': type === 'theorem' || type === 'lemma' || type === 'proposition' || type === 'corollary' }"
+        >
             <slot />
         </div>
     </div>
@@ -95,8 +97,17 @@ function renderName(text: string): string {
     opacity: 0.8;
 }
 
-/* Slightly indent math blocks within theorems */
+/* Tighter spacing for math blocks within theorems */
 .theorem-body :deep(.math-block) {
     margin-left: 0.5rem;
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+}
+
+/* Consecutive math blocks: no gap between them */
+.theorem-body :deep(.math-block + .math-block) {
+    margin-top: 0;
 }
 </style>
