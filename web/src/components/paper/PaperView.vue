@@ -208,7 +208,7 @@ function getPreview(section: PaperSectionData): string {
 
 <template>
     <div class="paper-scroll">
-        <div class="paper-layout mx-auto max-w-5xl px-3 py-14 pb-32 sm:px-6">
+        <div class="paper-layout mx-auto max-w-5xl px-2 py-14 pb-32 sm:px-6">
             <div class="paper-grid">
                 <!-- Desktop sidebar TOC -->
                 <aside class="paper-sidebar">
@@ -327,6 +327,7 @@ function getPreview(section: PaperSectionData): string {
     min-height: 0;
     overflow-y: auto;
     overflow-x: hidden;
+    max-width: 100vw;
 }
 
 .paper-article {
@@ -334,6 +335,7 @@ function getPreview(section: PaperSectionData): string {
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     hyphens: auto;
+    width: 100%;
     max-width: 48rem;
     min-width: 0;
     margin: 0 auto;
@@ -343,6 +345,7 @@ function getPreview(section: PaperSectionData): string {
     box-shadow: 3px 3px 0px 0px hsl(var(--foreground) / 0.08);
     padding: 1.25rem 1rem;
     overflow-x: hidden;
+    box-sizing: border-box;
 }
 
 @media (min-width: 640px) {
