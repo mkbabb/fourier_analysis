@@ -241,9 +241,11 @@ function dismissError() {
     .viz-grid {
         display: grid;
         grid-template-columns: 340px 1fr;
+        grid-template-rows: 1fr;
         gap: 1rem;
         padding: 1rem;
         padding-bottom: 1.5rem;
+        overflow: hidden;
     }
 }
 
