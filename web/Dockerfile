@@ -2,11 +2,11 @@ FROM node:22-slim AS base
 WORKDIR /app
 
 FROM base AS deps
-COPY package.json package-lock.json ./
+COPY web/package.json web/package-lock.json ./
 RUN npm ci
 
 FROM deps AS development
-COPY . .
+COPY web/ .
 CMD ["npm", "run", "dev", "--", "--host", "--port", "3000"]
 
 FROM deps AS builder
@@ -14,7 +14,11 @@ ARG VITE_API_URL=/api
 ARG VITE_BASE_URL=/fourier/
 ENV VITE_API_URL=${VITE_API_URL}
 ENV VITE_BASE_URL=${VITE_BASE_URL}
-COPY . .
+COPY web/ .
+# Assets needed by the paper figures (symlink won't resolve in Docker)
+COPY assets/ public/assets/
+# Paper .tex needed by vite-plugin-latex-paper at build time
+COPY paper/fourier_paper.tex /paper/fourier_paper.tex
 RUN npm run build
 
 FROM nginx:alpine AS production

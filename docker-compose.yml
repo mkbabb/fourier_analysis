@@ -17,7 +17,8 @@ services:
 
   frontend:
     build:
-      context: ./web
+      context: .
+      dockerfile: web/Dockerfile
       target: development
     volumes:
       - ./web/src:/app/src
