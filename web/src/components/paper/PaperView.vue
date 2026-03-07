@@ -208,7 +208,7 @@ function getPreview(section: PaperSectionData): string {
 
 <template>
     <div class="paper-scroll">
-        <div class="paper-layout mx-auto max-w-5xl px-4 py-14 pb-32 sm:px-6">
+        <div class="paper-layout mx-auto max-w-5xl px-3 py-14 pb-32 sm:px-6">
             <div class="paper-grid">
                 <!-- Desktop sidebar TOC -->
                 <aside class="paper-sidebar">
@@ -290,9 +290,12 @@ function getPreview(section: PaperSectionData): string {
                     <nav class="mb-14 cm-serif text-sm text-muted-foreground lg:hidden">
                         <ol class="list-none space-y-1.5 pl-0">
                             <li v-for="section in sections" :key="section.id">
-                                <a :href="'#' + section.id" class="hover:text-foreground transition-colors duration-150">
+                                <button
+                                    @click="scrollToSection(section.id)"
+                                    class="text-left hover:text-foreground transition-colors duration-150 cursor-pointer"
+                                >
                                     {{ section.number }}. {{ section.title }}
-                                </a>
+                                </button>
                             </li>
                         </ol>
                     </nav>
@@ -332,12 +335,14 @@ function getPreview(section: PaperSectionData): string {
     -webkit-font-smoothing: antialiased;
     hyphens: auto;
     max-width: 48rem;
+    min-width: 0;
     margin: 0 auto;
     border-radius: 0.75rem;
     border: 2px solid hsl(var(--foreground) / 0.15);
     background: hsl(var(--card));
     box-shadow: 3px 3px 0px 0px hsl(var(--foreground) / 0.08);
     padding: 1.25rem 1rem;
+    overflow-x: hidden;
 }
 
 @media (min-width: 640px) {
@@ -350,6 +355,7 @@ function getPreview(section: PaperSectionData): string {
     display: grid;
     grid-template-columns: 1fr;
     gap: 2rem;
+    min-width: 0;
 }
 
 @media (min-width: 1024px) {
