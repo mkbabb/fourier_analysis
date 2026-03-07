@@ -9,22 +9,24 @@ export const useAnimationStore = defineStore("animation", () => {
     const duration = ref(30000); // ms per full cycle
 
     let anim: Animation | null = null;
+    let rafId: number | null = null;
 
     function createAnim(): Animation {
         if (anim) {
             anim.stop();
         }
+        stopRAF();
 
         const a = new Animation({
             duration: duration.value / speed.value,
-            iterationCount: "infinite",
+            iterationCount: 1,
             timingFunction: "linear",
-            fillMode: "none",
+            fillMode: "forwards",
             useWAAPI: false,
         });
 
         a.addFrame("0%", { t: "0px" }, (_vars: any, time: number) => {
-            t.value = time / a.options.duration;
+            t.value = Math.min(time / a.options.duration, 1);
         });
         a.addFrame("100%", { t: "1px" });
         a.parse();
@@ -33,38 +35,41 @@ export const useAnimationStore = defineStore("animation", () => {
         return a;
     }
 
+    // Manual rAF loop for infinite cycling
+    function startLoop() {
+        let startTime: number | null = null;
+        const dur = duration.value / speed.value;
+
+        function tick(now: number) {
+            if (!playing.value) return;
+            if (startTime === null) startTime = now - t.value * dur;
+
+            const elapsed = now - startTime;
+            t.value = (elapsed % dur) / dur;
+
+            rafId = requestAnimationFrame(tick);
+        }
+
+        rafId = requestAnimationFrame(tick);
+    }
+
+    function stopRAF() {
+        if (rafId !== null) {
+            cancelAnimationFrame(rafId);
+            rafId = null;
+        }
+    }
+
     function play() {
         if (playing.value) return;
         playing.value = true;
-
-        // If paused mid-animation, toggle pause to resume
-        if (anim && anim.started && anim.paused) {
-            anim.pause(); // toggles: paused → resumed
-            return;
-        }
-
-        // Create fresh animation starting from current t position
-        const a = createAnim();
-        // play() starts the rAF loop; we adjust startTime after first tick
-        const currentT = t.value;
-        const origOnStart = a.onStart.bind(a);
-        const patchedOnStart = async function (this: Animation) {
-            await origOnStart();
-            // Offset startTime so we begin at the current t position
-            if (currentT > 0 && a.startTime != null) {
-                a.startTime -= currentT * a.options.duration;
-            }
-        };
-        a.onStart = patchedOnStart as any;
-        a.play();
+        startLoop();
     }
 
     function pause() {
         if (!playing.value) return;
         playing.value = false;
-        if (anim && anim.started && !anim.paused) {
-            anim.pause(false); // pause without toggle
-        }
+        stopRAF();
     }
 
     function toggle() {
@@ -74,41 +79,18 @@ export const useAnimationStore = defineStore("animation", () => {
 
     function seek(normalizedT: number) {
         t.value = Math.max(0, Math.min(1, normalizedT));
-
-        if (anim && anim.started) {
-            const targetTime = t.value * anim.options.duration;
-            anim.t = targetTime;
-
-            const now = performance.now();
-            anim.startTime = now - targetTime;
-            if (anim.pausedTime > 0) {
-                anim.pausedTime = now;
-            }
-
-            anim.interpFrames(targetTime, true);
-        }
     }
 
     function reset() {
-        playing.value = false;
+        pause();
         t.value = 0;
-        if (anim) {
-            anim.stop();
-            anim = null;
-        }
     }
 
-    // Adjust effective duration when speed changes
-    watch(speed, (newSpeed) => {
-        if (!anim || !anim.started) return;
-        const wasPlaying = playing.value;
-        const currentT = t.value;
-
-        // Recreate with new duration
-        if (wasPlaying) {
-            pause();
-            createAnim();
-            play();
+    // Restart loop when speed changes mid-play
+    watch(speed, () => {
+        if (playing.value) {
+            stopRAF();
+            startLoop();
         }
     });
 
