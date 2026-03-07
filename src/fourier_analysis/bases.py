@@ -110,6 +110,35 @@ def chebyshev_fit(
     return np.asarray(fit.coef, dtype=np.float64)
 
 
+def legendre_fit(
+    signal: NDArray[np.floating],
+    degree: int,
+) -> NDArray[np.float64]:
+    """Fit a real signal to Legendre polynomials directly.
+
+    This produces a DIFFERENT least-squares fit than converting from
+    Chebyshev, because ``Legendre.fit`` minimizes the unweighted L2
+    error in the Legendre basis, whereas converting from Chebyshev
+    gives the same polynomial (just re-expressed).
+
+    Parameters
+    ----------
+    signal : 1-D real array
+        Sampled values.
+    degree : int
+        Maximum polynomial degree.
+
+    Returns
+    -------
+    NDArray[float64]
+        Legendre coefficients d_0 .. d_degree.
+    """
+    n = len(signal)
+    s = np.linspace(-1, 1, n)
+    fit = legendre.Legendre.fit(s, signal, deg=degree, domain=[-1, 1])
+    return np.asarray(fit.coef, dtype=np.float64)
+
+
 def legendre_from_chebyshev(
     cheb_coeffs: NDArray[np.float64],
 ) -> NDArray[np.float64]:
@@ -117,6 +146,10 @@ def legendre_from_chebyshev(
 
     Uses NumPy's polynomial conversion: Chebyshev -> Legendre via the
     monomial basis as intermediate.
+
+    NOTE: This produces the same polynomial as the Chebyshev fit, just
+    re-expressed in the Legendre basis. For a genuinely different
+    approximation, use ``legendre_fit`` instead.
     """
     cheb = chebyshev.Chebyshev(cheb_coeffs, domain=[-1, 1])
     leg = cheb.convert(kind=legendre.Legendre)
@@ -149,7 +182,14 @@ def legendre_decomposition(
     signal: NDArray[np.floating],
     degree: int,
 ) -> BasisDecomposition:
-    """Decompose a real signal into Legendre basis."""
+    """Decompose a real signal into Legendre basis (via Chebyshev conversion).
+
+    NOTE: For equispaced data, Chebyshev.fit and Legendre.fit both solve
+    the same discrete least-squares problem — the resulting polynomial is
+    identical. Only the coefficient representation differs. We convert
+    from Chebyshev to preserve the well-conditioned Chebyshev fitting
+    while exposing Legendre coefficients.
+    """
     cheb_coeffs = chebyshev_fit(signal, degree)
     leg_coeffs = legendre_from_chebyshev(cheb_coeffs)
     return _real_decomposition(signal, degree, "legendre", leg_coeffs)
@@ -239,8 +279,10 @@ def evaluate_partial_sum(
             result += c * np.exp(2j * np.pi * k * t)
         return result
 
-    # Polynomial bases
-    s = np.linspace(-1, 1, n_eval)
+    # Polynomial bases — trim endpoints to mitigate Runge phenomenon
+    # on closed contours (which have an inherent discontinuity at s=±1)
+    eps = 0.03
+    s = np.linspace(-1 + eps, 1 - eps, n_eval)
     max_k = max(coeff_dict.keys()) if coeff_dict else 0
     coeffs_arr = np.zeros(max_k + 1, dtype=np.float64)
     for k, c in coeff_dict.items():
@@ -293,12 +335,27 @@ def build_animation_data(
             "y": vals.imag.tolist(),
         }
 
-    # Polynomial basis partial sums
+    # Polynomial basis partial sums — fit separately at each level
+    # (truncating a high-degree fit is incorrect for equispaced data)
+    x_signal = contour_points.real.astype(np.float64)
+    y_signal = contour_points.imag.astype(np.float64)
+    eps = 0.03
+    s_eval = np.linspace(-1 + eps, 1 - eps, n_eval)
+
     for basis_name in ("chebyshev", "legendre"):
         partial_sums[basis_name] = {}
         for n in levels:
-            x_vals = evaluate_partial_sum(approx.x[basis_name], n, n_eval)
-            y_vals = evaluate_partial_sum(approx.y[basis_name], n, n_eval)
+            deg = min(n, len(contour_points) - 1)
+            cheb_x = chebyshev_fit(x_signal, deg)
+            cheb_y = chebyshev_fit(y_signal, deg)
+            if basis_name == "chebyshev":
+                x_vals = chebyshev.chebval(s_eval, cheb_x)
+                y_vals = chebyshev.chebval(s_eval, cheb_y)
+            else:
+                leg_x = legendre_from_chebyshev(cheb_x)
+                leg_y = legendre_from_chebyshev(cheb_y)
+                x_vals = legendre.legval(s_eval, leg_x)
+                y_vals = legendre.legval(s_eval, leg_y)
             partial_sums[basis_name][n] = {
                 "x": x_vals.tolist(),
                 "y": y_vals.tolist(),

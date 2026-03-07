@@ -148,6 +148,15 @@ wheels = [
 ]
 
 [[package]]
+name = "coolname"
+version = "4.0.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/a9/57/03591c9dda2f394db126db86c9eb47d37006174d8aaa712e60e1d2376ade/coolname-4.0.0.tar.gz", hash = "sha256:168ec04acbd58c4b7db39c5988a0e9daa204631dc975367adeb762b2c880d767", size = 38143, upload-time = "2026-02-22T14:10:17.655Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1e/96/a4501854ec7178a8c1ccafa457f44b1a28b25b816a7407ba71b816216f32/coolname-4.0.0-py3-none-any.whl", hash = "sha256:6eb1d5471b40b718d26ae7f25466e76fd54eb27f816d67051a9cc4f3f690f940", size = 39761, upload-time = "2026-02-22T14:10:15.955Z" },
+]
+
+[[package]]
 name = "cycler"
 version = "0.12.1"
 source = { registry = "https://pypi.org/simple" }
@@ -262,6 +271,7 @@ dev = [
 web = [
     { name = "aiofiles" },
     { name = "cachetools" },
+    { name = "coolname" },
     { name = "fastapi" },
     { name = "motor" },
     { name = "pydantic-settings" },
@@ -274,6 +284,7 @@ web = [
 requires-dist = [
     { name = "aiofiles", marker = "extra == 'web'", specifier = ">=24.1" },
     { name = "cachetools", marker = "extra == 'web'", specifier = ">=5.5" },
+    { name = "coolname", marker = "extra == 'web'", specifier = ">=2.2" },
     { name = "fastapi", marker = "extra == 'web'", specifier = ">=0.115" },
     { name = "matplotlib", specifier = ">=3.8" },
     { name = "motor", marker = "extra == 'web'", specifier = ">=3.6" },

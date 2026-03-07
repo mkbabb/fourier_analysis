@@ -21,6 +21,7 @@ web = [
     "sse-starlette>=2.0",
     "aiofiles>=24.1",
     "cachetools>=5.5",
+    "coolname>=2.2",
     "pydantic-settings>=2.7",
 ]
 
