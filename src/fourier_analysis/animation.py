@@ -116,7 +116,10 @@ class FourierAnimation:
         # ---- Rainbow spectrum for circles ----
         # gist_rainbow from 1->0 gives red..violet, matching the original.
         n_vis = self.n_visible
-        spectrum = cm.gist_rainbow(np.linspace(1, 0, max(n_vis, 1)))
+        # Non-linear mapping biased by amplitude: stretch warm colors
+        t = np.linspace(0, 1, max(n_vis, 1))
+        curved = np.power(t, 0.6)
+        spectrum = cm.gist_rainbow(1 - curved)
 
         # ---- Pre-create persistent artists (no per-frame create/destroy) ----
 

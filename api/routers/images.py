@@ -108,21 +108,29 @@ async def get_image(slug: str):
     if not session.get("image"):
         raise HTTPException(status_code=404, detail="No image uploaded")
 
-    bucket = get_gridfs()
-    file_id = session["image"]["file_id"]
+    image_meta = session["image"]
 
-    try:
-        grid_out = await bucket.open_download_stream(ObjectId(file_id))
-    except Exception:
-        raise HTTPException(status_code=404, detail="Image file not found in storage")
+    # Handle GridFS-backed images (new format with file_id)
+    if "file_id" in image_meta:
+        bucket = get_gridfs()
+        try:
+            grid_out = await bucket.open_download_stream(ObjectId(image_meta["file_id"]))
+        except Exception:
+            raise HTTPException(status_code=404, detail="Image file not found in storage")
 
-    data = await grid_out.read()
-    content_type = session["image"].get("content_type", "image/png")
+        data = await grid_out.read()
+        content_type = image_meta.get("content_type", "image/png")
 
-    return StreamingResponse(
-        io.BytesIO(data),
-        media_type=content_type,
-        headers={
-            "Cache-Control": "public, max-age=86400",
-        },
+        return StreamingResponse(
+            io.BytesIO(data),
+            media_type=content_type,
+            headers={
+                "Cache-Control": "public, max-age=86400",
+            },
+        )
+
+    # Legacy filesystem-based images are no longer accessible
+    raise HTTPException(
+        status_code=404,
+        detail="Image stored in legacy format — please re-upload",
     )

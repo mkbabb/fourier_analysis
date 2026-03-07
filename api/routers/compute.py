@@ -28,8 +28,15 @@ async def _get_image_path(session: dict) -> Path:
             status_code=400, detail="No image uploaded for this session"
         )
 
+    image_meta = session["image"]
+    if "file_id" not in image_meta:
+        raise HTTPException(
+            status_code=400,
+            detail="Image stored in legacy format — please re-upload",
+        )
+
     bucket = get_gridfs()
-    file_id = session["image"]["file_id"]
+    file_id = image_meta["file_id"]
 
     try:
         grid_out = await bucket.open_download_stream(ObjectId(file_id))

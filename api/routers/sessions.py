@@ -48,15 +48,29 @@ async def create_session():
     )
 
 
+def _has_valid_image(session: dict) -> bool:
+    """Check if session has a non-legacy image (GridFS-backed with file_id)."""
+    img = session.get("image")
+    return img is not None and "file_id" in img
+
+
 @router.get("/{slug}", response_model=SessionResponse)
 async def get_session_endpoint(slug: str):
     session = await get_session(slug)
+
+    # Auto-clean legacy images (no file_id = not GridFS-backed)
+    img = session.get("image")
+    if img is not None and "file_id" not in img:
+        db = get_db()
+        await db.sessions.update_one({"slug": slug}, {"$set": {"image": None}})
+        session["image"] = None
+
     return SessionResponse(
         slug=session["slug"],
         created_at=session["created_at"],
         parameters=ContourSettings(**session["parameters"]),
         animation_settings=AnimationSettings(**session["animation_settings"]),
-        has_image=session.get("image") is not None,
+        has_image=_has_valid_image(session),
         has_results=session.get("results") is not None,
     )
 
@@ -85,7 +99,7 @@ async def update_session(slug: str, update: SessionUpdate):
         created_at=updated["created_at"],
         parameters=ContourSettings(**updated["parameters"]),
         animation_settings=AnimationSettings(**updated["animation_settings"]),
-        has_image=updated.get("image") is not None,
+        has_image=_has_valid_image(updated),
         has_results=updated.get("results") is not None,
     )
 
