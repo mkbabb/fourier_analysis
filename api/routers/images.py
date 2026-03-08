@@ -7,13 +7,13 @@ import io
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from bson import ObjectId
 from fastapi import APIRouter, HTTPException, UploadFile
 from fastapi.responses import StreamingResponse
 
 from api.config import settings
 from api.dependencies import get_gridfs, get_session
 from api.services.database import get_db
+from api.services.image_storage import stream_image
 
 router = APIRouter(prefix="/api/sessions/{slug}", tags=["images"])
 
@@ -104,33 +104,12 @@ async def upload_image(slug: str, file: UploadFile):
 @router.get("/image")
 async def get_image(slug: str):
     session = await get_session(slug)
+    data, content_type = await stream_image(session)
 
-    if not session.get("image"):
-        raise HTTPException(status_code=404, detail="No image uploaded")
-
-    image_meta = session["image"]
-
-    # Handle GridFS-backed images (new format with file_id)
-    if "file_id" in image_meta:
-        bucket = get_gridfs()
-        try:
-            grid_out = await bucket.open_download_stream(ObjectId(image_meta["file_id"]))
-        except Exception:
-            raise HTTPException(status_code=404, detail="Image file not found in storage")
-
-        data = await grid_out.read()
-        content_type = image_meta.get("content_type", "image/png")
-
-        return StreamingResponse(
-            io.BytesIO(data),
-            media_type=content_type,
-            headers={
-                "Cache-Control": "public, max-age=86400",
-            },
-        )
-
-    # Legacy filesystem-based images are no longer accessible
-    raise HTTPException(
-        status_code=404,
-        detail="Image stored in legacy format — please re-upload",
+    return StreamingResponse(
+        io.BytesIO(data),
+        media_type=content_type,
+        headers={
+            "Cache-Control": "public, max-age=86400",
+        },
     )

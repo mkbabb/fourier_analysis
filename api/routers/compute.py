@@ -3,13 +3,10 @@
 from __future__ import annotations
 
 import os
-import tempfile
-from pathlib import Path
 
-from bson import ObjectId
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 
-from api.dependencies import get_gridfs, get_session
+from api.dependencies import get_session
 from api.models.computation import (
     ComputeBasesRequest,
     ComputeContourRequest,
@@ -17,48 +14,15 @@ from api.models.computation import (
     ComputeResult,
 )
 from api.services import computation
+from api.services.image_storage import download_to_tempfile
 
 router = APIRouter(prefix="/api/sessions/{slug}/compute", tags=["compute"])
-
-
-async def _get_image_path(session: dict) -> Path:
-    """Download image from GridFS to a temporary file and return its path."""
-    if not session.get("image"):
-        raise HTTPException(
-            status_code=400, detail="No image uploaded for this session"
-        )
-
-    image_meta = session["image"]
-    if "file_id" not in image_meta:
-        raise HTTPException(
-            status_code=400,
-            detail="Image stored in legacy format — please re-upload",
-        )
-
-    bucket = get_gridfs()
-    file_id = image_meta["file_id"]
-
-    try:
-        grid_out = await bucket.open_download_stream(ObjectId(file_id))
-    except Exception:
-        raise HTTPException(status_code=404, detail="Image file not found in storage")
-
-    data = await grid_out.read()
-
-    # Determine extension from original name or content type
-    original = session["image"].get("original_name", "image.png")
-    ext = Path(original).suffix.lower() or ".png"
-
-    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=ext)
-    tmp.write(data)
-    tmp.close()
-    return Path(tmp.name)
 
 
 @router.post("/contours", response_model=ComputeResult)
 async def compute_contours(slug: str, req: ComputeContourRequest):
     session = await get_session(slug)
-    image_path = await _get_image_path(session)
+    image_path = await download_to_tempfile(session)
     try:
         data = await computation.compute_contours(
             image_path,
@@ -76,7 +40,7 @@ async def compute_contours(slug: str, req: ComputeContourRequest):
 @router.post("/epicycles", response_model=ComputeResult)
 async def compute_epicycles(slug: str, req: ComputeEpicyclesRequest):
     session = await get_session(slug)
-    image_path = await _get_image_path(session)
+    image_path = await download_to_tempfile(session)
     params = session.get("parameters", {})
     try:
         data = await computation.compute_epicycles(
@@ -96,7 +60,7 @@ async def compute_epicycles(slug: str, req: ComputeEpicyclesRequest):
 @router.post("/bases", response_model=ComputeResult)
 async def compute_bases(slug: str, req: ComputeBasesRequest):
     session = await get_session(slug)
-    image_path = await _get_image_path(session)
+    image_path = await download_to_tempfile(session)
     params = session.get("parameters", {})
     try:
         data = await computation.compute_bases(
