@@ -141,6 +141,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import { generateSunRays, wobbleDiamond, wobbleStarPolygon } from "@mkbabb/pencil-boil";
+import { extractContours } from "@/lib/svg-contours";
 
 const sunSvgRef = ref<SVGSVGElement | null>(null);
 const moonSvgRef = ref<SVGSVGElement | null>(null);
@@ -159,64 +160,6 @@ const sunSparklePoints = computed(() => [
     wobbleDiamond(170, 45, 5, 8, 20),
     wobbleDiamond(55, 170, 5, 9, 30),
 ]);
-
-/**
- * Sample points along every <path>, <polygon>, <circle> in an SVG,
- * producing an array of contours (each contour is an array of [x,y] points).
- */
-function extractContours(
-    svgEl: SVGSVGElement,
-    samplesPerPath: number = 128,
-): [number, number][][] {
-    const contours: [number, number][][] = [];
-
-    // Process all shape elements
-    const elements = svgEl.querySelectorAll("path, polygon, circle, ellipse, rect, line");
-
-    for (const el of elements) {
-        const points: [number, number][] = [];
-
-        if (el instanceof SVGCircleElement) {
-            // Sample points around a circle
-            const cx = el.cx.baseVal.value;
-            const cy = el.cy.baseVal.value;
-            const r = el.r.baseVal.value;
-            const n = Math.max(16, Math.round(samplesPerPath * (r / 50)));
-            for (let i = 0; i < n; i++) {
-                const angle = (2 * Math.PI * i) / n;
-                points.push([cx + r * Math.cos(angle), cy + r * Math.sin(angle)]);
-            }
-        } else if (el instanceof SVGPolygonElement) {
-            // Get polygon points directly
-            const pl = el.points;
-            for (let i = 0; i < pl.numberOfItems; i++) {
-                const pt = pl.getItem(i);
-                points.push([pt.x, pt.y]);
-            }
-        } else {
-            // For paths and other elements: use getTotalLength/getPointAtLength
-            const geom = el as SVGGeometryElement;
-            try {
-                const totalLen = geom.getTotalLength();
-                if (totalLen < 1) continue;
-                const n = samplesPerPath;
-                for (let i = 0; i < n; i++) {
-                    const t = (i / n) * totalLen;
-                    const pt = geom.getPointAtLength(t);
-                    points.push([pt.x, pt.y]);
-                }
-            } catch {
-                continue;
-            }
-        }
-
-        if (points.length >= 3) {
-            contours.push(points);
-        }
-    }
-
-    return contours;
-}
 
 function extractAndOutput() {
     if (!sunSvgRef.value || !moonSvgRef.value) return;
