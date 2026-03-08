@@ -7,11 +7,12 @@
  * 3. settle-in:   New shape resolves from low harmonics → full harmonics
  *
  * All transitions are driven by keyframes.js Animation instances
- * with custom cubic-bezier bounce easing applied to the interpolation t.
+ * with easing functions (from value.js) applied to the interpolation t.
  */
 
 import { ref, computed, type Ref } from "vue";
 import { Animation } from "@mkbabb/keyframes.js";
+import { timingFunctions } from "@mkbabb/value.js";
 import type { FourierShape } from "@/lib/svg-fourier";
 import {
     interpolateAtHarmonicLevel,
@@ -21,96 +22,48 @@ import {
 
 export type MorphPhase = "idle" | "settle-out" | "morph" | "settle-in";
 
-// ── Cubic-bezier easing ─────────────────────────────────────────────
-
-function bezierAt(u: number, p1: number, p2: number): number {
-    const inv = 1 - u;
-    return 3 * inv * inv * u * p1 + 3 * inv * u * u * p2 + u * u * u;
-}
-
-export function cubicBezier(p1x: number, p1y: number, p2x: number, p2y: number) {
-    return (t: number): number => {
-        if (t <= 0) return 0;
-        if (t >= 1) return 1;
-
-        let lo = 0,
-            hi = 1;
-        for (let i = 0; i < 16; i++) {
-            const mid = (lo + hi) / 2;
-            const x = bezierAt(mid, p1x, p2x);
-            if (x < t) lo = mid;
-            else hi = mid;
-        }
-        const u = (lo + hi) / 2;
-        return bezierAt(u, p1y, p2y);
-    };
-}
+// ── Easing presets ──────────────────────────────────────────────────
 
 export type EasingFn = (t: number) => number;
 
+/** Display labels for easing preset names. */
+const EASING_LABELS: Record<string, string> = {
+    linear: "Linear",
+    "ease-in": "Ease In",
+    "ease-out": "Ease Out",
+    "ease-in-out": "Ease In-Out",
+    "ease-in-back": "Back In",
+    "ease-out-back": "Back Out",
+    "ease-in-out-back": "Back In-Out",
+    "ease-in-quad": "Ease In Quad",
+    "ease-out-quad": "Ease Out Quad",
+    "ease-in-out-quad": "Ease In-Out Quad",
+    "ease-in-cubic": "Ease In Cubic",
+    "ease-out-cubic": "Ease Out Cubic",
+    "ease-in-out-cubic": "Ease In-Out Cubic",
+    "ease-in-sine": "Ease In Sine",
+    "ease-out-sine": "Ease Out Sine",
+    "ease-in-out-sine": "Ease In-Out Sine",
+    "ease-in-expo": "Ease In Expo",
+    "ease-out-expo": "Ease Out Expo",
+    "ease-in-out-expo": "Ease In-Out Expo",
+    "ease-in-circ": "Ease In Circ",
+    "ease-out-circ": "Ease Out Circ",
+    "ease-in-out-circ": "Ease In-Out Circ",
+};
+
 export interface EasingPreset {
     label: string;
-    bezier: [number, number, number, number];
     fn: EasingFn;
 }
 
-export const EASING_PRESETS: Record<string, EasingPreset> = {
-    linear: {
-        label: "Linear",
-        bezier: [0, 0, 1, 1],
-        fn: (t) => t,
-    },
-    "ease-in": {
-        label: "Ease In",
-        bezier: [0.42, 0, 1, 1],
-        fn: cubicBezier(0.42, 0, 1, 1),
-    },
-    "ease-out": {
-        label: "Ease Out",
-        bezier: [0, 0, 0.58, 1],
-        fn: cubicBezier(0, 0, 0.58, 1),
-    },
-    "ease-in-out": {
-        label: "Ease In-Out",
-        bezier: [0.42, 0, 0.58, 1],
-        fn: cubicBezier(0.42, 0, 0.58, 1),
-    },
-    snap: {
-        label: "Snap (Material)",
-        bezier: [0.4, 0, 0.2, 1],
-        fn: cubicBezier(0.4, 0, 0.2, 1),
-    },
-    "bounce-out": {
-        label: "Bounce Out",
-        bezier: [0.5, -0.12, 0.3, 1],
-        fn: cubicBezier(0.5, -0.12, 0.3, 1),
-    },
-    "spring-in": {
-        label: "Spring In",
-        bezier: [0.18, 0.89, 0.3, 1.12],
-        fn: cubicBezier(0.18, 0.89, 0.3, 1.12),
-    },
-    "back-in": {
-        label: "Back In",
-        bezier: [0.6, -0.28, 0.735, 0.045],
-        fn: cubicBezier(0.6, -0.28, 0.735, 0.045),
-    },
-    "back-out": {
-        label: "Back Out",
-        bezier: [0.175, 0.885, 0.32, 1.275],
-        fn: cubicBezier(0.175, 0.885, 0.32, 1.275),
-    },
-    "elastic-out": {
-        label: "Elastic Out",
-        bezier: [0.22, 1.36, 0.36, 1],
-        fn: cubicBezier(0.22, 1.36, 0.36, 1),
-    },
-    "aggressive-snap": {
-        label: "Aggressive Snap",
-        bezier: [0.7, 0, 0.15, 1],
-        fn: cubicBezier(0.7, 0, 0.15, 1),
-    },
-};
+/** All available easing presets, backed by value.js timing functions. */
+export const EASING_PRESETS: Record<string, EasingPreset> = Object.fromEntries(
+    Object.entries(EASING_LABELS).map(([name, label]) => [
+        name,
+        { label, fn: timingFunctions[name as keyof typeof timingFunctions] as EasingFn },
+    ]),
+);
 
 export const EASING_PRESET_NAMES = Object.keys(EASING_PRESETS);
 
