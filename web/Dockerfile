@@ -3,7 +3,7 @@ WORKDIR /app
 
 FROM base AS deps
 COPY web/package.json web/package-lock.json ./
-RUN npm ci
+RUN npm install -g npm@latest && hash -r && npm ci
 
 FROM deps AS development
 COPY web/ .
