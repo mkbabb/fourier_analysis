@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useHoverCard } from "./composables/useHoverCard";
 import { useSessionStore } from "@/stores/session";
@@ -11,7 +11,12 @@ import { Tooltip } from "@/components/ui/tooltip";
 const route = useRoute();
 const router = useRouter();
 
-const { isOpen: cardOpen, toggle: toggleCard, onHoverEnter, onHoverLeave } = useHoverCard();
+const { isOpen: cardOpen, toggle: toggleCard, close: closeCard, onHoverEnter, onHoverLeave } = useHoverCard();
+
+// Close hover card on outside click (for touch devices)
+function onDocClick() { closeCard(); }
+onMounted(() => document.addEventListener("click", onDocClick));
+onUnmounted(() => document.removeEventListener("click", onDocClick));
 
 const tabOptions = [
     { label: "Paper", value: "/paper" },
@@ -44,10 +49,10 @@ async function copyShareUrl() {
 
 <template>
     <header class="app-header sticky top-0 z-50 bg-background/90 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
-        <div class="flex h-14 items-center gap-4 px-4 sm:px-6">
+        <div class="flex h-14 items-center gap-2 sm:gap-4 px-2 sm:px-6">
             <!-- Logo with attribution hover card -->
             <div
-                class="logo-trigger relative"
+                class="logo-trigger relative shrink-0"
                 role="button"
                 tabindex="0"
                 aria-label="Show project info"
@@ -90,15 +95,17 @@ async function copyShareUrl() {
                 </div>
             </div>
 
-            <div class="h-5 w-px bg-foreground/15" />
+            <div class="h-5 w-px bg-foreground/15 shrink-0" />
 
-            <BouncyToggle
-                :options="tabOptions"
-                :model-value="activeTab"
-                @update:model-value="onTabChange"
-            />
+            <div class="min-w-0 overflow-x-auto scrollbar-hidden">
+                <BouncyToggle
+                    :options="tabOptions"
+                    :model-value="activeTab"
+                    @update:model-value="onTabChange"
+                />
+            </div>
 
-            <div class="ml-auto flex items-center gap-1.5">
+            <div class="ml-auto flex items-center gap-1.5 shrink-0">
                 <Tooltip v-if="sessionStore.slug && sessionStore.hasImage" :text="copied ? 'Copied!' : 'Share'">
                     <button class="share-btn" @click="copyShareUrl">
                         <Transition name="icon-swap" mode="out-in">

@@ -131,6 +131,11 @@
         @apply bg-background text-foreground font-serif;
         min-height: 100dvh;
     }
+
+    /* Safe-area insets for notched / home-indicator devices */
+    body {
+        padding-bottom: env(safe-area-inset-bottom);
+    }
 }
 
 /* Mobile-first responsive font sizing (outside @layer for specificity) */

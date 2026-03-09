@@ -145,7 +145,7 @@ watch(activeRootId, () => {
             </div>
         </Transition>
 
-        <div class="paper-layout mx-auto max-w-5xl px-2 py-14 pb-4 sm:px-6">
+        <div class="paper-layout mx-auto max-w-5xl px-2 py-2 sm:py-14 pb-4 sm:px-6">
             <div class="paper-grid">
                 <!-- Desktop sidebar TOC -->
                 <aside class="paper-sidebar">
