@@ -272,6 +272,68 @@ input[type="range"]::-webkit-slider-thumb:active {
     transform: scale(0.95);
 }
 
+/* ── Styled slider (shared by AnimationControls, BasisSelector, etc.) ── */
+
+.styled-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 10px;
+    border-radius: 5px;
+    touch-action: none;
+    background: linear-gradient(
+        to right,
+        var(--slider-color) var(--progress),
+        hsl(var(--secondary)) var(--progress)
+    );
+    outline: none;
+    cursor: pointer;
+}
+
+.styled-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--slider-color);
+    cursor: pointer;
+    border: 2px solid hsl(var(--background));
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+    transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                box-shadow 0.15s ease;
+}
+
+.styled-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.styled-slider::-webkit-slider-thumb:active {
+    transform: scale(0.95);
+}
+
+.styled-slider::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--slider-color);
+    cursor: pointer;
+    border: 2px solid hsl(var(--background));
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+.styled-slider::-moz-range-progress {
+    background: var(--slider-color);
+    border-radius: 5px;
+    height: 10px;
+}
+
+.styled-slider::-moz-range-track {
+    background: hsl(var(--secondary));
+    border-radius: 5px;
+    height: 10px;
+}
+
 /* ── KaTeX styling — LaTeX-faithful rendering ───────────────── */
 
 /* Force font-display: swap on KaTeX fonts to prevent invisible text during load */

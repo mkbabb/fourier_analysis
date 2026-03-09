@@ -16,7 +16,7 @@ const open = ref(props.defaultOpen)
 
 <template>
   <CollapsibleRoot v-model:open="open" class="collapsible-section">
-    <CollapsibleTrigger class="collapsible-trigger group flex w-full items-center gap-2 py-2 cursor-pointer select-none">
+    <CollapsibleTrigger class="collapsible-trigger group flex w-full items-center gap-2 py-1.5 cursor-pointer select-none">
       <ChevronRight class="h-4 w-4 text-muted-foreground transition-transform duration-200" :class="{ 'rotate-90': open }" />
       <span>
         <span class="cm-serif text-sm font-semibold tracking-tight">{{ title }}</span>
