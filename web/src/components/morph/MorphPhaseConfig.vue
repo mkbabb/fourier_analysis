@@ -187,64 +187,18 @@ const easingNames = EASING_PRESET_NAMES;
     flex-shrink: 0;
 }
 
-/* ── Styled slider ─────────────────────────────── */
-
+/* MorphPhaseConfig slider overrides — smaller thumb */
 .styled-slider {
-    -webkit-appearance: none;
-    appearance: none;
     flex: 1;
-    height: 10px;
-    border-radius: 5px;
-    background: linear-gradient(
-        to right,
-        var(--slider-color) var(--progress),
-        hsl(var(--secondary)) var(--progress)
-    );
-    outline: none;
-    transition: opacity 0.2s;
 }
 
 .styled-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
     width: 20px;
     height: 20px;
-    border-radius: 50%;
-    background: var(--slider-color);
-    cursor: pointer;
-    border: 2px solid hsl(var(--background));
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.styled-slider::-webkit-slider-thumb:hover {
-    transform: scale(1.15);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.styled-slider::-webkit-slider-thumb:active {
-    transform: scale(0.95);
 }
 
 .styled-slider::-moz-range-thumb {
     width: 20px;
     height: 20px;
-    border-radius: 50%;
-    background: var(--slider-color);
-    cursor: pointer;
-    border: 2px solid hsl(var(--background));
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-}
-
-.styled-slider::-moz-range-progress {
-    background: var(--slider-color);
-    border-radius: 5px;
-    height: 10px;
-}
-
-.styled-slider::-moz-range-track {
-    background: hsl(var(--secondary));
-    border-radius: 5px;
-    height: 10px;
 }
 </style>

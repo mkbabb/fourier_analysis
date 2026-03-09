@@ -2,12 +2,8 @@
 import { ref, watch, computed } from "vue";
 import { Collapsible } from "@/components/ui/collapsible";
 import { Tooltip } from "@/components/ui/tooltip";
-
-const basisDisplay: Record<string, { icon: string; label: string; color: string }> = {
-    fourier: { icon: "\u2131", label: "Fourier", color: "#ff3412" },
-    chebyshev: { icon: "T\u2099", label: "Chebyshev", color: "#3b82f6" },
-    legendre: { icon: "P\u2099", label: "Legendre", color: "#a855f7" },
-};
+import { VIZ_COLORS } from "@/lib/colors";
+import { basisDisplay } from "./lib/basis-display";
 
 const fourierModes = ["fourier-epicycles", "fourier-series"] as const;
 
@@ -95,9 +91,9 @@ function toggleBasis(key: string) {
 </script>
 
 <template>
-    <div class="cartoon-card p-3">
+    <div class="cartoon-card px-3 py-2">
         <Collapsible title="Basis" subtitle="decomposition & resolution" :default-open="true">
-            <div class="flex gap-1.5 pt-1 pb-1">
+            <div class="flex flex-wrap gap-1.5 pt-1 pb-1">
                 <Tooltip v-for="(info, key) in basisDisplay" :key="key" :text="getBasisTooltip(key as string)">
                     <button
                         class="basis-pill"
@@ -126,7 +122,7 @@ function toggleBasis(key: string) {
                         max="500"
                         step="1"
                         class="styled-slider w-full"
-                        :style="{ '--progress': harmonicsProgress + '%', '--slider-color': '#ff3412' }"
+                        :style="{ '--progress': harmonicsProgress + '%', '--slider-color': VIZ_COLORS.fourier }"
                     />
                 </div>
 
@@ -144,7 +140,7 @@ function toggleBasis(key: string) {
                         max="4096"
                         step="128"
                         class="styled-slider w-full"
-                        :style="{ '--progress': pointsProgress + '%', '--slider-color': '#3b82f6' }"
+                        :style="{ '--progress': pointsProgress + '%', '--slider-color': VIZ_COLORS.chebyshev }"
                     />
                 </div>
             </div>
@@ -153,63 +149,37 @@ function toggleBasis(key: string) {
 </template>
 
 <style scoped>
-/* Gradient sliders */
+/* BasisSelector slider overrides — slightly larger than default */
 .styled-slider {
-    -webkit-appearance: none;
-    appearance: none;
     height: 12px;
     border-radius: 6px;
-    touch-action: none;
     background: linear-gradient(
         to right,
         var(--slider-color) var(--progress),
         hsl(var(--secondary)) var(--progress)
     );
-    outline: none;
-    cursor: pointer;
 }
 
 .styled-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
     width: 24px;
     height: 24px;
-    border-radius: 50%;
+    border-width: 2.5px;
     background: var(--slider-color);
-    cursor: pointer;
-    border: 2.5px solid hsl(var(--background));
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
-    transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275),
-                box-shadow 0.15s ease;
-}
-
-.styled-slider::-webkit-slider-thumb:hover {
-    transform: scale(1.15);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.styled-slider::-webkit-slider-thumb:active {
-    transform: scale(0.95);
 }
 
 .styled-slider::-moz-range-thumb {
     width: 24px;
     height: 24px;
-    border-radius: 50%;
+    border-width: 2.5px;
     background: var(--slider-color);
-    cursor: pointer;
-    border: 2.5px solid hsl(var(--background));
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
 }
 
 .styled-slider::-moz-range-progress {
-    background: var(--slider-color);
     border-radius: 6px;
     height: 12px;
 }
 
 .styled-slider::-moz-range-track {
-    background: hsl(var(--secondary));
     border-radius: 6px;
     height: 12px;
 }

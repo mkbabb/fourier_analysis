@@ -22,7 +22,7 @@
                     :max="highLevel - 1"
                     step="1"
                     class="styled-slider"
-                    :style="sliderStyle(lowLevel, 1, highLevel - 1, '#3b82f6')"
+                    :style="sliderStyle(lowLevel, 1, highLevel - 1, VIZ_COLORS.chebyshev)"
                 />
             </div>
 
@@ -45,7 +45,7 @@
                     max="100"
                     step="1"
                     class="styled-slider"
-                    :style="sliderStyle(highLevel, lowLevel + 1, 100, '#3b82f6')"
+                    :style="sliderStyle(highLevel, lowLevel + 1, 100, VIZ_COLORS.chebyshev)"
                 />
             </div>
         </div>
@@ -84,6 +84,7 @@
 
 <script setup lang="ts">
 import { sliderStyle } from "@/composables/useMorphConfig";
+import { VIZ_COLORS } from "@/lib/colors";
 import type { FourierShape } from "@/lib/svg-fourier";
 import { interpolateAtHarmonicLevel, pointsToSvgPath } from "@/lib/svg-fourier";
 
@@ -177,68 +178,23 @@ function getPath(level: number): string {
 }
 
 .level-input:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.15);
 }
 
-/* ── Styled slider ─────────────────────────────── */
-
+/* HarmonicLevelGrid slider overrides — slightly smaller thumb */
 .styled-slider {
-    -webkit-appearance: none;
-    appearance: none;
     flex: 1;
-    height: 10px;
-    border-radius: 5px;
-    background: linear-gradient(
-        to right,
-        var(--slider-color) var(--progress),
-        hsl(var(--secondary)) var(--progress)
-    );
-    outline: none;
 }
 
 .styled-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
     width: 20px;
     height: 20px;
-    border-radius: 50%;
-    background: var(--slider-color);
-    cursor: pointer;
-    border: 2px solid hsl(var(--background));
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.styled-slider::-webkit-slider-thumb:hover {
-    transform: scale(1.15);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.styled-slider::-webkit-slider-thumb:active {
-    transform: scale(0.95);
 }
 
 .styled-slider::-moz-range-thumb {
     width: 20px;
     height: 20px;
-    border-radius: 50%;
-    background: var(--slider-color);
-    cursor: pointer;
-    border: 2px solid hsl(var(--background));
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
-}
-
-.styled-slider::-moz-range-progress {
-    background: var(--slider-color);
-    border-radius: 5px;
-    height: 10px;
-}
-
-.styled-slider::-moz-range-track {
-    background: hsl(var(--secondary));
-    border-radius: 5px;
-    height: 10px;
 }
 
 /* ── Preview grid ────────────────────────────── */
@@ -282,8 +238,8 @@ function getPath(level: number): string {
 }
 
 .grid-cell.is-bound {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 1.5px rgba(59, 130, 246, 0.2);
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 1.5px rgba(96, 165, 250, 0.2);
 }
 
 .grid-svg {

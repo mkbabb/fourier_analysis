@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { useSessionStore } from "@/stores/session";
-import { useImageUpload } from "@/composables/useImageUpload";
+import { useImageUpload } from "./composables/useImageUpload";
 import { imageUrl } from "@/lib/api";
 import { ImagePlus, Upload, ImageOff } from "lucide-vue-next";
 
@@ -27,7 +27,7 @@ function onImgError() {
 
 <template>
     <div
-        class="cartoon-card p-3 relative"
+        class="cartoon-card px-3 py-2 relative"
         @drop="handleDrop"
         @dragover="handleDragOver"
         @dragenter="handleDragEnter"
@@ -56,8 +56,7 @@ function onImgError() {
                 v-else
                 :src="preview || (store.slug ? imageUrl(store.slug) : '')"
                 alt="Uploaded image"
-                class="w-full object-contain transition-all duration-300"
-                style="max-height: 200px"
+                class="w-full max-h-[200px] object-contain transition-all duration-300"
                 @error="onImgError"
             />
             <div
@@ -138,13 +137,13 @@ function onImgError() {
     border-radius: 9999px;
     background: linear-gradient(
         90deg,
-        #ff3412 0%,
-        #f59e0b 17%,
-        #10b981 33%,
-        #3b82f6 50%,
-        #a855f7 67%,
-        #ec4899 83%,
-        #ff3412 100%
+        #f87171 0%,
+        #fbbf24 17%,
+        #34d399 33%,
+        #60a5fa 50%,
+        #c084fc 67%,
+        #f472b6 83%,
+        #f87171 100%
     );
     background-size: 200% 100%;
     animation: rainbow-slide 1.4s linear infinite;

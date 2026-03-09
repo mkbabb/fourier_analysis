@@ -36,7 +36,7 @@ function formatPercent(amplitude: number): string {
 </script>
 
 <template>
-    <div class="cartoon-card p-3">
+    <div class="cartoon-card px-3 py-2">
         <Collapsible title="Coefficients" subtitle="Fourier spectrum" :default-open="false">
             <div class="pt-1">
                 <div class="flex items-center justify-end mb-2">

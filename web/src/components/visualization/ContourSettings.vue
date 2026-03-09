@@ -3,6 +3,7 @@ import { ref, onMounted, computed, type WritableComputedRef } from "vue";
 import { watchDebounced } from "@vueuse/core";
 import { useSessionStore } from "@/stores/session";
 import { useAnimationStore } from "@/stores/animation";
+import { VIZ_COLORS } from "@/lib/colors";
 import { Collapsible } from "@/components/ui/collapsible";
 import {
     Select,
@@ -90,7 +91,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="cartoon-card p-3">
+    <div class="cartoon-card px-3 py-2">
         <Collapsible title="Contour" subtitle="edge extraction settings" :default-open="true">
             <div class="space-y-3 pt-1">
                 <!-- Strategy -->
@@ -129,7 +130,7 @@ onMounted(() => {
                             max="5"
                             step="0.1"
                             class="styled-slider w-full"
-                            :style="{ '--progress': blurProgress + '%', '--slider-color': '#f59e0b' }"
+                            :style="{ '--progress': blurProgress + '%', '--slider-color': VIZ_COLORS.amber }"
                         />
                     </div>
                 </Tooltip>
