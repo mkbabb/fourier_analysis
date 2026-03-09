@@ -44,26 +44,26 @@ export function drawBasisLabels(
         // Draw mode label
         ctx.font = "bold 16px 'Fira Code', monospace";
         const labelW = ctx.measureText(` ${modeLabel}`).width;
-        ctx.fillText(` ${modeLabel}`, width - 16, yOff);
+        ctx.fillText(` ${modeLabel}`, width - 48, yOff);
 
         // Draw icon larger
         ctx.font = "bold 22px 'Computer Modern Serif', Georgia, serif";
         const iconW = ctx.measureText(cfg.icon).width;
-        ctx.fillText(cfg.icon, width - 16 - labelW, yOff - 2);
+        ctx.fillText(cfg.icon, width - 48 - labelW, yOff - 2);
 
         ctx.shadowColor = "transparent";
         ctx.shadowBlur = 0;
 
         // Store hit region
         const totalW = iconW + labelW;
-        hitRegions.push({ key: basisKey, x: width - 16 - totalW, y: yOff - 4, w: totalW + 8, h: 26 });
+        hitRegions.push({ key: basisKey, x: width - 48 - totalW, y: yOff - 4, w: totalW + 8, h: 26 });
         yOff += 24;
     }
 
     ctx.globalAlpha = 1;
     ctx.fillStyle = "rgba(150, 150, 150, 0.7)";
     ctx.font = "bold 16px 'Fira Code', monospace";
-    ctx.fillText(levelText, width - 16, yOff);
+    ctx.fillText(levelText, width - 48, yOff);
 
     return { hitRegions };
 }
@@ -84,11 +84,11 @@ export function drawEpicycleLabel(
     ctx.font = "bold 16px 'Fira Code', monospace";
     const epicLabel = " Epicycles";
     const eLabelW = ctx.measureText(epicLabel).width;
-    ctx.fillText(epicLabel, width - 16, 16);
+    ctx.fillText(epicLabel, width - 48, 16);
     ctx.font = "bold 22px 'Computer Modern Serif', Georgia, serif";
-    ctx.fillText("\u2131", width - 16 - eLabelW, 14);
+    ctx.fillText("\u2131", width - 48 - eLabelW, 14);
     ctx.globalAlpha = 1;
     ctx.fillStyle = "rgba(150, 150, 150, 0.7)";
     ctx.font = "bold 16px 'Fira Code', monospace";
-    ctx.fillText(`t = ${tValue.toFixed(2)}`, width - 16, 40);
+    ctx.fillText(`t = ${tValue.toFixed(2)}`, width - 48, 40);
 }
