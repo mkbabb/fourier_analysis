@@ -1141,6 +1141,13 @@ a Sturm-Liouville problem with $p(x) = e^{-x^2}$, $w(x) = e^{-x^2}$, and eigenva
 
 The Fourier transform acts on the Hermite basis by pure phase rotation---a four-fold symmetry, since $(-i)^4 = 1$. The same function returns after four applications of $\mathcal{F}$, so the Hermite functions are the ``atoms'' that $\mathcal{F}$ cannot decompose further: they are to the Fourier transform what eigenvectors are to a matrix. This connects Hermite polynomials (a Sturm-Liouville eigenbasis on $\mathbb{R}$ with Gaussian weight) to the Fourier basis (eigenfunctions of the Laplacian with periodic boundary conditions)---two operators, two eigenbases, unified by the fact that the Gaussian is its own Fourier transform.
 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{../assets/f25_hermite_eigenfunctions.pdf}
+    \caption{The first four Hermite functions $\psi_n(x) = c_n H_n(x)e^{-x^2/2}$, each an eigenfunction of the Fourier transform with eigenvalue $(-i)^n$. The four eigenvalues cycle through $\{1, -i, -1, i\}$: applying $\mathcal{F}$ four times returns to the identity.}
+    \label{fig:hermite_eigen}
+\end{figure}
+
 \subsection{The Classical Family: A Survey}
 
 The Fourier, Chebyshev, Legendre, and Hermite bases derived above are instances of a broader pattern. Each row of the following table represents a Sturm-Liouville problem whose eigenfunctions form a complete orthogonal system:
@@ -1214,6 +1221,13 @@ The interpolating polynomial is then $p(x) = \sum_{i=0}^{n} y_i L_i(x)$.
 \end{proof}
 
 \paragraph{Optimal nodes.} The error bound \eqref{eq:interp_error} is controlled by $\|w\|_\infty = \|\prod(x - x_i)\|_\infty$. By the minimax property of Chebyshev polynomials (Theorem~\ref{thm:chebyshev_leading}), this product is minimized when the nodes are the zeros of $T_{n+1}$, i.e., the Chebyshev nodes $x_k = \cos\left(\frac{(2k+1)\pi}{2(n+1)}\right)$. For Chebyshev nodes, the Lebesgue constant grows as $O(\log n)$, compared to $O(2^n/n)$ for equispaced nodes---a dramatic difference that explains the Runge phenomenon for equispaced interpolation, in which equispaced polynomial interpolation of smooth functions (e.g., $f(x) = 1/(1+25x^2)$) diverges at the endpoints as the degree increases, because equispaced nodes concentrate interpolation error at the boundaries rather than distributing it.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{../assets/f24_runge_phenomenon.pdf}
+    \caption{The Runge phenomenon. Left: polynomial interpolation of $f(x) = 1/(1+25x^2)$ at equispaced nodes diverges wildly at the endpoints as the degree increases. Right: the same function interpolated at Chebyshev nodes converges uniformly.}
+    \label{fig:runge}
+\end{figure}
 
 \paragraph{Connection to spectral methods.} Interpolation at Chebyshev nodes, combined with the DCT (Chapter~\ref{ch:dft}), is the foundation of Chebyshev spectral methods for solving differential equations.
 
@@ -2440,6 +2454,13 @@ The eigendecomposition $A = Q\Lambda Q^{-1}$ requires $A$ to be square (and idea
 
 \paragraph{Geometric interpretation.} Every linear map decomposes as a rotation ($V^T$), followed by axis-aligned scaling ($\Sigma$), followed by another rotation ($U$). Concretely, $A$ maps the unit sphere to an ellipsoid: the right singular vectors $v_i$ are the input directions that map to the ellipsoid's axes, the left singular vectors $u_i$ are those axis directions in the output space, and the singular values $\sigma_i$ are the semi-axis lengths. The truncated SVD $A_k$ keeps the $k$ longest axes---the best rank-$k$ ellipsoidal approximation. For symmetric $A$, the SVD reduces to the spectral theorem ($U = V$, $\Sigma = |\Lambda|$): the SVD is the spectral theorem generalized to rectangular matrices.
 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{../assets/f22_svd_ellipsoid.pdf}
+    \caption{The SVD geometrically: $A$ maps the unit circle (left) to an ellipse (right). The right singular vectors $v_i$ are the input directions that map to the ellipse's axes; the left singular vectors $u_i$, scaled by $\sigma_i$, are those axes in the output space.}
+    \label{fig:svd_ellipsoid}
+\end{figure}
+
 \paragraph{Connection to eigendecomposition.} The left singular vectors $U$ are eigenvectors of $AA^T$; the right singular vectors $V$ are eigenvectors of $A^TA$:
 \begin{align}
     A^TA &= V\Sigma^2 V^T \\
@@ -2490,6 +2511,13 @@ PCA asks: given a collection of data points in $\mathbb{R}^p$, what directions c
 The diagonal entries $C_{jj}$ are the variances of individual features; the off-diagonal entries $C_{jk}$ are the pairwise covariances. $C$ is symmetric positive semidefinite by construction.
 
 Geometrically, $C$ describes the shape of the data cloud: its eigenvectors are the axes of the best-fit ellipsoid, and its eigenvalues are the squared semi-axis lengths (the variance along each axis). Diagonalizing $C$ rotates the coordinate system to align with the data's natural axes---the same operation as diagonalizing the Laplacian aligns coordinates with natural modes of vibration. The covariance matrix $C = \frac{1}{n-1}X^TX$ is a Gram matrix---the same structure as $\langle \phi_i, \phi_j \rangle$ in the Hilbert space framework of Chapter~\ref{ch:linear_algebra}. Covariance is the statistician's name for the inner product; correlation is normalized covariance, i.e., cosine similarity. PCA diagonalizes this Gram matrix just as Fourier analysis diagonalizes the Laplacian's.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{../assets/f23_pca_ellipse.pdf}
+    \caption{PCA as rotation to natural axes. Left: a 2D data cloud with the eigenvectors of the covariance matrix $C$ shown as arrows (lengths $= \sqrt{\lambda_i}$) and the $2\sigma$ ellipse dashed. Right: after the PCA rotation $V^T$, the data aligns with the coordinate axes and the covariance is diagonal.}
+    \label{fig:pca_ellipse}
+\end{figure}
 
 \paragraph{Deriving principal components via Lagrange multipliers.} The first principal component is the direction $w \in \mathbb{R}^p$ that maximizes the variance of the projected data:
 \begin{equation}
