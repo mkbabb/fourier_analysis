@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from "vue";
+import { ref, computed } from "vue";
+import { onClickOutside } from "@vueuse/core";
 import { useAnimationStore } from "@/stores/animation";
 import { useSessionStore } from "@/stores/session";
+import { VIZ_COLORS } from "@/lib/colors";
 import {
     Download,
     Eye,
@@ -74,30 +76,17 @@ const isEpicycleMode = computed(() =>
     props.activeBases.includes("fourier-epicycles"),
 );
 const sliderColor = computed(() =>
-    isEpicycleMode.value ? "#22c55e" : "#ff3412",
+    isEpicycleMode.value ? VIZ_COLORS.green : VIZ_COLORS.fourier,
 );
 const sliderColorDark = computed(() =>
-    isEpicycleMode.value ? "#16a34a" : "#b91c1c",
+    isEpicycleMode.value ? VIZ_COLORS.greenDark : VIZ_COLORS.redDark,
 );
 
 /* Three-dot menu */
 const menuOpen = ref(false);
 const menuAnchor = ref<HTMLElement>();
 
-function handleClickOutside(e: MouseEvent) {
-    if (
-        menuOpen.value &&
-        menuAnchor.value &&
-        !menuAnchor.value.contains(e.target as Node)
-    ) {
-        menuOpen.value = false;
-    }
-}
-
-onMounted(() => document.addEventListener("pointerdown", handleClickOutside));
-onUnmounted(() =>
-    document.removeEventListener("pointerdown", handleClickOutside),
-);
+onClickOutside(menuAnchor, () => { menuOpen.value = false });
 </script>
 
 <template>
@@ -127,7 +116,7 @@ onUnmounted(() =>
                 max="1"
                 step="0.001"
                 :value="anim.t"
-                class="timeline-slider w-full"
+                class="timeline-slider styled-slider w-full"
                 :style="{
                     '--slider-color': sliderColor,
                     '--slider-color-dark': sliderColorDark,
@@ -214,12 +203,12 @@ onUnmounted(() =>
 .anim-controls {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 0.75rem;
-    backdrop-filter: blur(12px);
-    background: hsl(var(--background) / 0.65);
-    border-top: 1px solid hsl(var(--foreground) / 0.08);
+    gap: 0.375rem;
+    padding: 0.25rem 0.375rem;
+    background: transparent;
+    border-top: none;
     min-width: 0;
+    z-index: 20;
 }
 
 /* Play/Pause — wide rounded-rect pill (keyframes.js style) */
@@ -228,9 +217,9 @@ onUnmounted(() =>
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 2.5rem;
-    height: 2.25rem;
-    border-radius: 0.625rem;
+    width: 2.25rem;
+    height: 1.75rem;
+    border-radius: 0.5rem;
     cursor: pointer;
     overflow: hidden;
     border: none;
@@ -245,17 +234,17 @@ onUnmounted(() =>
     content: "";
     position: absolute;
     inset: 0;
-    border-radius: 0.625rem;
+    border-radius: 0.5rem;
     background: linear-gradient(
         90deg,
-        hsl(0 85% 60%),
-        hsl(30 90% 55%),
-        hsl(55 85% 52%),
-        hsl(120 65% 48%),
-        hsl(200 75% 52%),
-        hsl(270 65% 55%),
-        hsl(330 80% 58%),
-        hsl(0 85% 60%)
+        hsl(0 78% 68%),
+        hsl(30 85% 65%),
+        hsl(55 80% 62%),
+        hsl(120 55% 58%),
+        hsl(200 70% 62%),
+        hsl(270 60% 65%),
+        hsl(330 72% 66%),
+        hsl(0 78% 68%)
     );
     background-size: 200% 100%;
     z-index: -1;
@@ -304,7 +293,7 @@ onUnmounted(() =>
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.2s ease;
-    z-index: 10;
+    z-index: 30;
 }
 
 /* Show caret on hover or when scrubbing */
@@ -326,80 +315,50 @@ onUnmounted(() =>
     white-space: nowrap;
 }
 
+/* Timeline slider overrides — custom track background with v-bind progress */
 .timeline-slider {
-    -webkit-appearance: none;
-    appearance: none;
-    height: 10px;
-    border-radius: 5px;
-    touch-action: none;
+    --progress: v-bind('(anim.t * 100) + "%"');
+    height: 12px;
+    border-radius: 6px;
     background: linear-gradient(
         to right,
-        var(--slider-color) v-bind('(anim.t * 100) + "%"'),
-        hsl(var(--foreground) / 0.12) v-bind('(anim.t * 100) + "%"')
+        var(--slider-color) var(--progress),
+        hsl(var(--foreground) / 0.12) var(--progress)
     );
-    outline: none;
-    cursor: pointer;
+}
+
+.timeline-slider::-webkit-slider-thumb {
+    background: var(--slider-color);
+}
+
+.timeline-slider::-moz-range-thumb {
+    background: var(--slider-color);
+}
+
+.timeline-slider::-moz-range-progress {
+    border-radius: 6px;
+    height: 12px;
+}
+
+.timeline-slider::-moz-range-track {
+    border-radius: 6px;
+    height: 12px;
 }
 
 :where(.dark) .timeline-slider {
     background: linear-gradient(
         to right,
-        var(--slider-color-dark) v-bind('(anim.t * 100) + "%"'),
-        hsl(var(--foreground) / 0.1) v-bind('(anim.t * 100) + "%"')
+        var(--slider-color-dark) var(--progress),
+        hsl(var(--foreground) / 0.1) var(--progress)
     );
-}
-
-.timeline-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: var(--slider-color);
-    cursor: pointer;
-    border: 2px solid hsl(var(--background));
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
-    transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275),
-        box-shadow 0.15s ease;
 }
 
 :where(.dark) .timeline-slider::-webkit-slider-thumb {
     background: var(--slider-color-dark);
 }
 
-.timeline-slider::-webkit-slider-thumb:hover {
-    transform: scale(1.2);
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--slider-color) 40%, transparent);
-}
-
-.timeline-slider::-webkit-slider-thumb:active {
-    transform: scale(0.95);
-}
-
-.timeline-slider::-moz-range-thumb {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: var(--slider-color);
-    cursor: pointer;
-    border: 2px solid hsl(var(--background));
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
-}
-
-.timeline-slider::-moz-range-progress {
-    background: var(--slider-color);
-    border-radius: 5px;
-    height: 10px;
-}
-
 :where(.dark) .timeline-slider::-moz-range-progress {
     background: var(--slider-color-dark);
-}
-
-.timeline-slider::-moz-range-track {
-    background: hsl(var(--secondary));
-    border-radius: 5px;
-    height: 10px;
 }
 
 /* Speed dropdown — desktop only */
@@ -429,13 +388,15 @@ onUnmounted(() =>
 }
 
 .speed-trigger {
-    height: 2.5rem;
-    width: 4.5rem;
+    height: 1.75rem;
+    width: 3.5rem;
     flex-shrink: 0;
     font-family: "Fira Code", monospace;
-    font-size: 0.8125rem;
-    border: 2px solid hsl(var(--foreground) / 0.15);
-    border-radius: 0.5rem;
+    font-size: 0.75rem;
+    border: none;
+    background: none;
+    border-radius: 0.375rem;
+    color: hsl(var(--muted-foreground));
 }
 
 .speed-trigger-compact {
@@ -457,19 +418,20 @@ onUnmounted(() =>
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 0.5rem;
-    border: 2px solid hsl(var(--foreground) / 0.15);
-    background: hsl(var(--background));
-    color: hsl(var(--foreground));
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 0.375rem;
+    border: none;
+    background: none;
+    color: hsl(var(--muted-foreground));
     cursor: pointer;
     transition: all 0.15s;
     flex-shrink: 0;
+    padding: 0;
 }
 .menu-btn:hover {
-    background: hsl(var(--muted));
-    transform: scale(1.05);
+    color: hsl(var(--foreground));
+    transform: scale(1.1);
 }
 .menu-btn:active {
     transform: scale(0.95);
@@ -487,7 +449,7 @@ onUnmounted(() =>
     border: 2px solid hsl(var(--foreground) / 0.15);
     border-radius: 0.75rem;
     box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.1);
-    z-index: 20;
+    z-index: 30;
 }
 
 .menu-item {
