@@ -2,6 +2,7 @@ FROM node:22-slim AS base
 WORKDIR /app
 
 FROM base AS deps
+RUN apt-get update && apt-get install -y --no-install-recommends git ca-certificates && rm -rf /var/lib/apt/lists/*
 COPY web/package.json web/package-lock.json ./
 RUN npm install -g npm@latest && hash -r && npm ci
 
