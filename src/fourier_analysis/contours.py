@@ -159,12 +159,31 @@ def extract_contours(
     if max_contours is not None:
         max_contours = max(0, max_contours) or None  # 0 → None (no limit)
 
-    img = Image.open(image_path).convert("L")
+    img_raw = Image.open(image_path)
+
+    # Detect usable alpha channel *before* converting to grayscale.
+    # PNGs with transparency (logos, rendered text, graphics) have a
+    # perfect built-in mask that beats any luminance-based threshold.
+    has_alpha = img_raw.mode in ("RGBA", "LA", "PA")
+    alpha_arr: NDArray[np.float64] | None = None
+    if has_alpha:
+        alpha_arr = np.array(img_raw.split()[-1], dtype=np.float64) / 255.0
+        # Only use alpha if it actually separates content from background:
+        # need both transparent and opaque regions.
+        opaque_frac = np.mean(alpha_arr > 0.5)
+        if opaque_frac < 0.01 or opaque_frac > 0.99:
+            alpha_arr = None  # degenerate — fall through to luminance
+
+    img = img_raw.convert("L")
 
     if resize is not None:
         ratio = resize / max(img.size)
         new_size = (int(img.size[0] * ratio), int(img.size[1] * ratio))
         img = img.resize(new_size, Image.Resampling.LANCZOS)
+        if alpha_arr is not None:
+            alpha_img = Image.fromarray((alpha_arr * 255).astype(np.uint8))
+            alpha_img = alpha_img.resize(new_size, Image.Resampling.LANCZOS)
+            alpha_arr = np.array(alpha_img, dtype=np.float64) / 255.0
 
     arr = np.array(img, dtype=np.float64)
 
@@ -178,6 +197,8 @@ def extract_contours(
     # picks up on painted portraits (Fourier, Cauchy, etc.).
     if blur_sigma > 0:
         arr = filters.gaussian(arr, sigma=blur_sigma)
+        if alpha_arr is not None:
+            alpha_arr = filters.gaussian(alpha_arr, sigma=blur_sigma)
 
     # Strategy dispatch
     is_auto = strategy == ContourStrategy.AUTO
@@ -190,7 +211,15 @@ def extract_contours(
         if smooth_contours == 0.0:
             smooth_contours = 0.1
 
-    if strategy == ContourStrategy.THRESHOLD:
+    # AUTO + alpha channel: use the alpha mask directly — it's far more
+    # reliable than any luminance-based threshold for transparent PNGs.
+    if is_auto and alpha_arr is not None:
+        binary = alpha_arr > 0.5
+        raw_contours = measure.find_contours(binary.astype(float), level=0.5)
+        # Skip the normal threshold path entirely
+        strategy = ContourStrategy.THRESHOLD  # prevent falling into blocks below
+
+    elif strategy == ContourStrategy.THRESHOLD:
         thresh = filters.threshold_otsu(arr)
 
         if is_auto:
