@@ -239,8 +239,8 @@ function dismissError() {
     flex-direction: column;
     flex: 1;
     min-height: 0;
-    padding: 0.75rem;
-    gap: 0.75rem;
+    padding: 0.375rem;
+    gap: 0.375rem;
 }
 
 @media (min-width: 1024px) {
@@ -248,9 +248,9 @@ function dismissError() {
         display: grid;
         grid-template-columns: 360px 1fr;
         grid-template-rows: 1fr;
-        gap: 0.75rem;
-        padding: 0.75rem;
-        padding-bottom: 1.25rem;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        padding-bottom: 0.75rem;
         overflow: hidden;
     }
 }
@@ -344,7 +344,7 @@ function dismissError() {
 .mobile-tab-bar {
     display: flex;
     justify-content: center;
-    padding: 0.5rem 0.75rem;
+    padding: 0.25rem 0.5rem;
     background: hsl(var(--background));
 }
 
