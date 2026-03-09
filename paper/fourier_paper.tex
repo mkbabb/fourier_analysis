@@ -116,8 +116,6 @@ Additionally, knowledge of real analysis and basic set theory will surely prove 
 
 For theorems involving said prerequisite material, they will be labeled then as "definitions", rather than "theorems", as they are most likely known already to the reader.
 
-
-
 \chapter{Origin and Derivation}
 \label{ch:origin}
 
@@ -472,7 +470,6 @@ As $\lambda$ can take on any integer value greater than one, a general solution 
 \end{align}
 
 Notice the values of $B_n$ and $C_n$ were combined into one ultimate constant, $c_n$.\\
-
 Wonderful, a general solution! But what of the constants $c_n$? Fourier uses a series (no pun intended) of ingenious and rather complicated steps to calculate a closed form expression for them. Notwithstanding the above, we can bypass much of the tedious calculation by using the results of our detour into Sturm-Liouville theory. Recall that the solution to equation \eqref{eq:sturm2} was guaranteed to be orthogonal on the interval from $[-\dfrac{\pi}{2}, \dfrac{\pi}{2}]$. We'll exploit this orthogonality using the following technique, which was subsequently used later by Fourier himself; ``Fourier's trick'' \cite{heat_fourier}. First, we will impose the boundary condition of $u(0, y) = 1, y \in [-\dfrac{\pi}{2}, \dfrac{\pi}{2}]$:
 
 \begin{equation}
@@ -537,14 +534,11 @@ Finally, our solution for $u(x, y)$, satisfying all of the boundary conditions i
 \section{Potentially Generalizing The Result}
 
 Fourier continues onward and generalizes these results in his treatise \cite{heat_fourier}, but his methodology is exceedingly arithmetically complex and rather terse. We shall then again for the final time diverge from Fourier's path, and rather view the notion of Fourier Analysis from two separate viewpoints: linear algebra and complex analysis.\\
-
 Upon cursory examination of the above material, one may notice straight away similarities with several topics from each respective discipline:
 
 In equation \eqref{eq:fourier_cosine_series}, $f(y)$ is being expressed as a linear combination of cosine terms, multiplied by various constants, $c_n$. This looks shockingly similar to both then power series, and vector expression via an orthogonal basis. Not so surprising, however, because the above concepts and equation\eqref{eq:fourier_cosine_series} are one in the same. Indeed, another similarity can also be surmised through our Sturm-Liouville adventure, whereon the concept of orthogonality is expressed explicitly: as one may guess, this was equivalent to the inner product operation that one sees in linear algebra.
 
 The above two assertions will be explained formally in the proceeding chapters. First, through linear algebra, then through complex analysis (Laurent series!). Onward to the next chapter!
-
-
 
 \chapter{Lens I: Linear Algebra}
 \label{ch:linear_algebra}
@@ -554,8 +548,6 @@ The above two assertions will be explained formally in the proceeding chapters. 
     \caption{Vector Projection of vectors $\vec{u}$ and $\vec{v}$. Recall that vector or subspace projection can be viewed as a way to discern "how much" of one vector is represented in another.}
     \label{fig:proj}
 \end{figure}
-
-
 
 \section{An Appeal to Intuition}
 Recall, that a vector, $\vec{u}$, of dimension N, located within the span of some arbitrary orthonormal basis, $B^T$, may be thereupon written as a linear combination of basis vectors therein $B^T$ as such:
@@ -571,8 +563,6 @@ Where the coefficients $c_n$ may be found by:
     \mathnormal{proj}_{\ehat_n}\vec{u} & = c_n
 \end{align}
 This projection operation is taking the original vector, $\vec{u}$, and \textit{transforming} its original basis to the newly defined basis, $B^T$.\\
-
-
 Recall then the euclidean inner product for two arbitrary vectors of dimension $N$, $\vec{u}$ and $\vec{v}$:
 
 \begin{definition}[Euclidean Inner Product]
@@ -622,9 +612,7 @@ Notice the vector space that one is operating in is $\mathbb{R}^N$. The above lo
 \end{figure}
 
 Before we can extend the concept of vectors to continuous functions (vectors of then infinite dimension), we'll need a few definitions to build up to the final result: $\mathbf{L}^2$ Hilbert space. To do so, we will move downwards in abstraction using the following hierarchy:\\
-
 Metric spaces $\rightarrow$ Normed vector spaces $\rightarrow$ Banach spaces $\rightarrow$ Inner product spaces $\rightarrow$ Hilbert space\\
-
 A Banach space is a complete normed vector space---one in which every Cauchy sequence converges. A Hilbert space additionally requires an inner product that induces the norm. The distinction matters: $\mathbf{L}^p$ for $p \neq 2$ is Banach but not Hilbert.
 
 \begin{aside}
@@ -708,7 +696,6 @@ Concretely, a sequence is said to be Cauchy if the distance between two two-tupl
 \end{definition}
 
 For further reading regarding metric spaces, and subsequent proof of the above definitions, see \cite{kaplansky_basic}.\\
-
 Generally, operations on metric spaces are restricted only to modifications of the metric: no other algebraic manipulations are permitted. To algebraically operate a space with a given metric, we will turn our attention now to normed vector spaces.
 
 \section{Normed Vector Spaces}
@@ -724,8 +711,6 @@ Using the above notion of a metric, or distance within a metric space, we will b
         \item $||x + y|| \leq ||x|| + ||y||$; Triangle Inequality.
     \end{enumerate}
 \end{definition}
-
-
 
 \begin{theorem}[Cauchy-Schwarz Inequality]
     If $\mathbf{X}$ is an inner product space with associated norm, $||\cdot||$, then $\forall x, y \in  \mathbf{X}$:
@@ -767,11 +752,9 @@ Using the above notion of a metric, or distance within a metric space, we will b
 \end{proof}
 
 A proof of the Triangle Inequality may be easily derived using then the Cauchy-Schwarz Inequality. For further reading regarding the above topics, see \cite{holland_schwarz}\\
-
 The above axioms make a great deal of sense when viewed through the lens of a metric. If a norm, $||x||$ is defined as a metric, $d(x, y)$ then certainly this distance is only 0 when d is zero. For an intuitive reasoning for the Triangle inequality:
 
 Let $||x||$ be the distance from point A to B, and let $||y||$ be the distance from A to C. Certainly, the path from A to B to C is always longer than the direct path from A to C.\\
-
 From the definition of a normed vector space, we arrive at the following (rather trivial) fact: a normed vector space is a prerequisite of an inner product space.
 
 Collating all of the preceding information into one respective concept, we may now finally define Hilbert space.
@@ -787,7 +770,6 @@ We now have all of the tools required to properly define a Hilbert space! Withou
 \end{definition}
 
 One can see now why the preceding sections were needed! All of the nice features of each component required to construct a Hilbert space is therein inherited by said space, which is great!\\
-
 One may look at the definition and wonder what differentiates a Hilbert space from a standard real or complex inner product space. The key differentiating factor is thus: a Hilbert space is a Cauchy metric space, whilst an inner product space may be not. This is crucial, because this qualifier is the key to then extending the notion of finite dimensional vectors to ones of infinite dimension. Why? Let's look at an example:
 
 Take a real inner product space, $\mathbf{X}$, defined with an inner product of:
@@ -801,7 +783,6 @@ and defined with a norm (and subsequent metric) of:
 \end{equation}
 
 Notice this metric lies within a $\ell^2$ metric space.\\
-
 If $\mathbf{X}$ was a standard inner product space, there would be no guarantee that the above norm or inner product would converge. However, if $\mathbf{X}$ were a Hilbert space, then by definition, the above \textit{must} converge, which is equivalent to stating:
 \begin{align}
     ||f(x)||^2 & = \langle f(x), f(x) \rangle                \\
@@ -810,7 +791,6 @@ If $\mathbf{X}$ was a standard inner product space, there would be no guarantee 
 \end{align}
 
 The above qualifier of $f$, is also known as "square integrable".\\
-
 This is exactly what we need: we now have all of the pieces to assemble both the Fourier transform and Fourier series via the qualifying conditions within a Hilbert space! Realize that this Hilbert space is a very particular one, as it is a \textit{function space}, rather than a traditional vector space. Because the metric was defined in $\ell^2$, the subsequent Hilbert space lies within $\mathbf{L[\mathbb{R}]}^2$ (function) space, and the interval covers the entire real line. We'll define $\mathbf{L[a, b]}^p$:
 
 \begin{definition}[$\mathbf{L}^2{[a, b]}$, Real, Hilbert Space]
@@ -1318,7 +1298,6 @@ It can be easily shown that the above are orthogonal on any interval that both c
 \end{equation}
 
 Though the above did not yield a sine term in Chapter~\ref{ch:origin}, it can be postulated that a similar equation, given the appropriate boundary conditions, could. Therefore, it can be concluded that, as both $e^{ix}$ and $e^{-ix}$ are potential solutions to a Sturm-Liouville differential equation, that they must then be orthogonal on some predefined interval.\\
-
 Though the orthogonality of the two equations above is trivial, transforming the final result into its complex form requires a bit more work. We may continue using the same approach that was used in the derivation of \eqref{defn:real_fourier} with only slight modification. Thereupon our operation in a complex vector space, we must first define a new complex inner product:
 
 \begin{definition}[Hermitian Inner Product for $\mathbb{C}^n$]
@@ -1522,7 +1501,6 @@ Earlier, the calculation of the coefficients was called the Fourier transform of
     \end{equation}
 \end{proof}
 See \cite{strauss_fourier} for more details regarding the above proof.\\
-
 With this, we've arrived at both the Fourier series representation of $f$ and its canonical Fourier transform. One last definition:
 
 \begin{definition}[Fourier Transform of $f$]
@@ -1884,7 +1862,6 @@ Though this may look different in comparison to standard vector projection in $\
 
 \begin{example}["Infinite Vectors"]
     In this example, we will be operating on $\mathbf{L}^2[-\pi, \pi]$.\\
-
     Take $f(x) = \sin(10x) + \cos^2(3x)$
 
     With 1000 vectors representing $f$, here is what it looks like:
