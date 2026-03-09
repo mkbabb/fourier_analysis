@@ -3,8 +3,7 @@ import { ref, computed } from "vue";
 import { useSessionStore } from "@/stores/session";
 import { useImageUpload } from "@/composables/useImageUpload";
 import { imageUrl } from "@/lib/api";
-import { ImagePlus, Upload, Replace, ImageOff } from "lucide-vue-next";
-import { Tooltip } from "@/components/ui/tooltip";
+import { ImagePlus, Upload, ImageOff } from "lucide-vue-next";
 
 const store = useSessionStore();
 const fileInput = ref<HTMLInputElement>();
@@ -61,12 +60,10 @@ function onImgError() {
                 style="max-height: 200px"
                 @error="onImgError"
             />
-            <Tooltip text="Click to replace image">
-                <div
-                    class="absolute inset-0 flex items-center justify-center bg-black/0 transition-all duration-200 cursor-pointer"
-                    :class="{
+            <div
+                class="absolute inset-0 flex items-center justify-center bg-black/0 transition-all duration-200 cursor-pointer"
+                :class="{
                     'bg-primary/10': isDragging,
-                    'group-hover:bg-black/30': !isDragging,
                 }"
                 @click="openFilePicker"
             >
@@ -77,15 +74,7 @@ function onImgError() {
                     <Upload class="h-3 w-3" />
                     Drop to replace
                 </div>
-                <div
-                    v-else
-                    class="flex items-center gap-1.5 rounded-md bg-background/90 px-3 py-1.5 text-xs font-medium opacity-0 transition-all duration-200 group-hover:opacity-100 shadow-sm backdrop-blur-sm"
-                >
-                    <Replace class="h-3 w-3" />
-                    Replace
-                </div>
-                </div>
-            </Tooltip>
+            </div>
         </div>
 
         <!-- Drop zone: only shown when no image is loaded -->

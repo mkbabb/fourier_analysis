@@ -217,7 +217,7 @@ function toggleBasis(key: string) {
 .basis-icon {
     display: inline-flex;
     align-items: center;
-    font-size: 1.15em;
+    font-size: 1.5em;
     line-height: 1;
     min-width: 1.2em;
     justify-content: center;
