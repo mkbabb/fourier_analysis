@@ -16,6 +16,3 @@ import SvgFilters from "@/components/decorative/SvgFilters.vue";
         </div>
     </TooltipProvider>
 </template>
-
-<style scoped>
-</style>

@@ -38,7 +38,6 @@ export const router = createRouter({
             path: "/s/:slug",
             name: "session",
             component: VisualizationView,
-            props: true,
         },
         {
             path: "/demo/fourier-morph",

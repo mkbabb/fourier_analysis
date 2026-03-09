@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useHoverCard } from "@/composables/useHoverCard";
+import { useHoverCard } from "./composables/useHoverCard";
 import { useSessionStore } from "@/stores/session";
 import { Share2, Check } from "lucide-vue-next";
 import DarkModeToggle from "./DarkModeToggle.vue";
@@ -116,13 +116,6 @@ async function copyShareUrl() {
 <style scoped>
 .app-header {
     font-feature-settings: "liga", "kern";
-}
-
-.fourier-f {
-    font-size: 1.35em;
-    line-height: 1;
-    vertical-align: -0.05em;
-    font-weight: 700;
 }
 
 /* Mobile: hide "ourier analysis" text */

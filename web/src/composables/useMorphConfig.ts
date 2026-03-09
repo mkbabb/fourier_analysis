@@ -5,7 +5,7 @@
  * and syncing with a useFourierMorph instance.
  */
 
-import { reactive, ref, computed, watch } from "vue";
+import { reactive, ref, computed, watch, onUnmounted } from "vue";
 import {
     DEFAULT_MORPH_CONFIG,
     EASING_PRESETS,
@@ -83,6 +83,11 @@ export function useMorphConfig(initialConfig?: Partial<MorphConfig>) {
     );
 
     const copied = ref(false);
+    let copiedTimer: ReturnType<typeof setTimeout> | null = null;
+
+    onUnmounted(() => {
+        if (copiedTimer) clearTimeout(copiedTimer);
+    });
 
     function reset() {
         Object.assign(config, DEFAULT_MORPH_CONFIG);
@@ -100,7 +105,8 @@ export function useMorphConfig(initialConfig?: Partial<MorphConfig>) {
     function copyToClipboard() {
         navigator.clipboard.writeText(toJSON()).then(() => {
             copied.value = true;
-            setTimeout(() => (copied.value = false), 2000);
+            if (copiedTimer) clearTimeout(copiedTimer);
+            copiedTimer = setTimeout(() => (copied.value = false), 2000);
         });
     }
 

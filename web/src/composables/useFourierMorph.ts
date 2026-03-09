@@ -10,7 +10,7 @@
  * with easing functions (from value.js) applied to the interpolation t.
  */
 
-import { ref, computed, type Ref } from "vue";
+import { ref, computed, onUnmounted, type Ref } from "vue";
 import { Animation } from "@mkbabb/keyframes.js";
 import { timingFunctions } from "@mkbabb/value.js";
 import type { FourierShape } from "@/lib/svg-fourier";
@@ -235,6 +235,8 @@ export function useFourierMorph(options: UseFourierMorphOptions = {}) {
         morphProgress.value = 1;
         currentAnim = null;
     }
+
+    onUnmounted(() => stopAnim());
 
     return {
         phase,

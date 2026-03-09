@@ -25,9 +25,9 @@ import moonData from "@/assets/fourier-paths/moon.json";
 const sunShape = prepareFourierShape(sunData as any);
 const moonShape = prepareFourierShape(moonData as any);
 
-// Sun: warm orange   Moon: soft purple
+// Sun: warm orange   Moon: legendre purple
 const SUN_COLOR = [232, 136, 69] as const;   // #E88845
-const MOON_COLOR = [180, 140, 220] as const; // #B48CDC
+const MOON_COLOR = [192, 132, 252] as const; // #c084fc — matches VIZ_COLORS.legendre
 
 const isDark = ref(false);
 /** true when morphing toward dark (moon), false when morphing toward light (sun) */

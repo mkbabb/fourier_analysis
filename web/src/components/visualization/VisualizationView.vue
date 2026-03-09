@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useSessionStore } from "@/stores/session";
-import { useImageUpload } from "@/composables/useImageUpload";
+import { useImageUpload } from "./composables/useImageUpload";
 import { Upload, AlertTriangle, X } from "lucide-vue-next";
 import { Tooltip } from "@/components/ui/tooltip";
 import ImageUpload from "./ImageUpload.vue";
@@ -67,15 +67,13 @@ const nHarmonics = ref(store.session?.parameters?.n_harmonics ?? 200);
 const nPoints = ref(store.session?.parameters?.n_points ?? 1024);
 
 // Seed from session once it loads (e.g. after store.load())
-{
-    let seeded = !!store.session;
+if (!store.session) {
     watch(() => store.session, (s) => {
-        if (!seeded && s?.parameters) {
+        if (s?.parameters) {
             nHarmonics.value = s.parameters.n_harmonics ?? 200;
             nPoints.value = s.parameters.n_points ?? 1024;
-            seeded = true;
         }
-    });
+    }, { once: true });
 }
 
 // Reset harmonics to 1 on new image upload to avoid flash from high N
@@ -85,8 +83,8 @@ watch(() => store.hasImage, (has, prevHas) => {
     }
 });
 
-const hasData = () => store.epicycleData || store.basesData;
-const hasEpicycles = () => activeBases.value.includes("fourier-epicycles");
+const hasData = computed(() => store.epicycleData || store.basesData);
+const hasEpicycles = computed(() => activeBases.value.includes("fourier-epicycles"));
 
 const showGhost = ref(true);
 watch(showGhost, (v) => {
@@ -118,7 +116,7 @@ function dismissError() {
 
         <!-- Loading -->
         <div v-if="store.loading && !store.session" class="flex flex-col items-center justify-center flex-1 gap-3">
-            <div class="loading-spinner" />
+            <div class="h-8 w-8 animate-spin rounded-full border-[2.5px] border-border border-t-primary" />
             <p class="text-sm text-muted-foreground fira-code">Initializing session...</p>
         </div>
 
@@ -183,7 +181,7 @@ function dismissError() {
                         </Transition>
                         <Transition name="slide-down">
                             <BasisSelector
-                                v-if="hasData()"
+                                v-if="hasData"
                                 :active-bases="activeBases"
                                 v-model:n-harmonics="nHarmonics"
                                 v-model:n-points="nPoints"
@@ -199,7 +197,7 @@ function dismissError() {
                 <!-- Right panel: Canvas with overlaid controls -->
                 <div class="viz-panel-right" :class="{ 'mobile-hidden': mobileView !== 'canvas' }">
                     <BasisCanvas ref="canvasComponent" :active-bases="activeBases" />
-                    <div v-if="hasData()" class="controls-overlay">
+                    <div v-if="hasData" class="controls-overlay">
                         <AnimationControls
                             :active-bases="activeBases"
                             :show-ghost="showGhost"
@@ -214,7 +212,7 @@ function dismissError() {
         <!-- Export modal -->
         <ExportModal
             v-if="showExport"
-            :has-epicycles="hasEpicycles()"
+            :has-epicycles="hasEpicycles"
             @export="doExport"
             @close="showExport = false"
         />
@@ -248,24 +246,24 @@ function dismissError() {
 @media (min-width: 1024px) {
     .viz-grid {
         display: grid;
-        grid-template-columns: 340px 1fr;
+        grid-template-columns: 360px 1fr;
         grid-template-rows: 1fr;
-        gap: 1rem;
-        padding: 1rem;
-        padding-bottom: 1.5rem;
+        gap: 0.75rem;
+        padding: 0.75rem;
+        padding-bottom: 1.25rem;
         overflow: hidden;
     }
 }
 
 @media (min-width: 1280px) {
     .viz-grid {
-        grid-template-columns: 380px 1fr;
+        grid-template-columns: 400px 1fr;
     }
 }
 
 @media (min-width: 1536px) {
     .viz-grid {
-        grid-template-columns: 420px 1fr;
+        grid-template-columns: 440px 1fr;
     }
 }
 
@@ -329,14 +327,15 @@ function dismissError() {
     position: relative;
 }
 
-/* Controls overlaid at bottom of canvas */
+/* Controls overlaid at bottom of canvas — floats over grid */
 .controls-overlay {
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    z-index: 10;
-    transition: opacity 0.2s ease;
+    z-index: 20;
+    border-radius: 0 0 0.75rem 0.75rem;
+    overflow: visible;
 }
 
 
@@ -375,18 +374,6 @@ function dismissError() {
     color: hsl(var(--foreground));
 }
 
-/* ── Shared ──────────────────────────────────── */
-.loading-spinner {
-    width: 2rem;
-    height: 2rem;
-    border: 2.5px solid hsl(var(--border));
-    border-top-color: hsl(var(--primary));
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-}
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
 .slide-down-enter-active {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
