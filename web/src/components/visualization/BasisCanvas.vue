@@ -37,15 +37,119 @@ let resizeObserver: ResizeObserver | null = null;
 let mouseX = -1;
 let mouseY = -1;
 
+// Legend hover: which basis key is hovered
+let hoveredBasis: string | null = null;
+// Store label hit regions for mouse detection
+let labelHitRegions: { key: string; x: number; y: number; w: number; h: number }[] = [];
+let shimmerRafId: number | null = null;
+
+function startShimmer() {
+    if (shimmerRafId) return;
+    function shimmerTick() {
+        if (!hoveredBasis) { shimmerRafId = null; return; }
+        if (ctx && width > 0) drawFrame();
+        shimmerRafId = requestAnimationFrame(shimmerTick);
+    }
+    shimmerRafId = requestAnimationFrame(shimmerTick);
+}
+
+function stopShimmer() {
+    if (shimmerRafId) {
+        cancelAnimationFrame(shimmerRafId);
+        shimmerRafId = null;
+    }
+}
+
 // Epicycles always visible at base size, grow on hover
-const BASE_EPICYCLE_SCALE = 0.42;
-const HOVER_EPICYCLE_SCALE = 0.6;
+const BASE_EPICYCLE_SCALE = 0.38;
+const HOVER_EPICYCLE_SCALE = 0.55;
 let currentEpicycleScale = BASE_EPICYCLE_SCALE;
 let targetEpicycleScale = BASE_EPICYCLE_SCALE;
 let hoverAnimFrame: number | null = null;
 
-// Fixed epicycle display scale (no dynamic tracking — prevents jitter/drift)
-const EPICYCLE_DISPLAY_SCALE = 0.85;
+// Track the actual rendered bounding box of the epicycle region (screen coords)
+let epicycleBounds = { x: 0, y: 0, w: 0, h: 0 };
+
+// Cached stable epicycle bbox (computed once when data changes, not per-frame)
+let stableEpicycleBbox: { minX: number; minY: number; maxX: number; maxY: number } | null = null;
+
+/**
+ * Compute a stable (time-invariant) bounding box for the epicycle chain
+ * by sampling positions across the full animation cycle and taking the union
+ * of all circle extents. This gives a tight but stable bound.
+ */
+function computeStableEpicycleBbox(
+    components: BasisComponent[],
+    nVis: number,
+    toScreen: (x: number, y: number) => [number, number],
+    scale: number,
+): { minX: number; minY: number; maxX: number; maxY: number } {
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    const nSamples = 64;
+    for (let s = 0; s <= nSamples; s++) {
+        const t = s / nSamples;
+        const positions = fourierPositionsAt(components, t, nVis);
+        for (let i = 0; i < nVis; i++) {
+            const [ccx, ccy] = toScreen(positions[i][0], positions[i][1]);
+            const r = components[i].amplitude * scale;
+            minX = Math.min(minX, ccx - r);
+            minY = Math.min(minY, ccy - r);
+            maxX = Math.max(maxX, ccx + r);
+            maxY = Math.max(maxY, ccy + r);
+        }
+    }
+    return { minX, minY, maxX, maxY };
+}
+
+// Cached base-scale fit center so hover scales from center, not from corner
+let baseFitCenter: { cx: number; cy: number; baseFitScale: number } | null = null;
+
+/**
+ * Compute a transform that fits a raw-coordinate bounding box into
+ * the bottom-left corner of the canvas. Uses BASE_EPICYCLE_SCALE for
+ * positioning (cached), then applies currentEpicycleScale as a multiplier
+ * so hover grows from center.
+ * Returns null if the bbox is degenerate.
+ */
+function computeEpicycleFit(
+    rawMinX: number, rawMinY: number, rawMaxX: number, rawMaxY: number,
+) {
+    const bboxW = rawMaxX - rawMinX;
+    const bboxH = rawMaxY - rawMinY;
+    if (bboxW <= 0 || bboxH <= 0) return null;
+
+    const pad = 12;
+
+    // Compute the base fit (at BASE_EPICYCLE_SCALE) — this determines the fixed center
+    if (!baseFitCenter) {
+        const baseRegionW = width * BASE_EPICYCLE_SCALE;
+        const baseRegionH = height * BASE_EPICYCLE_SCALE;
+        const bfs = Math.min(baseRegionW / bboxW, baseRegionH / bboxH);
+        const baseScaledW = bboxW * bfs;
+        const baseScaledH = bboxH * bfs;
+        baseFitCenter = {
+            cx: pad + baseScaledW / 2,
+            cy: height - pad - baseScaledH / 2,
+            baseFitScale: bfs,
+        };
+    }
+
+    // Apply hover multiplier: scale around the cached center
+    const hoverMul = currentEpicycleScale / BASE_EPICYCLE_SCALE;
+    const fitScale = baseFitCenter.baseFitScale * hoverMul;
+    const scaledW = bboxW * fitScale;
+    const scaledH = bboxH * fitScale;
+
+    // Raw bbox center
+    const bboxCX = (rawMinX + rawMaxX) / 2;
+    const bboxCY = (rawMinY + rawMaxY) / 2;
+
+    // Target center = cached base center (doesn't move on hover)
+    const targetCX = baseFitCenter.cx;
+    const targetCY = baseFitCenter.cy;
+
+    return { fitScale, bboxCX, bboxCY, targetCX, targetCY, scaledW, scaledH, pad };
+}
 
 function spectrumColor(i: number, total: number): string {
     // Non-linear mapping: stretch warm colors (red/orange/yellow), compress cool
@@ -64,6 +168,8 @@ function setupCanvas() {
     dpr = window.devicePixelRatio || 1;
     width = rect.width;
     height = rect.height;
+    stableEpicycleBbox = null; // Invalidate on resize
+    baseFitCenter = null;
 
     canvasRef.value.width = Math.round(width * dpr);
     canvasRef.value.height = Math.round(height * dpr);
@@ -115,44 +221,15 @@ function getPathBounds() {
     };
 }
 
-function getEpicycleRegion() {
-    const isDesktop = width >= 768;
-
-    if (!isDesktop) {
-        // Mobile: fixed center at bottom-left
-        const mobileS = 0.3;
-        return {
-            centerX: width * mobileS / 2,
-            centerY: height - height * mobileS / 2,
-            regionScale: mobileS,
-        };
-    }
-
-    const s = currentEpicycleScale;
-    const pad = 8;
-
-    // Fixed pivot: center of the epicycle region at BASE scale
-    // This ensures hover scaling expands from center, not from anchor
-    const baseW = width * BASE_EPICYCLE_SCALE;
-    const baseH = height * BASE_EPICYCLE_SCALE;
-    // Bias towards bottom-left: use 0.4 of region width/height instead of 0.5
-    const pivotX = pad + baseW * 0.4;
-    const pivotY = height - pad - baseH * 0.4;
-
-    return {
-        centerX: pivotX,
-        centerY: pivotY,
-        regionScale: s,
-    };
-}
 
 function isMouseInEpicycleRegion(): boolean {
     if (mouseX < 0 || mouseY < 0) return false;
-    // Check if mouse is within the epicycle display area
-    const pad = 12;
-    const regionW = width * HOVER_EPICYCLE_SCALE;
-    const regionH = height * HOVER_EPICYCLE_SCALE;
-    return mouseX < pad + regionW && mouseY > height - pad - regionH;
+    // Check if mouse is within the actual rendered epicycle bounding box
+    const pad = 16;
+    return mouseX >= epicycleBounds.x - pad &&
+           mouseX <= epicycleBounds.x + epicycleBounds.w + pad &&
+           mouseY >= epicycleBounds.y - pad &&
+           mouseY <= epicycleBounds.y + epicycleBounds.h + pad;
 }
 
 function onCanvasMouseMove(e: MouseEvent) {
@@ -167,6 +244,24 @@ function onCanvasMouseMove(e: MouseEvent) {
         targetEpicycleScale = newTarget;
         if (!hoverAnimFrame) hoverAnimFrame = requestAnimationFrame(updateHoverScale);
     }
+
+    // Check label hover
+    let newHovered: string | null = null;
+    for (const region of labelHitRegions) {
+        if (mouseX >= region.x && mouseX <= region.x + region.w &&
+            mouseY >= region.y && mouseY <= region.y + region.h) {
+            newHovered = region.key;
+            break;
+        }
+    }
+    if (newHovered !== hoveredBasis) {
+        hoveredBasis = newHovered;
+        if (containerRef.value) {
+            containerRef.value.style.cursor = hoveredBasis ? "pointer" : "";
+        }
+        if (hoveredBasis) startShimmer();
+        else { stopShimmer(); if (ctx && width > 0) drawFrame(); }
+    }
 }
 
 function onCanvasMouseLeave() {
@@ -175,6 +270,11 @@ function onCanvasMouseLeave() {
     if (targetEpicycleScale !== BASE_EPICYCLE_SCALE) {
         targetEpicycleScale = BASE_EPICYCLE_SCALE;
         if (!hoverAnimFrame) hoverAnimFrame = requestAnimationFrame(updateHoverScale);
+    }
+    if (hoveredBasis) {
+        hoveredBasis = null;
+        if (containerRef.value) containerRef.value.style.cursor = "";
+        if (ctx && width > 0) drawFrame();
     }
 }
 
@@ -389,24 +489,30 @@ function drawEpicycleFrame(
         ctx.globalAlpha = 1;
     }
 
-    // Draw epicycles — fixed center in bottom-left, no drifting
+    // Draw epicycles — use stable bbox for consistent placement
     {
-        const { centerX, centerY, regionScale } = getEpicycleRegion();
         const isDesktop = width >= 768;
         const hoverT = (currentEpicycleScale - BASE_EPICYCLE_SCALE) / (HOVER_EPICYCLE_SCALE - BASE_EPICYCLE_SCALE);
         const epicycleAlpha = 0.65 + 0.35 * Math.max(0, Math.min(1, hoverT));
 
-        const epicycleFitScale = regionScale * EPICYCLE_DISPLAY_SCALE;
-
-        ctx.save();
-        if (isDesktop) {
-            // Scale from the fixed center point
-            ctx.translate(centerX, centerY);
-            ctx.scale(epicycleFitScale, epicycleFitScale);
-            ctx.translate(-width / 2, -height / 2);
+        // Use stable (time-invariant) bounding box so epicycles don't shift/resize during animation
+        if (!stableEpicycleBbox) {
+            stableEpicycleBbox = computeStableEpicycleBbox(components, nVis, toScreen, scale);
         }
 
-        // Draw circles and arms (with fade based on hover)
+        const fit = isDesktop && nVis > 0
+            ? computeEpicycleFit(stableEpicycleBbox.minX, stableEpicycleBbox.minY, stableEpicycleBbox.maxX, stableEpicycleBbox.maxY)
+            : null;
+
+        // Transform: map raw point (rx, ry) → screen (targetCX + (rx - bboxCX) * fitScale, ...)
+        ctx.save();
+        if (fit) {
+            ctx.translate(fit.targetCX, fit.targetCY);
+            ctx.scale(fit.fitScale, fit.fitScale);
+            ctx.translate(-fit.bboxCX, -fit.bboxCY);
+        }
+
+        // Pass 2: draw circles and arms
         for (let i = 0; i < nVis; i++) {
             const [ccx, ccy] = toScreen(visPositions[i][0], visPositions[i][1]);
             const [tx, ty] = toScreen(visPositions[i + 1][0], visPositions[i + 1][1]);
@@ -455,13 +561,25 @@ function drawEpicycleFrame(
 
         ctx.restore();
 
+        // Update screen-space bounds for hover detection
+        if (fit) {
+            epicycleBounds = {
+                x: fit.targetCX - fit.scaledW / 2,
+                y: fit.targetCY - fit.scaledH / 2,
+                w: fit.scaledW,
+                h: fit.scaledH,
+            };
+        } else {
+            epicycleBounds = { x: 0, y: 0, w: 0, h: 0 };
+        }
+
         // Connecting line from epicycle tip to trace position
-        if (isDesktop) {
+        if (fit) {
             const visTip = visPositions[visPositions.length - 1];
             const [rawX, rawY] = toScreen(visTip[0], visTip[1]);
 
-            const tipSx = centerX + (rawX - width / 2) * epicycleFitScale;
-            const tipSy = centerY + (rawY - height / 2) * epicycleFitScale;
+            const tipSx = fit.targetCX + (rawX - fit.bboxCX) * fit.fitScale;
+            const tipSy = fit.targetCY + (rawY - fit.bboxCY) * fit.fitScale;
             const [traceSx, traceSy] = toScreen(tip[0], tip[1]);
 
             ctx.beginPath();
@@ -489,6 +607,22 @@ function drawEpicycleFrame(
     ctx.arc(traceSx, traceSy, 15, 0, Math.PI * 2);
     ctx.fillStyle = "rgba(255, 52, 18, 0.15)";
     ctx.fill();
+
+    // Label: t value in top-right
+    ctx.textAlign = "right";
+    ctx.textBaseline = "top";
+    ctx.fillStyle = "#ff3412";
+    ctx.globalAlpha = 0.9;
+    ctx.font = "bold 16px 'Fira Code', monospace";
+    const epicLabel = " Epicycles";
+    const eLabelW = ctx.measureText(epicLabel).width;
+    ctx.fillText(epicLabel, width - 16, 16);
+    ctx.font = "bold 22px 'Computer Modern Serif', Georgia, serif";
+    ctx.fillText("\u2131", width - 16 - eLabelW, 14);
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = "rgba(150, 150, 150, 0.7)";
+    ctx.font = "bold 16px 'Fira Code', monospace";
+    ctx.fillText(`t = ${anim.t.toFixed(2)}`, width - 16, 40);
 }
 
 function drawMultiBasesFrame(
@@ -554,10 +688,18 @@ function drawMultiBasesFrame(
         const cfg = basisConfig[basisName];
         if (!cfg) continue;
 
+        const isHovered = hoveredBasis === basisKey;
+        // Shimmer: modulate gold brightness with time
+        const shimmer = isHovered ? 0.85 + 0.15 * Math.sin(performance.now() / 200) : 0;
+        const goldColor = isHovered ? `rgba(240, 182, 50, ${shimmer})` : cfg.color;
         ctx.beginPath();
-        ctx.strokeStyle = cfg.color;
-        ctx.lineWidth = 3;
-        ctx.globalAlpha = 0.85;
+        ctx.strokeStyle = isHovered ? "#f0b632" : cfg.color;
+        ctx.lineWidth = isHovered ? 4 : 3;
+        ctx.globalAlpha = isHovered ? shimmer : 0.85;
+        if (isHovered) {
+            ctx.shadowColor = `rgba(240, 182, 50, ${shimmer * 0.4})`;
+            ctx.shadowBlur = 6;
+        }
         ctx.lineJoin = "round";
         ctx.lineCap = "round";
 
@@ -608,6 +750,8 @@ function drawMultiBasesFrame(
         }
         ctx.stroke();
         ctx.globalAlpha = 1;
+        ctx.shadowColor = "transparent";
+        ctx.shadowBlur = 0;
     }
 
     // Epicycle trail + tip + hover overlay when fourier-epicycles is active in multi-basis mode
@@ -678,24 +822,30 @@ function drawMultiBasesFrame(
         ctx.fillStyle = "rgba(255, 52, 18, 0.15)";
         ctx.fill();
 
-        // Epicycle circles/arms overlay — fixed center in bottom-left
+        // Epicycle circles/arms overlay — bbox-aware bottom-left placement
         {
             const visPositions = fourierPositionsAt(components, anim.t, nVis);
-            const { centerX, centerY, regionScale } = getEpicycleRegion();
             const isDesktop = width >= 768;
             const hoverT = (currentEpicycleScale - BASE_EPICYCLE_SCALE) / (HOVER_EPICYCLE_SCALE - BASE_EPICYCLE_SCALE);
             const epicycleAlpha = 0.65 + 0.35 * Math.max(0, Math.min(1, hoverT));
 
-            const epicycleFitScale2 = regionScale * EPICYCLE_DISPLAY_SCALE;
-
-            ctx.save();
-            if (isDesktop) {
-                // Scale from the fixed center point
-                ctx.translate(centerX, centerY);
-                ctx.scale(epicycleFitScale2, epicycleFitScale2);
-                ctx.translate(-width / 2, -height / 2);
+            // Use stable (time-invariant) bounding box
+            if (!stableEpicycleBbox) {
+                stableEpicycleBbox = computeStableEpicycleBbox(components, nVis, toScreen, scale);
             }
 
+            const fit2 = isDesktop && nVis > 0
+                ? computeEpicycleFit(stableEpicycleBbox.minX, stableEpicycleBbox.minY, stableEpicycleBbox.maxX, stableEpicycleBbox.maxY)
+                : null;
+
+            ctx.save();
+            if (fit2) {
+                ctx.translate(fit2.targetCX, fit2.targetCY);
+                ctx.scale(fit2.fitScale, fit2.fitScale);
+                ctx.translate(-fit2.bboxCX, -fit2.bboxCY);
+            }
+
+            // Pass 2: draw
             for (let i = 0; i < nVis; i++) {
                 const [ccx, ccy] = toScreen(visPositions[i][0], visPositions[i][1]);
                 const [tx, ty] = toScreen(visPositions[i + 1][0], visPositions[i + 1][1]);
@@ -740,11 +890,22 @@ function drawMultiBasesFrame(
 
             ctx.restore();
 
-            if (isDesktop) {
+            // Update screen-space epicycle bounds
+            if (fit2) {
+                epicycleBounds = {
+                    x: fit2.targetCX - fit2.scaledW / 2,
+                    y: fit2.targetCY - fit2.scaledH / 2,
+                    w: fit2.scaledW,
+                    h: fit2.scaledH,
+                };
+            }
+
+            // Connecting line from epicycle tip to trace position
+            if (fit2) {
                 const visTip = visPositions[visPositions.length - 1];
                 const [rawX, rawY] = toScreen(visTip[0], visTip[1]);
-                const tipSx = centerX + (rawX - width / 2) * epicycleFitScale2;
-                const tipSy = centerY + (rawY - height / 2) * epicycleFitScale2;
+                const tipSx = fit2.targetCX + (rawX - fit2.bboxCX) * fit2.fitScale;
+                const tipSy = fit2.targetCY + (rawY - fit2.bboxCY) * fit2.fitScale;
 
                 ctx.beginPath();
                 ctx.moveTo(tipSx, tipSy);
@@ -762,7 +923,7 @@ function drawMultiBasesFrame(
     }
 
     // Labels in top-right corner
-    ctx.font = "bold 13px 'Fira Code', monospace";
+    labelHitRegions = [];
     ctx.textAlign = "right";
     ctx.textBaseline = "top";
     let yOff = 16;
@@ -773,13 +934,32 @@ function drawMultiBasesFrame(
         const modeLabel = basisKey === "fourier-epicycles" ? "Epicycles"
             : basisKey === "fourier-series" ? "Series"
             : cfg.label;
-        ctx.fillStyle = cfg.color;
-        ctx.globalAlpha = 0.9;
-        ctx.fillText(`${cfg.icon} ${modeLabel}`, width - 16, yOff);
-        yOff += 20;
+        const isHovered = hoveredBasis === basisKey;
+        const labelShimmer = isHovered ? 0.85 + 0.15 * Math.sin(performance.now() / 200) : 0;
+        ctx.fillStyle = isHovered ? "#f0b632" : cfg.color;
+        ctx.globalAlpha = isHovered ? labelShimmer : 0.9;
+        if (isHovered) {
+            ctx.shadowColor = `rgba(240, 182, 50, ${labelShimmer * 0.35})`;
+            ctx.shadowBlur = 5;
+        }
+        // Draw mode label
+        ctx.font = "bold 16px 'Fira Code', monospace";
+        const labelW = ctx.measureText(` ${modeLabel}`).width;
+        ctx.fillText(` ${modeLabel}`, width - 16, yOff);
+        // Draw icon larger
+        ctx.font = "bold 22px 'Computer Modern Serif', Georgia, serif";
+        const iconW = ctx.measureText(cfg.icon).width;
+        ctx.fillText(cfg.icon, width - 16 - labelW, yOff - 2);
+        ctx.shadowColor = "transparent";
+        ctx.shadowBlur = 0;
+        // Store hit region
+        const totalW = iconW + labelW;
+        labelHitRegions.push({ key: basisKey, x: width - 16 - totalW, y: yOff - 4, w: totalW + 8, h: 26 });
+        yOff += 24;
     }
     ctx.globalAlpha = 1;
     ctx.fillStyle = "rgba(150, 150, 150, 0.7)";
+    ctx.font = "bold 16px 'Fira Code', monospace";
     ctx.fillText(`N = ${level}`, width - 16, yOff);
 }
 
@@ -836,7 +1016,7 @@ function drawPlaceholder() {
 
     // Text
     ctx.fillStyle = "rgba(150, 150, 150, 0.6)";
-    ctx.font = "500 13px 'Fira Code', monospace";
+    ctx.font = "500 15px 'Fira Code', monospace";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     const msg = store.hasImage ? "Computing..." : "Drag & drop an image here";
@@ -857,6 +1037,8 @@ watch(
         trailX.length = 0;
         trailY.length = 0;
         lastTrailT = -1;
+        stableEpicycleBbox = null; // Invalidate on data change
+        baseFitCenter = null;
         // Pre-compute trail for fast scrubbing
         if (store.epicycleData) {
             precomputeTrail(store.epicycleData.components);
@@ -899,6 +1081,7 @@ onMounted(() => {
 onUnmounted(() => {
     resizeObserver?.disconnect();
     if (hoverAnimFrame) cancelAnimationFrame(hoverAnimFrame);
+    stopShimmer();
 });
 
 function exportFrame(options: Record<string, boolean> = {}) {
