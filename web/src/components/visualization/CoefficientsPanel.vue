@@ -37,7 +37,7 @@ function formatPercent(amplitude: number): string {
 
 <template>
     <div class="cartoon-card p-3">
-        <Collapsible title="Coefficients" subtitle="Fourier spectrum" :default-open="true">
+        <Collapsible title="Coefficients" subtitle="Fourier spectrum" :default-open="false">
             <div class="pt-1">
                 <div class="flex items-center justify-end mb-2">
                     <span class="fira-code text-xs text-muted-foreground">
