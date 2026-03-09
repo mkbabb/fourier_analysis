@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, type WritableComputedRef } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { watchDebounced } from "@vueuse/core";
 import { useSessionStore } from "@/stores/session";
 import { useAnimationStore } from "@/stores/animation";
@@ -11,8 +11,12 @@ import {
     SelectItem,
     SelectTrigger,
 } from "@/components/ui/select";
-import { Wand2 } from "lucide-vue-next";
+import { Wand2, ChevronRight } from "lucide-vue-next";
 import { Tooltip } from "@/components/ui/tooltip";
+import { CollapsibleRoot, CollapsibleTrigger, CollapsibleContent } from "reka-ui";
+import SliderControl from "@/components/ui/SliderControl.vue";
+
+const advancedOpen = ref(false);
 
 const props = defineProps<{
     nHarmonics: number;
@@ -24,6 +28,9 @@ const anim = useAnimationStore();
 
 const strategy = ref(store.session?.parameters.strategy ?? "auto");
 const blurSigma = ref(store.session?.parameters.blur_sigma ?? 1.0);
+const minContourArea = ref((store.session?.parameters.min_contour_area ?? 0) * 100);
+const maxContours = ref<number>(store.session?.parameters.max_contours ?? 0);
+const smoothContours = ref(store.session?.parameters.smooth_contours ?? 0.1);
 
 const computing = computed({
     get: () => store.computing,
@@ -46,9 +53,6 @@ const strategyDescriptions: Record<string, string> = {
 
 const strategyLabel = computed(() => strategyLabels[strategy.value] ?? strategy.value);
 
-// Slider gradient progress
-const blurProgress = computed(() => ((blurSigma.value - 0) / 5) * 100);
-
 async function runCompute() {
     if (!store.hasImage || computing.value) return;
     computing.value = true;
@@ -56,11 +60,14 @@ async function runCompute() {
         parameters: {
             strategy: strategy.value,
             blur_sigma: blurSigma.value,
+            min_contour_area: minContourArea.value / 100,
+            max_contours: maxContours.value === 0 ? null : maxContours.value,
+            smooth_contours: smoothContours.value,
             n_harmonics: props.nHarmonics,
             n_points: props.nPoints,
         },
     });
-    await Promise.all([
+    const results = await Promise.allSettled([
         store.runEpicycles({
             n_harmonics: props.nHarmonics,
             n_points: props.nPoints,
@@ -71,13 +78,17 @@ async function runCompute() {
         }),
     ]);
     computing.value = false;
-    anim.reset();
-    anim.play();
+    // Only auto-play if at least one computation succeeded
+    const anyOk = results.some((r) => r.status === "fulfilled");
+    if (anyOk && (store.epicycleData || store.basesData)) {
+        anim.reset();
+        anim.play();
+    }
 }
 
 // Auto-compute on settings change (debounced 800ms)
 watchDebounced(
-    () => [strategy.value, blurSigma.value, props.nHarmonics, props.nPoints],
+    () => [strategy.value, blurSigma.value, minContourArea.value, maxContours.value, smoothContours.value, props.nHarmonics, props.nPoints],
     () => runCompute(),
     { debounce: 800, immediate: false },
 );
@@ -92,7 +103,7 @@ onMounted(() => {
 
 <template>
     <div class="cartoon-card px-3 py-2">
-        <Collapsible title="Contour" subtitle="edge extraction settings" :default-open="true">
+        <Collapsible title="Contour" subtitle="edge extraction settings" :default-open="false">
             <div class="space-y-3 pt-1">
                 <!-- Strategy -->
                 <div>
@@ -116,32 +127,72 @@ onMounted(() => {
                 </div>
 
                 <!-- Blur Sigma -->
-                <Tooltip text="Gaussian blur before edge detection — higher = smoother contours">
-                    <div>
-                        <label class="mb-1.5 flex items-center justify-between text-sm font-medium text-muted-foreground">
-                            <span>Blur Sigma</span>
-                            <input
-                                type="number"
-                                class="inline-number fira-code"
-                                :value="blurSigma.toFixed(1)"
-                                min="0"
-                                max="5"
-                                step="0.1"
-                                @input="blurSigma = Math.max(0, Math.min(5, parseFloat(($event.target as HTMLInputElement).value) || 0))"
-                            />
-                        </label>
-                        <input
-                            :value="blurSigma"
-                            @input="blurSigma = parseFloat(($event.target as HTMLInputElement).value)"
-                            type="range"
-                            min="0"
-                            max="5"
-                            step="0.1"
-                            class="styled-slider w-full"
-                            :style="{ '--progress': blurProgress + '%', '--slider-color': VIZ_COLORS.amber }"
-                        />
-                    </div>
+                <Tooltip text="Soften before tracing — crank it up for furry subjects or noisy backgrounds">
+                    <SliderControl
+                        v-model="blurSigma"
+                        label="Blur Sigma"
+                        :min="0"
+                        :max="5"
+                        :step="0.1"
+                        :color="VIZ_COLORS.amber"
+                        :format-value="(v: number) => v.toFixed(1)"
+                    />
                 </Tooltip>
+
+                <!-- Advanced divider + collapsible -->
+                <CollapsibleRoot v-model:open="advancedOpen">
+                    <div class="advanced-divider">
+                        <div class="divider-line" />
+                        <CollapsibleTrigger class="advanced-trigger">
+                            <span>Advanced</span>
+                            <ChevronRight class="h-3 w-3 text-muted-foreground/60 transition-transform duration-200" :class="{ 'rotate-90': advancedOpen }" />
+                        </CollapsibleTrigger>
+                        <div class="divider-line" />
+                    </div>
+
+                    <CollapsibleContent class="advanced-content">
+                        <div class="advanced-grid">
+                            <!-- Min Area % -->
+                            <Tooltip text="Ignore tiny contours — raise to drop grass, fences, and stray edges">
+                                <SliderControl
+                                    v-model="minContourArea"
+                                    label="Min Area %"
+                                    :min="0"
+                                    :max="20"
+                                    :step="0.5"
+                                    :color="VIZ_COLORS.amber"
+                                    :format-value="(v: number) => v.toFixed(1)"
+                                />
+                            </Tooltip>
+
+                            <!-- Max Contours -->
+                            <Tooltip text="How many outlines to keep — 1 for a clean silhouette, more for interior detail">
+                                <SliderControl
+                                    v-model="maxContours"
+                                    label="Max Contours"
+                                    :min="0"
+                                    :max="50"
+                                    :step="1"
+                                    :color="VIZ_COLORS.amber"
+                                    :format-value="(v: number) => v === 0 ? 'All' : String(v)"
+                                />
+                            </Tooltip>
+
+                            <!-- Smoothing -->
+                            <Tooltip text="Iron out jagged edges — tame fur, leaves, and pixelated boundaries">
+                                <SliderControl
+                                    v-model="smoothContours"
+                                    label="Smoothing"
+                                    :min="0"
+                                    :max="1"
+                                    :step="0.05"
+                                    :color="VIZ_COLORS.amber"
+                                    :format-value="(v: number) => v.toFixed(2)"
+                                />
+                            </Tooltip>
+                        </div>
+                    </CollapsibleContent>
+                </CollapsibleRoot>
 
             </div>
         </Collapsible>
@@ -150,26 +201,61 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.inline-number {
-    width: 2.75rem;
-    text-align: right;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid transparent;
-    color: hsl(var(--foreground));
-    font-size: inherit;
-    padding: 0;
-    outline: none;
-    -moz-appearance: textfield;
-    transition: border-color 0.15s;
+/* Advanced section */
+.advanced-divider {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
 }
-.inline-number:hover,
-.inline-number:focus {
-    border-bottom-color: hsl(var(--foreground) / 0.3);
+.divider-line {
+    flex: 1;
+    height: 1px;
+    background: hsl(var(--foreground) / 0.1);
 }
-.inline-number::-webkit-inner-spin-button,
-.inline-number::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+.advanced-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    cursor: pointer;
+    user-select: none;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    color: hsl(var(--foreground) / 0.4);
+    transition: color 0.15s;
+    white-space: nowrap;
+    padding: 0.125rem 0;
+}
+.advanced-trigger:hover {
+    color: hsl(var(--foreground) / 0.6);
+}
+
+.advanced-content {
+    overflow: hidden;
+}
+.advanced-content[data-state="open"] {
+    animation: adv-open 0.2s ease-out;
+}
+.advanced-content[data-state="closed"] {
+    animation: adv-close 0.2s ease-out;
+}
+@keyframes adv-open {
+    from { height: 0; opacity: 0; }
+    to { height: var(--reka-collapsible-content-height); opacity: 1; }
+}
+@keyframes adv-close {
+    from { height: var(--reka-collapsible-content-height); opacity: 1; }
+    to { height: 0; opacity: 0; }
+}
+
+.advanced-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.625rem 0.75rem;
+    padding-top: 0.625rem;
+}
+.advanced-grid > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
 }
 </style>
