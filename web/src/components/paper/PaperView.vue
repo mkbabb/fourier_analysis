@@ -68,7 +68,7 @@ _scrollTo = scrollTo;
 const sections = computed(() => paperSections);
 
 function getPreview(section: PaperSectionData): string {
-    const text = section.paragraphs?.[0] ?? "";
+    const text = section.content?.find((b): b is string => typeof b === "string") ?? "";
     const clean = text.replace(/\$[^$]+\$/g, "\u2026").replace(/<[^>]+>/g, "");
     const preview = clean.length > 100 ? clean.slice(0, 100) + "\u2026" : clean;
 
