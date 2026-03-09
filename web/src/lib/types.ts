@@ -48,6 +48,9 @@ export interface ContourSettings {
     n_points: number;
     n_classes: number;
     min_contour_length: number;
+    min_contour_area: number;
+    max_contours: number | null;
+    smooth_contours: number;
 }
 
 export interface AnimationSettings {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { CollapsibleRoot, CollapsibleTrigger, CollapsibleContent } from 'reka-ui'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { ChevronRight } from 'lucide-vue-next'
 
 const props = withDefaults(defineProps<{
@@ -12,10 +12,23 @@ const props = withDefaults(defineProps<{
 })
 
 const open = ref(props.defaultOpen)
+const rootEl = ref<InstanceType<typeof CollapsibleRoot> | null>(null)
+
+watch(open, (isOpen) => {
+    if (isOpen) {
+        // Scroll into view after the open animation completes
+        setTimeout(() => {
+            (rootEl.value?.$el ?? rootEl.value)?.scrollIntoView?.({
+                behavior: 'smooth',
+                block: 'nearest',
+            })
+        }, 220)
+    }
+})
 </script>
 
 <template>
-  <CollapsibleRoot v-model:open="open" class="collapsible-section">
+  <CollapsibleRoot ref="rootEl" v-model:open="open" class="collapsible-section">
     <CollapsibleTrigger class="collapsible-trigger group flex w-full items-center gap-2 py-1.5 cursor-pointer select-none">
       <ChevronRight class="h-4 w-4 text-muted-foreground transition-transform duration-200" :class="{ 'rotate-90': open }" />
       <span>

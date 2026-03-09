@@ -3,8 +3,9 @@ import { ref, computed, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useSessionStore } from "@/stores/session";
 import { useImageUpload } from "./composables/useImageUpload";
-import { Upload, AlertTriangle, X, Maximize2 } from "lucide-vue-next";
+import { Upload, Maximize2 } from "lucide-vue-next";
 import { Tooltip } from "@/components/ui/tooltip";
+import { useToast } from "@/composables/useToast";
 import ImageUpload from "./ImageUpload.vue";
 import ContourSettings from "./ContourSettings.vue";
 import BasisCanvas from "./BasisCanvas.vue";
@@ -93,9 +94,14 @@ watch(showGhost, (v) => {
     if (canvasComponent.value) canvasComponent.value.showGhost = v;
 });
 
-function dismissError() {
-    store.error = null;
-}
+const { toast } = useToast();
+
+watch(() => store.error, (err) => {
+    if (err && store.session) {
+        toast(err, "error");
+        store.error = null;
+    }
+});
 </script>
 
 <template>
@@ -157,30 +163,11 @@ function dismissError() {
                 />
             </div>
 
-            <!-- Inline error banner -->
-            <Transition name="slide-down">
-                <div v-if="store.error && store.session" class="error-banner">
-                    <AlertTriangle class="h-4 w-4 text-amber-500 flex-shrink-0" />
-                    <p class="flex-1 text-xs fira-code truncate">{{ store.error }}</p>
-                    <Tooltip text="Dismiss error">
-                        <button class="flex-shrink-0 p-0.5 rounded hover:bg-foreground/10 cursor-pointer" @click="dismissError">
-                            <X class="h-3.5 w-3.5" />
-                        </button>
-                    </Tooltip>
-                </div>
-            </Transition>
-
             <div class="viz-grid">
                 <!-- Left panel: Controls -->
                 <div class="viz-panel-left-wrap" :class="{ 'mobile-hidden': mobileView !== 'controls' }">
                     <div class="viz-panel-left">
                         <ImageUpload />
-                        <Transition name="slide-down">
-                            <ContourSettings v-if="store.hasImage"
-                                v-model:n-harmonics="nHarmonics"
-                                v-model:n-points="nPoints"
-                            />
-                        </Transition>
                         <Transition name="slide-down">
                             <BasisSelector
                                 v-if="hasData"
@@ -188,6 +175,12 @@ function dismissError() {
                                 v-model:n-harmonics="nHarmonics"
                                 v-model:n-points="nPoints"
                                 @update:active-bases="activeBases = $event"
+                            />
+                        </Transition>
+                        <Transition name="slide-down">
+                            <ContourSettings v-if="store.hasImage"
+                                v-model:n-harmonics="nHarmonics"
+                                v-model:n-points="nPoints"
                             />
                         </Transition>
                         <Transition name="slide-down">
@@ -425,19 +418,6 @@ function dismissError() {
     .mobile-hidden {
         display: none;
     }
-}
-
-/* ── Error banner ── */
-.error-banner {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin: 0.5rem 0.75rem 0;
-    padding: 0.5rem 0.75rem;
-    border-radius: 0.5rem;
-    background: hsl(var(--destructive) / 0.08);
-    border: 1.5px solid hsl(var(--destructive) / 0.2);
-    color: hsl(var(--foreground));
 }
 
 .slide-down-enter-active {

@@ -121,6 +121,7 @@ export const useSessionStore = defineStore("session", () => {
             epicycleData.value = await api.computeEpicycles(slug.value, params);
         } catch (e: any) {
             error.value = e.message;
+            epicycleData.value = null;
         } finally {
             loading.value = false;
         }
@@ -139,6 +140,7 @@ export const useSessionStore = defineStore("session", () => {
             basesData.value = await api.computeBases(slug.value, params);
         } catch (e: any) {
             error.value = e.message;
+            basesData.value = null;
         } finally {
             loading.value = false;
         }

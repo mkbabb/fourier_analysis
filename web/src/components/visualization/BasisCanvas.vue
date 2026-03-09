@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import { easeInOutCubic } from "@mkbabb/value.js";
 import { useSessionStore } from "@/stores/session";
 import { useAnimationStore } from "@/stores/animation";
 import { fourierPositionsAt, evaluateFourier } from "@/lib/bases";
@@ -213,7 +212,7 @@ function drawEpicycleFrame(
     drawTipDot(s, view, tip[0], tip[1]);
 
     // Label with hit regions for hover detection
-    const level = Math.max(1, Math.ceil(anim.t * components.length));
+    const level = Math.max(1, Math.ceil(anim.easedT * components.length));
     const { hitRegions } = drawBasisLabels(s, ["fourier-epicycles"], `N = ${level}`, hoveredBasis);
     hover.setLabelHitRegions(hitRegions);
 }
@@ -241,21 +240,22 @@ function drawMultiBasesFrame(s: CanvasSurface, view: ViewTransform) {
         }
     }
 
-    // Current level with smooth interpolation
+    // Current level — global easing drives one continuous flow,
+    // linear interpolation between adjacent precomputed levels.
     let level = 1;
     let levelFrac = 0;
     let levelNext = 1;
     if (basesData && basesData.levels.length > 0) {
         const levels = basesData.levels;
-        const pos = anim.t * (levels.length - 1);
+        const pos = anim.easedT * (levels.length - 1);
         const lo = Math.floor(pos);
         const hi = Math.min(lo + 1, levels.length - 1);
-        levelFrac = easeInOutCubic(pos - lo);
+        levelFrac = pos - lo;  // linear — global easing already shaped the curve
         level = levels[lo];
         levelNext = levels[hi];
     } else if (epicycleData) {
         const components: BasisComponent[] = epicycleData.components;
-        level = Math.max(1, Math.ceil(anim.t * components.length));
+        level = Math.max(1, Math.ceil(anim.easedT * components.length));
         levelNext = level;
     }
 
@@ -415,7 +415,7 @@ watch(
 
 // Render watcher: just calls drawFrame()
 watch(
-    [() => anim.t, () => store.basesData],
+    [() => anim.t, () => anim.easedT, () => store.basesData],
     () => {
         if (surface.value) drawFrame();
     },
