@@ -113,7 +113,7 @@ Four [strategies](src/fourier_analysis/contours.py) are available:
 
 | Strategy | Best for | Method |
 |---|---|---|
-| `auto` (default) | General use | Delegates to `multi_threshold` |
+| `auto` (default) | General use | Otsu threshold + morphological cleanup (both polarities), falls back to `multi_threshold` |
 | `threshold` | Portraits, silhouettes | [Otsu binarization](https://en.wikipedia.org/wiki/Otsu%27s_method) → marching squares |
 | `multi_threshold` | Interior detail | [Multi-Otsu](https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.threshold_multiotsu) → contours at each level boundary |
 | `canny` | Line drawings, gradients | Canny edges → morphological closing → marching squares |
@@ -123,7 +123,10 @@ from fourier_analysis.contours import extract_contours, resample_arc_length
 from fourier_analysis.shortest_tour import order_contours
 
 # Extract edge contours from an image as complex paths
-contours = extract_contours("image.png", strategy="auto", resize=512, blur_sigma=1.0)
+contours = extract_contours(
+    "image.png", strategy="auto", resize=512, blur_sigma=1.0,
+    min_contour_area=0.01, max_contours=10, smooth_contours=0.2,
+)
 
 # Order via KDTree nearest-neighbor + 2-opt refinement, concatenate into a single path
 path = order_contours(contours, method="nearest_2opt")
@@ -186,7 +189,7 @@ The deploy script (`scripts/deploy.sh`) pushes to GitHub, SSHs to the production
 ### Frontend features
 
 - **Paper view**: the LaTeX paper parsed at build time into navigable, collapsible sections with KaTeX-rendered math and theorem blocks
-- **Visualization view**: image upload (drag-and-drop), contour parameter tuning, basis selection (Fourier/Chebyshev/Legendre), animated epicycle canvas, coefficient panel, frame export
+- **Visualization view**: image upload (drag-and-drop), contour parameter tuning (strategy, blur, area filtering, max contours, contour smoothing), basis selection (Fourier/Chebyshev/Legendre), animated epicycle canvas, coefficient panel, frame export
 - **Session persistence**: slug-based URLs (`/s/big-red-angry-python`), stored in MongoDB with GridFS-backed images
 
 ### API endpoints
@@ -223,7 +226,7 @@ fourier_analysis/
         epicycles.py             # EpicycleComponent, EpicycleChain
         bases.py                 # Multi-basis decomposition (Fourier, Chebyshev, Legendre)
         fft_backend.py           # FFT backend abstraction (NumPy / mdarray)
-        contours.py              # Contour extraction (Otsu, multi-Otsu, Canny)
+        contours.py              # Contour extraction (Otsu, multi-Otsu, Canny), area filtering, contour ranking, smoothing
         shortest_tour.py         # KDTree nearest-neighbor + 2-opt tour ordering
         animation.py             # Matplotlib epicycle animation renderer
         figures/

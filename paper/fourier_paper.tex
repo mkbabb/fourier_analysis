@@ -2624,9 +2624,9 @@ represents $\gamma$ as a sum of $2N + 1$ rotating vectors. Each term $c_n e^{2\p
 
 The pipeline for reconstructing an arbitrary image via epicycles is as follows:
 \begin{enumerate}
-    \item \textbf{Contour extraction}: binarize the image via Otsu thresholding (for portraits and silhouettes) or Canny edge detection with morphological closing (for line drawings), then extract ordered contour paths via marching squares (\texttt{skimage.measure.find\_contours}).
+    \item \textbf{Contour extraction}: select a binarization strategy---the default ``auto'' mode applies Otsu thresholding with morphological closing and opening to produce clean subject silhouettes even when the subject has internal texture (fur, giraffe patches, foliage), trying both threshold polarities and filtering by compactness to reject wiggly zone boundaries. Multi-Otsu is available for images with interior detail, and Canny edge detection for line drawings. An area-based filter discards small background-noise contours, and optional Savitzky--Golay smoothing reduces jaggedness from texture edges.
     \item \textbf{Tour ordering}: concatenate contour segments into a single path using KDTree-accelerated nearest-neighbor initialization, refined by 2-opt local search to minimize inter-contour gaps.
-    \item \textbf{Arc-length resampling}: resample the path to uniform arc-length spacing---essential for accurate Fourier coefficients, since the FFT assumes uniform sampling.
+    \item \textbf{Arc-length resampling}: resample the path to uniform arc-length spacing via cubic interpolation---essential for accurate Fourier coefficients, since the FFT assumes uniform sampling.
     \item \textbf{Fourier decomposition}: compute the Fourier coefficients of the complex path.
     \item \textbf{Epicycle rendering}: animate the rotating vectors, tracing the reconstruction.
 \end{enumerate}
@@ -2719,7 +2719,7 @@ The interactive web companion at \url{https://fourier.babb.dev} implements the p
 \section{Contour Extraction and FFT Pipeline}
 \label{app:contour_fft}
 
-The epicycle reconstruction of Chapter~\ref{ch:applications} begins with extracting a closed curve from an image. The pipeline implements the steps described in \S\ref{sec:epicycles_app}: binarization via Otsu thresholding, contour extraction via marching squares, tour ordering, and arc-length resampling.
+The epicycle reconstruction of Chapter~\ref{ch:applications} begins with extracting a closed curve from an image. The default ``auto'' strategy applies Otsu thresholding followed by morphological closing and opening, which fills internal texture gaps (giraffe patches, fur) and removes small noise protrusions. Both threshold polarities are tried---dark foreground for portraits and silhouettes, light foreground for bright subjects on medium backgrounds---and the results are merged. A compactness filter (circularity $= 4\pi A/P^2$) rejects wiggly zone-boundary contours that lack the coherent shape of a real subject outline. An area-based filter then removes small spurious contours (background texture, grass, fences), and optional Savitzky--Golay smoothing reduces jagged edges before tour ordering and cubic arc-length resampling.
 
 The Fourier coefficients of the resulting complex path $\gamma(t)$ are computed via the FFT. The DFT definition (Definition~\ref{eq:dft}) gives $c_n = \frac{1}{N}\sum_{k=0}^{N-1}\gamma(k/N)\,e^{-2\pi ink/N}$, which is $\frac{1}{N}$ times the FFT output:
 
