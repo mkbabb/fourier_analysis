@@ -1,73 +1,81 @@
 <script setup lang="ts">
-import PaperSectionContent from "./PaperSectionContent.vue";
+import {
+    PaperSectionContent,
+    usePaperReader,
+    useKatex,
+    createRenderTitle,
+    PAPER_CONTEXT,
+    type PaperContext,
+} from "@mkbabb/latex-paper/vue";
 import Tooltip from "@/components/ui/tooltip/Tooltip.vue";
 import { paperSections, labelMap } from "@/lib/paperContent";
 import type { PaperSectionData } from "@/lib/paperContent";
-import { ref, computed, watch, onMounted, onUnmounted, nextTick } from "vue";
-import { useKatex } from "@/composables/useKatex";
-import { ChevronDown } from "lucide-vue-next";
-import { useLazyLoader } from "@/composables/useLazyLoader";
-import { useTableOfContents } from "@/composables/useTableOfContents";
-import { useScrollTracking } from "@/composables/useScrollTracking";
+import { ref, computed, provide, watch, onMounted, onUnmounted, nextTick } from "vue";
+import { ChevronDown, ArrowRight } from "lucide-vue-next";
 
-const { renderInline } = useKatex();
+// ── KaTeX with app-specific macros ─────────────────────────
+const macros: Record<string, string> = {
+    "\\deriv": "\\mathrm{d}",
+    "\\ihat": "\\boldsymbol{\\hat{\\imath}}",
+    "\\jhat": "\\boldsymbol{\\hat{\\jmath}}",
+    "\\khat": "\\boldsymbol{\\hat{k}}",
+    "\\ehat": "\\boldsymbol{\\hat{e}}",
+    "\\dott": "\\boldsymbol{\\cdot}",
+    "\\leftrightarrow": "\\longleftrightarrow",
+    "\\Leftrightarrow": "\\Longleftrightarrow",
+};
+
+const { renderInline, renderDisplay, renderTitle } = useKatex(macros);
+
+const scrollContainer = ref<HTMLElement | null>(null);
+const sidebarNav = ref<HTMLElement | null>(null);
+const baseUrl = import.meta.env.BASE_URL;
+
+// ── Build PaperContext and wire up tracking ────────────────
+// scrollToId is a late-bound reference set after usePaperReader creates scrollTo
+let _scrollTo: (id: string) => void = () => {};
+
+const paperContext: PaperContext = {
+    sections: paperSections,
+    labelMap,
+    renderInline,
+    renderDisplay,
+    renderTitle,
+    assetBase: `${baseUrl}assets/`,
+    scrollToId: (id) => _scrollTo(id),
+};
+
+provide(PAPER_CONTEXT, paperContext);
+
+const {
+    visibleCount,
+    loadSentinel,
+    treeIndex,
+    isActive,
+    isInActiveChain,
+    activeId,
+    activeRootId,
+    scrollTo,
+} = usePaperReader({
+    context: paperContext,
+    scrollContainer,
+    sidebarEl: sidebarNav,
+});
+
+_scrollTo = scrollTo;
+
 const sections = computed(() => paperSections);
 
-function renderTitle(text: string): string {
-    return text.replace(/\$([^$]+)\$/g, (_, tex) => {
-        return `<span class="math-inline">${renderInline(tex)}</span>`;
-    });
-}
-
-// ── Composables ─────────────────────────────────────────────
-const { visibleCount, loadSentinel } = useLazyLoader(paperSections.length);
-const { tocIndex, isActive, isInActiveChain } = useTableOfContents(paperSections);
-const { activeId, activeTopId, sidebarNav } = useScrollTracking(
-    paperSections,
-    tocIndex,
-    visibleCount,
-);
-
-// ── Scroll to section ───────────────────────────────────────
-function scrollToSection(id: string) {
-    visibleCount.value = paperSections.length;
-
-    let attempts = 0;
-    let lastY = -1;
-
-    function tryScroll() {
-        const el = document.getElementById(id);
-        const scroller = document.querySelector('.paper-scroll');
-        if (!el || !scroller) {
-            if (attempts++ < 60) requestAnimationFrame(tryScroll);
-            return;
-        }
-
-        const scrollerRect = scroller.getBoundingClientRect();
-        const elRect = el.getBoundingClientRect();
-        const absoluteTop = elRect.top - scrollerRect.top + scroller.scrollTop;
-
-        if (Math.abs(absoluteTop - lastY) < 1 && attempts > 2) {
-            scroller.scrollTo({ top: Math.max(0, absoluteTop - 16), behavior: "instant" });
-            return;
-        }
-        lastY = absoluteTop;
-        attempts++;
-        requestAnimationFrame(tryScroll);
-    }
-    nextTick(() => requestAnimationFrame(tryScroll));
-}
-
 function getPreview(section: PaperSectionData): string {
-    const text = section.paragraphs?.[0] ?? '';
-    const clean = text.replace(/\$[^$]+\$/g, '\u2026').replace(/<[^>]+>/g, '');
-    const preview = clean.length > 100 ? clean.slice(0, 100) + '\u2026' : clean;
+    const text = section.paragraphs?.[0] ?? "";
+    const clean = text.replace(/\$[^$]+\$/g, "\u2026").replace(/<[^>]+>/g, "");
+    const preview = clean.length > 100 ? clean.slice(0, 100) + "\u2026" : clean;
 
     const parts: string[] = [];
     if (preview) parts.push(preview);
     if (section.summary) parts.push(section.summary);
 
-    return parts.join(' · ');
+    return parts.join(" \u00b7 ");
 }
 
 // ── Mobile floating TOC ─────────────────────────────────────
@@ -77,24 +85,11 @@ const floatingTocOpen = ref(false);
 let mobileTocObserver: IntersectionObserver | null = null;
 
 const currentSection = computed(() => {
-    if (!activeTopId.value) return null;
-    const entry = tocIndex.get(activeTopId.value);
+    if (!activeRootId.value) return null;
+    const entry = treeIndex.get(activeRootId.value);
     if (!entry) return null;
-    return entry.section;
+    return paperSections.find((s) => s.id === entry.node.id) ?? null;
 });
-
-// ── Cross-reference click handling ──────────────────────────
-function handleRefClick(e: MouseEvent) {
-    const target = (e.target as HTMLElement).closest<HTMLAnchorElement>(".paper-ref");
-    if (!target) return;
-    e.preventDefault();
-    const refKey = target.dataset.ref;
-    if (!refKey) return;
-    const info = labelMap[refKey];
-    if (!info) return;
-    // Use elementId for precise targeting (theorem/figure), fall back to sectionId
-    scrollToSection(info.elementId ?? info.sectionId);
-}
 
 onMounted(() => {
     mobileTocObserver = new IntersectionObserver(
@@ -108,22 +103,19 @@ onMounted(() => {
     nextTick(() => {
         if (mobileNavRef.value) mobileTocObserver!.observe(mobileNavRef.value);
     });
-    // Delegated click handler for cross-reference links
-    document.querySelector(".paper-scroll")?.addEventListener("click", handleRefClick);
 });
 
 onUnmounted(() => {
     mobileTocObserver?.disconnect();
-    document.querySelector(".paper-scroll")?.removeEventListener("click", handleRefClick);
 });
 
-watch(activeTopId, () => {
+watch(activeRootId, () => {
     floatingTocOpen.value = false;
 });
 </script>
 
 <template>
-    <div class="paper-scroll">
+    <div ref="scrollContainer" class="paper-scroll">
         <!-- Mobile floating TOC bar -->
         <Transition name="slide-down">
             <div v-if="!mobileTocVisible" class="floating-toc lg:hidden">
@@ -140,9 +132,9 @@ watch(activeTopId, () => {
                             v-for="(section, si) in sections"
                             :key="section.id"
                             class="floating-toc-item cm-serif"
-                            :class="{ 'is-active': activeTopId === section.id }"
-                            :style="activeTopId === section.id ? { color: `var(--section-color-${si})` } : {}"
-                            @click="scrollToSection(section.id); floatingTocOpen = false"
+                            :class="{ 'is-active': activeRootId === section.id }"
+                            :style="activeRootId === section.id ? { color: `var(--section-color-${si})` } : {}"
+                            @click="scrollTo(section.id); floatingTocOpen = false"
                         >
                             <span class="fira-code text-xs opacity-50">{{ section.number }}.</span>
                             {{ section.title }}
@@ -163,10 +155,10 @@ watch(activeTopId, () => {
                                 <Tooltip :text="getPreview(section)" side="right">
                                     <button
                                         :data-toc-id="section.id"
-                                        @click="scrollToSection(section.id)"
+                                        @click="scrollTo(section.id)"
                                         class="sidebar-link cm-serif"
-                                        :class="{ 'is-active': activeTopId === section.id }"
-                                        :style="activeTopId === section.id ? { color: `var(--section-color-${si})` } : {}"
+                                        :class="{ 'is-active': activeRootId === section.id }"
+                                        :style="activeRootId === section.id ? { color: `var(--section-color-${si})` } : {}"
                                     >
                                         <span class="sidebar-number fira-code">{{ section.number }}.</span>
                                         <span v-html="renderTitle(section.title)" />
@@ -176,21 +168,21 @@ watch(activeTopId, () => {
                                 <div
                                     v-if="section.subsections"
                                     class="sidebar-sublist-wrapper"
-                                    :class="{ 'is-expanded': activeTopId === section.id }"
+                                    :class="{ 'is-expanded': activeRootId === section.id }"
                                 >
                                     <ol class="sidebar-sublist">
                                         <li v-for="sub in section.subsections" :key="sub.id">
                                             <Tooltip :text="getPreview(sub)" side="right">
                                                 <button
                                                     :data-toc-id="sub.id"
-                                                    @click="scrollToSection(sub.id)"
+                                                    @click="scrollTo(sub.id)"
                                                     class="sidebar-link sidebar-sublink cm-serif"
                                                     :class="{ 'is-active-sub': isActive(sub.id, activeId) || isInActiveChain(sub.id, activeId) }"
                                                     :style="isActive(sub.id, activeId)
                                                         ? { color: `var(--section-color-${si})`, fontWeight: '600', background: 'hsl(var(--muted) / 0.4)' }
                                                         : isInActiveChain(sub.id, activeId)
                                                             ? { color: `color-mix(in srgb, var(--section-color-${si}) 70%, hsl(var(--muted-foreground)))` }
-                                                            : activeTopId === section.id
+                                                            : activeRootId === section.id
                                                                 ? { color: `color-mix(in srgb, var(--section-color-${si}) 50%, hsl(var(--muted-foreground)))` }
                                                                 : {}"
                                                 >
@@ -203,7 +195,7 @@ watch(activeTopId, () => {
                                                 <li v-for="subsub in sub.subsections" :key="subsub.id">
                                                     <button
                                                         :data-toc-id="subsub.id"
-                                                        @click="scrollToSection(subsub.id)"
+                                                        @click="scrollTo(subsub.id)"
                                                         class="sidebar-link sidebar-subsublink cm-serif"
                                                         :style="isActive(subsub.id, activeId)
                                                             ? { color: `var(--section-color-${si})`, fontWeight: '600', background: 'hsl(var(--muted) / 0.4)' }
@@ -237,7 +229,7 @@ watch(activeTopId, () => {
                         <ol class="list-none space-y-1.5 pl-0">
                             <li v-for="section in sections" :key="section.id">
                                 <button
-                                    @click="scrollToSection(section.id)"
+                                    @click="scrollTo(section.id)"
                                     class="text-left hover:text-foreground transition-colors duration-150 cursor-pointer"
                                 >
                                     <span>{{ section.number }}. </span><span v-html="renderTitle(section.title)" />
@@ -252,7 +244,31 @@ watch(activeTopId, () => {
                         :section="section"
                         :depth="0"
                         :section-index="si"
-                    />
+                    >
+                        <template #figure="{ figure }">
+                            <img
+                                :src="`${baseUrl}assets/${figure.filename}`"
+                                :alt="figure.caption"
+                                class="max-w-full rounded-lg shadow-sm"
+                                :class="figure.filename.includes('portrait') ? 'paper-portrait' : 'paper-figure'"
+                                style="max-height: 400px"
+                                loading="lazy"
+                            />
+                        </template>
+                        <template #callout="{ callout, section: sec }">
+                            <div class="interactive-callout">
+                                <p class="cm-serif text-sm text-muted-foreground mb-3">{{ callout.text }}</p>
+                                <router-link
+                                    :to="callout.link"
+                                    class="callout-btn"
+                                >
+                                    <span class="fourier-f">ℱ</span>
+                                    <span>Open Visualizer</span>
+                                    <ArrowRight class="h-4 w-4" />
+                                </router-link>
+                            </div>
+                        </template>
+                    </PaperSectionContent>
                     <!-- Sentinel triggers loading next batch when scrolled near -->
                     <div
                         v-if="visibleCount < sections.length"
@@ -569,5 +585,375 @@ watch(activeTopId, () => {
 .paper-article :deep(.paper-ref:hover) {
     border-bottom-style: solid;
     border-bottom-color: hsl(var(--primary));
+}
+
+/* ── Styles from extracted components (via :deep) ─────────── */
+
+/* MathBlock */
+.paper-article :deep(.math-block) {
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0.5rem 0;
+    margin: 0.75rem 0;
+    text-align: center;
+    border-left: 2px solid transparent;
+    padding-left: 1rem;
+    border-radius: 2px;
+    transition: border-color 0.3s ease;
+}
+
+.paper-article :deep(.math-block:hover) {
+    border-left-color: hsl(var(--border));
+}
+
+/* MathInline */
+.paper-article :deep(.math-inline) {
+    white-space: nowrap;
+}
+
+/* Theorem */
+.paper-article :deep(.theorem-block) {
+    position: relative;
+    margin: 1rem 0;
+    border-radius: 0.5rem;
+    border-left-width: 3px;
+    border-left-style: solid;
+    padding: 0.75rem 1.25rem;
+    scroll-margin-top: 6rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.03);
+    transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
+}
+
+.paper-article :deep(.theorem-block:hover) {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.04);
+    transform: translateY(-1px);
+}
+
+:where(.dark) .paper-article :deep(.theorem-block) {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+:where(.dark) .paper-article :deep(.theorem-block:hover) {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.paper-article :deep(.theorem-block::before) {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 3rem;
+    height: 3rem;
+    border-top: 1px solid hsl(var(--border));
+    border-right: 1px solid hsl(var(--border));
+    border-radius: 0 0.5rem 0 0;
+    opacity: 0.5;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.paper-article :deep(.theorem-block:hover::before) {
+    opacity: 0.8;
+}
+
+/* Theorem type accent colors */
+.paper-article :deep(.theorem-block--theorem),
+.paper-article :deep(.theorem-block--proposition),
+.paper-article :deep(.theorem-block--corollary) {
+    border-left-color: hsl(var(--primary));
+}
+
+.paper-article :deep(.theorem-block--definition),
+.paper-article :deep(.theorem-block--example) {
+    border-left-color: hsl(var(--accent-pink));
+}
+
+.paper-article :deep(.theorem-block--lemma),
+.paper-article :deep(.theorem-block--aside) {
+    border-left-color: hsl(var(--muted-foreground));
+}
+
+.paper-article :deep(.theorem-label) {
+    margin-bottom: 0.25rem;
+}
+
+.paper-article :deep(.theorem-block--theorem .theorem-label),
+.paper-article :deep(.theorem-block--proposition .theorem-label),
+.paper-article :deep(.theorem-block--corollary .theorem-label) {
+    color: hsl(var(--primary));
+}
+
+.paper-article :deep(.theorem-block--definition .theorem-label),
+.paper-article :deep(.theorem-block--example .theorem-label) {
+    color: hsl(var(--accent-pink));
+}
+
+.paper-article :deep(.theorem-block--lemma .theorem-label),
+.paper-article :deep(.theorem-block--aside .theorem-label) {
+    color: hsl(var(--muted-foreground));
+}
+
+.paper-article :deep(.theorem-type) {
+    font-weight: 700;
+    font-variant: small-caps;
+}
+
+.paper-article :deep(.theorem-number) {
+    font-size: 0.85em;
+    opacity: 0.7;
+}
+
+.paper-article :deep(.theorem-body) {
+    font-size: 0.938rem;
+    line-height: 1.75;
+    color: hsl(var(--foreground) / 0.9);
+}
+
+.paper-article :deep(.theorem-body--italic) {
+    font-style: italic;
+}
+
+.paper-article :deep(.theorem-body .math-block) {
+    margin-left: 0.5rem;
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+}
+
+.paper-article :deep(.theorem-body .math-block + .math-block) {
+    margin-top: 0;
+}
+
+/* PaperSection */
+.paper-article :deep(.paper-section) {
+    scroll-margin-top: 5rem;
+}
+
+.paper-article :deep(.paper-section:not(:last-child)) {
+    margin-bottom: 2rem;
+}
+
+.paper-article :deep(.section-header--chapter) {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: hsl(var(--card));
+    box-shadow: none;
+    padding: 0.75rem 1rem 0.25rem;
+    margin-left: -1rem;
+    margin-right: -1rem;
+    border-radius: var(--radius);
+}
+
+.paper-article :deep(.section-header--sub) {
+    position: sticky;
+    top: 3.5rem;
+    z-index: 9;
+    background: hsl(var(--card));
+    box-shadow: none;
+    padding: 0.5rem 1rem 0.125rem;
+    margin-left: -1rem;
+    margin-right: -1rem;
+    border-radius: var(--radius);
+}
+
+.paper-article :deep(.section-heading) {
+    font-weight: 700;
+    letter-spacing: normal;
+    line-height: 1.25;
+    margin-bottom: 0;
+}
+
+.paper-article :deep(.section-header--chapter .section-heading) {
+    font-size: 1.625rem;
+    color: var(--_section-color, hsl(var(--section-heading)));
+}
+
+.paper-article :deep(.section-header--sub .section-heading) {
+    font-size: 1.25rem;
+    color: var(--_section-color, hsl(var(--section-heading)));
+}
+
+.paper-article :deep(.section-number) {
+    font-size: 0.95rem;
+    font-weight: 400;
+    margin-right: 0.375rem;
+    user-select: none;
+}
+
+.paper-article :deep(.section-header--chapter .section-number) {
+    font-size: 0.95rem;
+    color: color-mix(in srgb, var(--_section-color, hsl(var(--section-heading))) 50%, transparent);
+}
+
+.paper-article :deep(.section-header--sub .section-number) {
+    font-size: 0.8rem;
+    color: color-mix(in srgb, var(--_section-color, hsl(var(--section-heading))) 50%, transparent);
+}
+
+.paper-article :deep(.section-heading:hover .section-number) {
+    opacity: 0.85;
+    transition: opacity 0.2s ease;
+}
+
+.paper-article :deep(.section-divider) {
+    margin-top: 1rem;
+    height: 1px;
+    background: linear-gradient(
+        to right,
+        color-mix(in srgb, var(--_section-color, hsl(var(--section-heading))) 30%, transparent),
+        color-mix(in srgb, var(--_section-color, hsl(var(--section-heading))) 10%, transparent),
+        transparent
+    );
+}
+
+.paper-article :deep(.section-body) {
+    margin-top: 1.25rem;
+    font-size: 1rem;
+    line-height: 1.8;
+    color: hsl(var(--foreground) / 0.9);
+}
+
+@media (min-width: 1024px) {
+    .paper-article :deep(.section-body) {
+        font-size: 1.125rem;
+    }
+}
+
+.paper-article :deep(.section-body p + p) {
+    margin-top: 1rem;
+}
+
+.paper-article :deep(.section-body em) {
+    font-style: italic;
+    color: hsl(var(--foreground));
+}
+
+.paper-article :deep(.section-body strong) {
+    font-weight: 700;
+    color: hsl(var(--foreground));
+}
+
+.paper-article :deep(.section-body .paper-code) {
+    font-family: "Fira Code", monospace;
+    font-size: 0.85em;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    background: hsl(var(--muted) / 0.5);
+    color: hsl(var(--foreground));
+}
+
+.paper-article :deep(.section-body .paper-cite) {
+    font-style: normal;
+    font-size: 0.8em;
+    color: hsl(var(--primary));
+    cursor: default;
+    font-family: "Fira Code", monospace;
+    vertical-align: super;
+    line-height: 0;
+}
+
+.paper-article :deep(.section-body .paper-quote) {
+    border-left: 3px solid hsl(var(--border));
+    margin: 1rem 0;
+    padding: 0.75rem 1.25rem;
+    color: hsl(var(--muted-foreground));
+    font-style: italic;
+    background: hsl(var(--muted) / 0.2);
+    border-radius: 0 0.375rem 0.375rem 0;
+}
+
+.paper-article :deep(.section-body .paper-list) {
+    margin: 0.75rem 0;
+    padding-left: 1.5rem;
+}
+
+.paper-article :deep(.section-body .paper-list li) {
+    margin: 0.25rem 0;
+}
+
+.paper-article :deep(.section-body .paper-description) {
+    margin: 0.75rem 0;
+}
+
+.paper-article :deep(.section-body .paper-description dt) {
+    font-weight: 700;
+    margin-top: 0.5rem;
+}
+
+.paper-article :deep(.section-body .paper-description dd) {
+    margin-left: 1.5rem;
+    margin-top: 0.125rem;
+}
+
+/* Figures */
+.paper-article :deep(.paper-figure) {
+    border: 1px solid hsl(var(--border) / 0.5);
+    background: white;
+    border-radius: 0.5rem;
+}
+
+:where(.dark) .paper-article :deep(.paper-figure) {
+    filter: invert(1) hue-rotate(180deg);
+    background: transparent;
+    border-color: hsl(var(--border) / 0.3);
+}
+
+.paper-article :deep(.paper-portrait) {
+    border: 1px solid hsl(var(--border) / 0.5);
+    border-radius: 0.5rem;
+}
+
+.paper-article :deep(figure) {
+    margin: 1.5rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    scroll-margin-top: 6rem;
+}
+
+.paper-article :deep(figcaption) {
+    font-size: 0.875rem;
+    color: hsl(var(--muted-foreground));
+    text-align: center;
+    max-width: 32rem;
+    font-style: italic;
+}
+
+/* Interactive callout */
+.interactive-callout {
+    margin: 1.5rem 0;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.75rem;
+    background: hsl(var(--muted) / 0.25);
+    text-align: center;
+}
+
+.callout-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1.5rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: hsl(var(--primary-foreground));
+    background: hsl(var(--primary));
+    border-radius: 9999px;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 8px hsl(var(--primary) / 0.25);
+}
+
+.callout-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px hsl(var(--primary) / 0.35);
+}
+
+.callout-btn .fourier-f {
+    font-size: 1.1em;
+    opacity: 0.85;
 }
 </style>
