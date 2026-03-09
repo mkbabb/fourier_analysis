@@ -6,7 +6,7 @@ export const useAnimationStore = defineStore("animation", () => {
     const t = ref(0);
     const playing = ref(false);
     const speed = ref(1);
-    const duration = ref(30000); // ms per full cycle
+    const duration = ref(20000); // ms per full cycle
 
     let anim: Animation | null = null;
     let rafId: number | null = null;
@@ -35,7 +35,7 @@ export const useAnimationStore = defineStore("animation", () => {
         return a;
     }
 
-    // Manual rAF loop for infinite cycling
+    // Manual rAF loop with alternate (ping-pong)
     function startLoop() {
         let startTime: number | null = null;
         const dur = duration.value / speed.value;
@@ -45,7 +45,10 @@ export const useAnimationStore = defineStore("animation", () => {
             if (startTime === null) startTime = now - t.value * dur;
 
             const elapsed = now - startTime;
-            t.value = (elapsed % dur) / dur;
+            // Which cycle are we in? Even = forward, odd = reverse
+            const cycle = Math.floor(elapsed / dur);
+            const frac = (elapsed % dur) / dur;
+            t.value = cycle % 2 === 0 ? frac : 1 - frac;
 
             rafId = requestAnimationFrame(tick);
         }
