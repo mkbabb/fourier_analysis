@@ -3,16 +3,16 @@ import {
     PaperSectionContent,
     usePaperReader,
     useKatex,
-    createRenderTitle,
     PAPER_CONTEXT,
     type PaperContext,
 } from "@mkbabb/latex-paper/vue";
 import "@mkbabb/latex-paper/theme";
-import Tooltip from "@/components/ui/tooltip/Tooltip.vue";
+import PaperSidebar from "./PaperSidebar.vue";
+import MobileFloatingToc from "./MobileFloatingToc.vue";
 import { paperSections, labelMap } from "@/lib/paperContent";
 import type { PaperSectionData } from "@/lib/paperContent";
-import { ref, computed, provide, watch, onMounted, onUnmounted, nextTick } from "vue";
-import { ChevronDown, ArrowRight } from "lucide-vue-next";
+import { ref, computed, provide, onMounted, onUnmounted, nextTick } from "vue";
+import { ArrowRight } from "lucide-vue-next";
 
 // ── KaTeX with app-specific macros ─────────────────────────
 const macros: Record<string, string> = {
@@ -29,11 +29,11 @@ const macros: Record<string, string> = {
 const { renderInline, renderDisplay, renderTitle } = useKatex(macros);
 
 const scrollContainer = ref<HTMLElement | null>(null);
-const sidebarNav = ref<HTMLElement | null>(null);
+const sidebarRef = ref<InstanceType<typeof PaperSidebar> | null>(null);
+const sidebarNav = computed(() => sidebarRef.value?.sidebarNav ?? null);
 const baseUrl = import.meta.env.BASE_URL;
 
 // ── Build PaperContext and wire up tracking ────────────────
-// scrollToId is a late-bound reference set after usePaperReader creates scrollTo
 let _scrollTo: (id: string) => void = () => {};
 
 const paperContext: PaperContext = {
@@ -79,10 +79,9 @@ function getPreview(section: PaperSectionData): string {
     return parts.join(" \u00b7 ");
 }
 
-// ── Mobile floating TOC ─────────────────────────────────────
+// ── Mobile floating TOC visibility ───────────────────────────
 const mobileNavRef = ref<HTMLElement | null>(null);
 const mobileTocVisible = ref(true);
-const floatingTocOpen = ref(false);
 let mobileTocObserver: IntersectionObserver | null = null;
 
 const currentSection = computed(() => {
@@ -109,111 +108,38 @@ onMounted(() => {
 onUnmounted(() => {
     mobileTocObserver?.disconnect();
 });
-
-watch(activeRootId, () => {
-    floatingTocOpen.value = false;
-});
 </script>
 
 <template>
     <div ref="scrollContainer" class="paper-scroll">
         <!-- Mobile floating TOC bar -->
         <Transition name="slide-down">
-            <div v-if="!mobileTocVisible" class="floating-toc lg:hidden">
-                <button class="floating-toc-bar" @click="floatingTocOpen = !floatingTocOpen">
-                    <span class="floating-toc-section cm-serif">
-                        <span class="fira-code text-xs opacity-50">{{ currentSection?.number }}.</span>
-                        {{ currentSection?.title }}
-                    </span>
-                    <ChevronDown class="floating-toc-chevron" :class="{ 'rotate-180': floatingTocOpen }" />
-                </button>
-                <Transition name="toc-expand">
-                    <div v-if="floatingTocOpen" class="floating-toc-dropdown">
-                        <button
-                            v-for="(section, si) in sections"
-                            :key="section.id"
-                            class="floating-toc-item cm-serif"
-                            :class="{ 'is-active': activeRootId === section.id }"
-                            :style="activeRootId === section.id ? { color: `var(--section-color-${si})` } : {}"
-                            @click="scrollTo(section.id); floatingTocOpen = false"
-                        >
-                            <span class="fira-code text-xs opacity-50">{{ section.number }}.</span>
-                            {{ section.title }}
-                        </button>
-                    </div>
-                </Transition>
-            </div>
+            <MobileFloatingToc
+                v-if="!mobileTocVisible"
+                :sections="sections"
+                :active-root-id="activeRootId"
+                :current-section="currentSection"
+                :scroll-to="scrollTo"
+                :render-title="renderTitle"
+                :scroll-container="scrollContainer"
+            />
         </Transition>
 
         <div class="paper-layout mx-auto max-w-5xl px-2 py-2 sm:py-14 pb-4 sm:px-6">
             <div class="paper-grid">
                 <!-- Desktop sidebar TOC -->
-                <aside class="paper-sidebar">
-                    <nav ref="sidebarNav" class="sidebar-nav scrollbar-thin">
-                        <p class="sidebar-label cm-serif">Contents</p>
-                        <ol class="sidebar-list">
-                            <li v-for="(section, si) in sections" :key="section.id">
-                                <Tooltip :text="getPreview(section)" side="right">
-                                    <button
-                                        :data-toc-id="section.id"
-                                        @click="scrollTo(section.id)"
-                                        class="sidebar-link cm-serif"
-                                        :class="{ 'is-active': activeRootId === section.id }"
-                                        :style="activeRootId === section.id ? { color: `var(--section-color-${si})` } : {}"
-                                    >
-                                        <span class="sidebar-number fira-code">{{ section.number }}.</span>
-                                        <span v-html="renderTitle(section.title)" />
-                                    </button>
-                                </Tooltip>
-                                <!-- Subsections (animated expand) -->
-                                <div
-                                    v-if="section.subsections"
-                                    class="sidebar-sublist-wrapper"
-                                    :class="{ 'is-expanded': activeRootId === section.id }"
-                                >
-                                    <ol class="sidebar-sublist">
-                                        <li v-for="sub in section.subsections" :key="sub.id">
-                                            <Tooltip :text="getPreview(sub)" side="right">
-                                                <button
-                                                    :data-toc-id="sub.id"
-                                                    @click="scrollTo(sub.id)"
-                                                    class="sidebar-link sidebar-sublink cm-serif"
-                                                    :class="{ 'is-active-sub': isActive(sub.id, activeId) || isInActiveChain(sub.id, activeId) }"
-                                                    :style="isActive(sub.id, activeId)
-                                                        ? { color: `var(--section-color-${si})`, fontWeight: '600', background: 'hsl(var(--muted) / 0.4)' }
-                                                        : isInActiveChain(sub.id, activeId)
-                                                            ? { color: `color-mix(in srgb, var(--section-color-${si}) 70%, hsl(var(--muted-foreground)))` }
-                                                            : activeRootId === section.id
-                                                                ? { color: `color-mix(in srgb, var(--section-color-${si}) 50%, hsl(var(--muted-foreground)))` }
-                                                                : {}"
-                                                >
-                                                    <span class="sidebar-number fira-code">{{ sub.number }}.</span>
-                                                    <span v-html="renderTitle(sub.title)" />
-                                                </button>
-                                            </Tooltip>
-                                            <!-- Sub-subsections -->
-                                            <ol v-if="sub.subsections && isInActiveChain(sub.id, activeId)" class="sidebar-subsublist">
-                                                <li v-for="subsub in sub.subsections" :key="subsub.id">
-                                                    <button
-                                                        :data-toc-id="subsub.id"
-                                                        @click="scrollTo(subsub.id)"
-                                                        class="sidebar-link sidebar-subsublink cm-serif"
-                                                        :style="isActive(subsub.id, activeId)
-                                                            ? { color: `var(--section-color-${si})`, fontWeight: '600', background: 'hsl(var(--muted) / 0.4)' }
-                                                            : { color: `color-mix(in srgb, var(--section-color-${si}) 40%, hsl(var(--muted-foreground)))` }"
-                                                    >
-                                                        <span class="sidebar-number fira-code">{{ subsub.number }}.</span>
-                                                        <span v-html="renderTitle(subsub.title)" />
-                                                    </button>
-                                                </li>
-                                            </ol>
-                                        </li>
-                                    </ol>
-                                </div>
-                            </li>
-                        </ol>
-                    </nav>
-                </aside>
+                <PaperSidebar
+                    ref="sidebarRef"
+                    :sections="sections"
+                    :active-root-id="activeRootId"
+                    :active-id="activeId"
+                    :scroll-to="scrollTo"
+                    :render-title="renderTitle"
+                    :tree-index="treeIndex"
+                    :is-active="isActive"
+                    :is-in-active-chain="isInActiveChain"
+                    :get-preview="getPreview"
+                />
 
                 <!-- Main article -->
                 <article class="paper-article leading-relaxed">
@@ -330,125 +256,6 @@ watch(activeRootId, () => {
     }
 }
 
-.paper-sidebar {
-    display: none;
-}
-
-@media (min-width: 1024px) {
-    .paper-sidebar {
-        display: block;
-    }
-}
-
-.sidebar-nav {
-    position: sticky;
-    top: 1.5rem;
-    max-height: calc(100dvh - 5rem);
-    overflow-y: auto;
-    padding: 0.75rem;
-    border-radius: 0.75rem;
-    border: 2px solid hsl(var(--foreground) / 0.15);
-    background: hsl(var(--card));
-    box-shadow: 3px 3px 0px 0px hsl(var(--foreground) / 0.08);
-}
-
-.sidebar-label {
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: hsl(var(--muted-foreground) / 0.6);
-    padding: 0 0.75rem;
-    margin-bottom: 0.75rem;
-}
-
-.sidebar-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.125rem;
-}
-
-.sidebar-link {
-    display: block;
-    width: 100%;
-    text-align: left;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 0.875rem;
-    font-weight: 500;
-    line-height: 1.45;
-    padding: 0.375rem 0.75rem;
-    border-radius: calc(var(--radius) - 2px);
-    color: hsl(var(--muted-foreground));
-    transition: color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-                background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-                font-weight 0.15s ease;
-}
-
-.sidebar-link:hover {
-    color: hsl(var(--foreground));
-    background: hsl(var(--muted) / 0.5);
-}
-
-.sidebar-link.is-active {
-    background: none;
-    font-weight: 600;
-}
-
-.sidebar-number {
-    font-size: 0.75rem;
-    margin-right: 0.25rem;
-    opacity: 0.5;
-}
-
-.sidebar-link.is-active .sidebar-number {
-    opacity: 0.8;
-}
-
-/* Animated subsection expand/collapse */
-.sidebar-sublist-wrapper {
-    display: grid;
-    grid-template-rows: 0fr;
-    opacity: 0;
-    transition: grid-template-rows 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-                opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.sidebar-sublist-wrapper.is-expanded {
-    grid-template-rows: 1fr;
-    opacity: 1;
-}
-
-.sidebar-sublist-wrapper > .sidebar-sublist {
-    overflow: hidden;
-}
-
-.sidebar-sublist {
-    list-style: none;
-    padding: 0 0 0 0.75rem;
-    margin: 0.125rem 0 0.25rem;
-}
-
-.sidebar-sublink {
-    font-size: 0.8125rem;
-    padding: 0.25rem 0.5rem;
-}
-
-.sidebar-subsublist {
-    list-style: none;
-    padding: 0 0 0 0.625rem;
-    margin: 0.0625rem 0 0.125rem;
-}
-
-.sidebar-subsublink {
-    font-size: 0.75rem;
-    padding: 0.1875rem 0.375rem;
-}
-
 .load-sentinel {
     display: flex;
     justify-content: center;
@@ -457,87 +264,6 @@ watch(activeRootId, () => {
 
 .last-section-spacer {
     height: 50vh;
-}
-
-/* ── Mobile floating TOC bar ───────────────────────────────── */
-.floating-toc {
-    position: sticky;
-    top: 0;
-    z-index: 20;
-    padding: 0 0.5rem;
-}
-
-.floating-toc-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    padding: 0.625rem 1rem;
-    background: hsl(var(--background) / 0.85);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: none;
-    border-bottom: 1px solid hsl(var(--border) / 0.5);
-    cursor: pointer;
-    text-align: left;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: hsl(var(--foreground));
-}
-
-.floating-toc-section {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    flex: 1;
-    min-width: 0;
-}
-
-.floating-toc-chevron {
-    width: 1rem;
-    height: 1rem;
-    flex-shrink: 0;
-    opacity: 0.5;
-    transition: transform 0.2s ease;
-}
-
-.floating-toc-dropdown {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: hsl(var(--background) / 0.95);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid hsl(var(--border));
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-    max-height: 60vh;
-    overflow-y: auto;
-    padding: 0.5rem;
-}
-
-.floating-toc-item {
-    display: block;
-    width: 100%;
-    padding: 0.5rem 0.75rem;
-    border-radius: 0.375rem;
-    border: none;
-    background: none;
-    cursor: pointer;
-    text-align: left;
-    font-size: 0.8125rem;
-    color: hsl(var(--muted-foreground));
-    transition: all 0.15s;
-}
-
-.floating-toc-item:hover,
-.floating-toc-item.is-active {
-    background: hsl(var(--muted) / 0.5);
-    color: hsl(var(--foreground));
-}
-
-.floating-toc-item.is-active {
-    font-weight: 600;
 }
 
 /* ── Transition: slide-down ──────────────────────────────── */
@@ -555,23 +281,6 @@ watch(activeRootId, () => {
 .slide-down-leave-to {
     transform: translateY(-100%);
     opacity: 0;
-}
-
-/* ── Transition: toc-expand ──────────────────────────────── */
-.toc-expand-enter-active,
-.toc-expand-leave-active {
-    transition: opacity 0.2s ease,
-                transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.toc-expand-enter-from {
-    opacity: 0;
-    transform: translateY(-0.5rem);
-}
-
-.toc-expand-leave-to {
-    opacity: 0;
-    transform: translateY(-0.5rem);
 }
 
 /* Interactive callout */

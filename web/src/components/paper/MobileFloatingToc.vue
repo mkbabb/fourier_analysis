@@ -1,0 +1,158 @@
+<script setup lang="ts">
+import { ref, watch } from "vue";
+import { ChevronDown } from "lucide-vue-next";
+import type { PaperSectionData } from "@/lib/paperContent";
+
+const props = defineProps<{
+    sections: PaperSectionData[];
+    activeRootId: string | null;
+    currentSection: PaperSectionData | null;
+    scrollTo: (id: string) => void;
+    renderTitle: (title: string) => string;
+    scrollContainer: HTMLElement | null;
+}>();
+
+const floatingTocOpen = ref(false);
+
+watch(floatingTocOpen, (open) => {
+    const container = props.scrollContainer;
+    if (!container) return;
+    container.style.overflow = open ? "hidden" : "";
+});
+
+watch(() => props.activeRootId, () => {
+    floatingTocOpen.value = false;
+});
+
+function selectSection(id: string) {
+    props.scrollTo(id);
+    floatingTocOpen.value = false;
+}
+</script>
+
+<template>
+    <div class="floating-toc lg:hidden">
+        <button class="floating-toc-bar" @click="floatingTocOpen = !floatingTocOpen">
+            <span class="floating-toc-section cm-serif">
+                <span class="fira-code text-xs opacity-50">{{ currentSection?.number }}.</span>
+                {{ currentSection?.title }}
+            </span>
+            <ChevronDown class="floating-toc-chevron" :class="{ 'rotate-180': floatingTocOpen }" />
+        </button>
+        <Transition name="toc-expand">
+            <div v-if="floatingTocOpen" class="floating-toc-dropdown">
+                <button
+                    v-for="(section, si) in sections"
+                    :key="section.id"
+                    class="floating-toc-item cm-serif"
+                    :class="{ 'is-active': activeRootId === section.id }"
+                    :style="activeRootId === section.id ? { color: `var(--section-color-${si})` } : {}"
+                    @click="selectSection(section.id)"
+                >
+                    <span class="fira-code text-xs opacity-50">{{ section.number }}.</span>
+                    {{ section.title }}
+                </button>
+            </div>
+        </Transition>
+    </div>
+</template>
+
+<style scoped>
+.floating-toc {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    height: 0;
+    overflow: visible;
+}
+
+.floating-toc-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.625rem 1rem;
+    background: hsl(var(--background) / 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: none;
+    border-bottom: 1px solid hsl(var(--border) / 0.5);
+    cursor: pointer;
+    text-align: left;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: hsl(var(--foreground));
+}
+
+.floating-toc-section {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
+}
+
+.floating-toc-chevron {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+    opacity: 0.5;
+    transition: transform 0.2s ease;
+}
+
+.floating-toc-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: hsl(var(--background) / 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid hsl(var(--border));
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    max-height: 60vh;
+    overflow-y: auto;
+    padding: 0.5rem;
+}
+
+.floating-toc-item {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+    text-align: left;
+    font-size: 0.8125rem;
+    color: hsl(var(--muted-foreground));
+    transition: all 0.15s;
+}
+
+.floating-toc-item:hover,
+.floating-toc-item.is-active {
+    background: hsl(var(--muted) / 0.5);
+    color: hsl(var(--foreground));
+}
+
+.floating-toc-item.is-active {
+    font-weight: 600;
+}
+
+/* ── Transition: toc-expand ──────────────────────────────── */
+.toc-expand-enter-active,
+.toc-expand-leave-active {
+    transition: opacity 0.2s ease,
+                transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.toc-expand-enter-from {
+    opacity: 0;
+    transform: translateY(-0.5rem);
+}
+
+.toc-expand-leave-to {
+    opacity: 0;
+    transform: translateY(-0.5rem);
+}
+</style>
