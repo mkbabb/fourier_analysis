@@ -87,6 +87,72 @@ function ensureTargetLoaded(id: string) {
     }
 }
 
+/**
+ * Overlay-based teleport: covers content, jumps, corrects until layout
+ * stabilizes, then reveals.  Content rendering (images, math) can shift
+ * the target element for several frames after Vue mounts new sections.
+ */
+function teleportTo(sc: HTMLElement, target: HTMLElement | null, offset: number, scrollTop?: number) {
+    const overlay = sc.querySelector('.teleport-overlay') as HTMLElement | null;
+
+    const jumpOnce = () => {
+        if (target) {
+            target.scrollIntoView({ behavior: "instant", block: "start" });
+            sc.scrollBy({ top: -offset, behavior: "instant" });
+        } else if (scrollTop !== undefined) {
+            sc.scrollTo({ top: scrollTop, behavior: "instant" });
+        }
+    };
+
+    /** Keep re-scrolling to target until scrollHeight stops changing. */
+    const jumpUntilStable = (onDone: () => void) => {
+        let lastHeight = -1;
+        let stableFrames = 0;
+        const correct = () => {
+            jumpOnce();
+            const h = sc.scrollHeight;
+            if (Math.abs(h - lastHeight) < 2) {
+                if (++stableFrames >= 5) { onDone(); return; }
+            } else {
+                stableFrames = 0;
+            }
+            lastHeight = h;
+            requestAnimationFrame(correct);
+        };
+        correct();
+    };
+
+    if (!overlay) {
+        jumpUntilStable(() => forceRecalculate());
+        return;
+    }
+
+    // Phase 1: fade overlay in
+    overlay.style.transition = "opacity 80ms ease-out";
+    overlay.style.opacity = "1";
+    overlay.style.pointerEvents = "auto";
+
+    let started = false;
+    const startJump = () => {
+        if (started) return;
+        started = true;
+
+        // Phase 2: jump + correct while overlay hides everything
+        jumpUntilStable(() => {
+            forceRecalculate();
+            // Phase 3: reveal
+            requestAnimationFrame(() => {
+                overlay.style.transition = "opacity 120ms ease-in";
+                overlay.style.opacity = "0";
+                overlay.style.pointerEvents = "none";
+            });
+        });
+    };
+
+    overlay.addEventListener("transitionend", startJump, { once: true });
+    setTimeout(startJump, 120);
+}
+
 function performScroll(id: string) {
     const scroller = scrollContainer.value;
     if (!scroller) { rawScrollTo(id); return; }
@@ -102,39 +168,19 @@ function performScroll(id: string) {
             return;
         }
 
-        const scrollerRect = s.getBoundingClientRect();
         const elRect = el.getBoundingClientRect();
+        const scrollerRect = s.getBoundingClientRect();
         const offset = getScrollOffset();
-        const absoluteTop = elRect.top - scrollerRect.top + s.scrollTop;
-        const distance = Math.abs(absoluteTop - s.scrollTop);
+        const distance = Math.abs(elRect.top - scrollerRect.top);
 
         if (distance < TELEPORT_THRESHOLD) {
-            s.scrollTo({ top: Math.max(0, absoluteTop - offset), behavior: "smooth" });
+            el.scrollIntoView({ behavior: "smooth", block: "start" });
+            s.scrollBy({ top: -offset, behavior: "smooth" });
             return;
         }
 
-        // Far — fast fade out, teleport, fade in
-        s.classList.add("teleport-out");
-
-        // One rAF to ensure the opacity transition starts, then jump
-        requestAnimationFrame(() => requestAnimationFrame(() => {
-            const sc = scrollContainer.value;
-            if (!sc) return;
-            // Recompute position (layout may have shifted)
-            const freshRect = el.getBoundingClientRect();
-            const off = getScrollOffset();
-            const top = freshRect.top - sc.getBoundingClientRect().top + sc.scrollTop;
-            sc.scrollTo({ top: Math.max(0, top - off), behavior: "instant" });
-
-            // Clear stale tracking state and recalculate from new position
-            forceRecalculate();
-
-            sc.classList.remove("teleport-out");
-            sc.classList.add("teleport-in");
-            sc.addEventListener("transitionend", () => {
-                sc.classList.remove("teleport-in");
-            }, { once: true });
-        }));
+        // Far — overlay fade, teleport, reveal
+        teleportTo(s, el, offset);
     }
 
     nextTick(() => requestAnimationFrame(tryNavigate));
@@ -168,16 +214,7 @@ function scrollToTop() {
     const s = scrollContainer.value;
     if (!s) return;
     if (s.scrollTop > TELEPORT_THRESHOLD) {
-        s.classList.add("teleport-out");
-        requestAnimationFrame(() => requestAnimationFrame(() => {
-            s.scrollTo({ top: 0, behavior: "instant" });
-            forceRecalculate();
-            s.classList.remove("teleport-out");
-            s.classList.add("teleport-in");
-            s.addEventListener("transitionend", () => {
-                s.classList.remove("teleport-in");
-            }, { once: true });
-        }));
+        teleportTo(s, null, 0, 0);
     } else {
         s.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -256,6 +293,7 @@ onUnmounted(() => {
 <template>
     <div class="paper-root">
         <div ref="scrollContainer" class="paper-scroll">
+            <div class="teleport-overlay" />
             <!-- Mobile floating TOC bar -->
             <Transition name="slide-down">
                 <MobileFloatingToc
@@ -395,14 +433,13 @@ onUnmounted(() => {
     max-width: 100vw;
 }
 
-.paper-scroll.teleport-out {
+.teleport-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: hsl(var(--background));
     opacity: 0;
-    transition: opacity 60ms ease-out;
-}
-
-.paper-scroll.teleport-in {
-    opacity: 1;
-    transition: opacity 100ms ease-in;
+    pointer-events: none;
 }
 
 .paper-article {
