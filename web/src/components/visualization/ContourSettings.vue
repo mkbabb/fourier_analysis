@@ -84,23 +84,15 @@ const shortError = computed(() => {
     return msg.length > 60 ? msg.slice(0, 60) + "…" : msg;
 });
 
-let abortController: AbortController | null = null;
-
 async function runCompute() {
     if (!store.hasImage) return;
-
-    // Abort any in-flight compute — prevents request pile-up
-    if (abortController) abortController.abort();
-    abortController = new AbortController();
-    const { signal } = abortController;
 
     computing.value = true;
     store.error = null;
 
     try {
-        // Save settings and run both computes in parallel (3 requests → 2)
-        // Settings are passed inline to the compute endpoints, so updateSettings
-        // only needs to persist them — fire-and-forget.
+        // Save settings (fire-and-forget) and run both computes in parallel.
+        // The API layer handles per-endpoint abort automatically.
         store.updateSettings({
             parameters: {
                 strategy: strategy.value,
@@ -111,7 +103,7 @@ async function runCompute() {
                 n_harmonics: props.nHarmonics,
                 n_points: props.nPoints,
             },
-        }); // no await — fire and forget
+        });
 
         const results = await Promise.allSettled([
             store.runEpicycles({
@@ -124,9 +116,6 @@ async function runCompute() {
             }),
         ]);
 
-        // If aborted, a newer compute replaced us — bail silently
-        if (signal.aborted) return;
-
         computing.value = false;
         const anyOk = results.some((r) => r.status === "fulfilled");
         if (anyOk && (store.epicycleData || store.basesData)) {
@@ -134,7 +123,7 @@ async function runCompute() {
             anim.play();
         }
     } catch {
-        if (!signal.aborted) computing.value = false;
+        computing.value = false;
     }
 }
 
