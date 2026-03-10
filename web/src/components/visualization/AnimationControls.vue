@@ -202,7 +202,7 @@ onClickOutside(menuAnchor, () => { menuOpen.value = false });
     z-index: 20;
 }
 
-/* Play/Pause — glassmorphic rainbow pill */
+/* Play/Pause — glassy rainbow pill */
 .play-btn {
     position: relative;
     display: inline-flex;
@@ -213,46 +213,70 @@ onClickOutside(menuAnchor, () => { menuOpen.value = false });
     border-radius: 0.5rem;
     cursor: pointer;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    background: hsl(var(--foreground) / 0.04);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.15) 0%,
+        rgba(255, 255, 255, 0.05) 100%
+    );
+    backdrop-filter: blur(12px) saturate(1.4);
+    -webkit-backdrop-filter: blur(12px) saturate(1.4);
     color: #fff;
     flex-shrink: 0;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.2s, box-shadow 0.3s, border-color 0.3s;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.05),
+        0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
-/* Semi-transparent rainbow overlay */
+/* Rainbow gradient layer */
 .play-btn::before {
     content: "";
     position: absolute;
     inset: 0;
     border-radius: 0.5rem;
     background: linear-gradient(
-        90deg,
-        hsl(0 78% 60% / 0.7),
-        hsl(30 85% 58% / 0.7),
-        hsl(55 80% 52% / 0.7),
-        hsl(120 55% 48% / 0.7),
-        hsl(200 70% 55% / 0.7),
-        hsl(270 60% 58% / 0.7),
-        hsl(330 72% 58% / 0.7),
-        hsl(0 78% 60% / 0.7)
+        135deg,
+        hsl(0 75% 62% / 0.55),
+        hsl(35 85% 58% / 0.5),
+        hsl(55 80% 55% / 0.45),
+        hsl(140 50% 50% / 0.45),
+        hsl(210 65% 58% / 0.5),
+        hsl(275 55% 58% / 0.5),
+        hsl(330 65% 58% / 0.55)
     );
-    background-size: 200% 100%;
+    background-size: 300% 300%;
     z-index: -1;
     transition: opacity 0.3s ease;
 }
-/* Animated shift when playing */
+
+/* Glass highlight edge */
+.play-btn::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 0.5rem;
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.25) 0%,
+        rgba(255, 255, 255, 0) 50%
+    );
+    pointer-events: none;
+}
+
+/* Only animate rainbow when playing */
 .play-btn.is-playing::before {
-    animation: rainbow-shift 3s linear infinite;
+    animation: rainbow-drift 2.5s ease infinite;
 }
 
 .play-btn:hover {
     transform: scale(1.08);
-    border-color: rgba(255, 255, 255, 0.35);
-    box-shadow: 0 2px 16px rgba(255, 100, 100, 0.2),
-        0 2px 16px rgba(100, 100, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.25),
+        0 4px 20px rgba(200, 100, 255, 0.2),
+        0 2px 12px rgba(100, 180, 255, 0.15);
 }
 .play-btn:active {
     transform: scale(0.93);
@@ -261,15 +285,13 @@ onClickOutside(menuAnchor, () => { menuOpen.value = false });
 .play-icon {
     width: 13px;
     height: 13px;
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.15));
 }
 
-@keyframes rainbow-shift {
-    0% {
-        background-position: 0% 50%;
-    }
-    100% {
-        background-position: 200% 50%;
-    }
+@keyframes rainbow-drift {
+    0% { background-position: 0% 0%; }
+    50% { background-position: 100% 100%; }
+    100% { background-position: 0% 0%; }
 }
 
 /* Timeline slider — fills remaining space */
