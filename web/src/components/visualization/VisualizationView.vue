@@ -250,8 +250,8 @@ watch(() => store.error, (err) => {
     flex-direction: column;
     flex: 1;
     min-height: 0;
-    padding: 0.375rem;
-    gap: 0.375rem;
+    padding: 0.25rem;
+    gap: 0.25rem;
 }
 
 @media (min-width: 1024px) {
@@ -286,11 +286,18 @@ watch(() => store.error, (err) => {
     margin: 0 auto;
     width: 100%;
     min-height: 0;
-    overflow: hidden;
+    overflow: clip;
     flex: 1;
 }
 
-/* Bottom fade overlay */
+@media (max-width: 1023px) {
+    .viz-panel-left-wrap {
+        overflow: visible;
+        flex: none;
+    }
+}
+
+/* Bottom fade overlay — desktop only (mobile scrolls naturally) */
 .viz-panel-left-wrap::after {
     content: '';
     position: absolute;
@@ -301,6 +308,12 @@ watch(() => store.error, (err) => {
     background: linear-gradient(to bottom, transparent, hsl(var(--background)));
     pointer-events: none;
     z-index: 2;
+}
+
+@media (max-width: 1023px) {
+    .viz-panel-left-wrap::after {
+        display: none;
+    }
 }
 
 @media (min-width: 1024px) {
@@ -403,7 +416,7 @@ watch(() => store.error, (err) => {
 .mobile-tab-bar {
     display: flex;
     justify-content: center;
-    padding: 0.25rem 0.5rem;
+    padding: 0.125rem 0.5rem;
     background: hsl(var(--background));
 }
 

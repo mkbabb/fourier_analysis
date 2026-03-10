@@ -124,7 +124,7 @@ function toggleBasis(key: string) {
                     <RotateCcw class="h-3.5 w-3.5" />
                 </button>
             </template>
-            <div class="flex flex-wrap gap-1.5 pt-1 pb-1">
+            <div class="flex flex-wrap justify-center gap-1.5 pt-1 pb-1">
                 <Tooltip v-for="(info, key) in basisDisplay" :key="key" :text="getBasisTooltip(key as string)">
                     <button
                         class="basis-pill"
@@ -248,6 +248,24 @@ function toggleBasis(key: string) {
     transition: all 0.2s;
     white-space: nowrap;
     flex-shrink: 0;
+}
+
+/* Compact pills on mobile so all three fit on one line */
+@media (max-width: 639px) {
+    .basis-pill {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.6875rem;
+        gap: 0.125rem;
+        border-width: 1.5px;
+    }
+    .basis-icon {
+        font-size: 1.25em;
+        min-width: 1em;
+    }
+    .basis-icon--fourier {
+        font-size: 1.75em;
+        margin: -0.3em -0.05em;
+    }
 }
 .basis-pill:hover {
     border-color: hsl(var(--foreground) / 0.25);
