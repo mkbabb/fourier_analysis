@@ -271,7 +271,7 @@ function toggleBasis(key: string) {
     transition: color 0.15s, opacity 0.2s;
 }
 .reset-icon-btn.is-default {
-    opacity: 0;
+    opacity: 0.25;
     pointer-events: none;
 }
 .reset-icon-btn:hover {
