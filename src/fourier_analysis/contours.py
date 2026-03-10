@@ -179,6 +179,8 @@ def extract_contours(
     # Detect usable alpha channel *before* converting to grayscale.
     # PNGs with transparency (logos, rendered text, graphics) have a
     # perfect built-in mask that beats any luminance-based threshold.
+    # However, simple convex masks (circle crops, rounded rects) are just
+    # crop artifacts — fall through to luminance extraction for those.
     has_alpha = img_raw.mode in ("RGBA", "LA", "PA")
     alpha_arr: NDArray[np.float64] | None = None
     if has_alpha:
@@ -186,6 +188,32 @@ def extract_contours(
         opaque_frac = np.mean(alpha_arr > 0.5)
         if opaque_frac < 0.01 or opaque_frac > 0.99:
             alpha_arr = None  # degenerate — fall through to luminance
+        elif alpha_arr is not None:
+            # Check if the alpha mask is a simple convex shape (circle crop,
+            # rounded rectangle, etc.) by measuring circularity. High
+            # circularity means the mask is just a crop artifact, not a
+            # meaningful subject outline — fall through to luminance.
+            _alpha_contours = measure.find_contours(
+                (alpha_arr > 0.5).astype(float), level=0.5
+            )
+            if len(_alpha_contours) <= 2:
+                # Single/double contour — check if it's convex-ish
+                _ac = max(_alpha_contours, key=len) if _alpha_contours else None
+                if _ac is not None and len(_ac) > 10:
+                    _area = 0.5 * abs(
+                        np.sum(
+                            _ac[:, 1] * np.roll(_ac[:, 0], -1)
+                            - np.roll(_ac[:, 1], -1) * _ac[:, 0]
+                        )
+                    )
+                    _perim = np.sum(
+                        np.sqrt(np.sum(np.diff(_ac, axis=0) ** 2, axis=1))
+                    )
+                    _circularity = (
+                        4 * np.pi * _area / (_perim**2) if _perim > 0 else 0
+                    )
+                    if _circularity > 0.7:
+                        alpha_arr = None  # simple crop mask
 
     img = img_raw.convert("L")
 
