@@ -56,12 +56,69 @@ const {
     isInActiveChain,
     activeId,
     activeRootId,
-    scrollTo,
+    scrollTo: rawScrollTo,
 } = usePaperReader({
     context: paperContext,
     scrollContainer,
     sidebarEl: sidebarNav,
 });
+
+/** Threshold (px) — if target is farther than this, fade-teleport instead of smooth scroll */
+const TELEPORT_THRESHOLD = 1200;
+const SCROLL_OFFSET = 16;
+
+function scrollTo(id: string) {
+    const scroller = scrollContainer.value;
+    if (!scroller) { rawScrollTo(id); return; }
+
+    // Ensure all sections are rendered (mirrors rawScrollTo behavior)
+    visibleCount.value = paperSections.length;
+
+    // Wait for the element to appear, then decide smooth vs teleport
+    let attempts = 0;
+    function tryNavigate() {
+        const el = document.getElementById(id);
+        const s = scrollContainer.value;
+        if (!el || !s) {
+            if (attempts++ < 60) requestAnimationFrame(tryNavigate);
+            return;
+        }
+
+        const scrollerRect = s.getBoundingClientRect();
+        const elRect = el.getBoundingClientRect();
+        const distance = Math.abs(elRect.top - scrollerRect.top);
+
+        if (distance < TELEPORT_THRESHOLD) {
+            // Close — smooth scroll
+            const absoluteTop = elRect.top - scrollerRect.top + s.scrollTop;
+            s.scrollTo({ top: Math.max(0, absoluteTop - SCROLL_OFFSET), behavior: "smooth" });
+            return;
+        }
+
+        // Far — fade out, teleport, fade in
+        s.style.transition = "opacity 0.15s ease-out";
+        s.style.opacity = "0";
+
+        setTimeout(() => {
+            const sc = scrollContainer.value;
+            if (!sc) return;
+            const freshRect = el.getBoundingClientRect();
+            const absoluteTop = freshRect.top - sc.getBoundingClientRect().top + sc.scrollTop;
+            sc.scrollTo({ top: Math.max(0, absoluteTop - SCROLL_OFFSET), behavior: "instant" });
+
+            requestAnimationFrame(() => {
+                sc.style.transition = "opacity 0.25s ease-in";
+                sc.style.opacity = "1";
+                setTimeout(() => {
+                    sc.style.transition = "";
+                    sc.style.opacity = "";
+                }, 300);
+            });
+        }, 150);
+    }
+
+    nextTick(() => requestAnimationFrame(tryNavigate));
+}
 
 _scrollTo = scrollTo;
 
@@ -125,7 +182,7 @@ onUnmounted(() => {
             />
         </Transition>
 
-        <div class="paper-layout mx-auto max-w-5xl px-2 py-2 sm:py-14 pb-4 sm:px-6">
+        <div class="paper-layout mx-auto max-w-5xl px-2 pt-2 pb-0 sm:py-14 sm:px-6">
             <div class="paper-grid">
                 <!-- Desktop sidebar TOC -->
                 <PaperSidebar
