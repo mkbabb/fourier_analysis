@@ -11,8 +11,8 @@ import PaperSidebar from "./PaperSidebar.vue";
 import MobileFloatingToc from "./MobileFloatingToc.vue";
 import { paperSections, labelMap } from "@/lib/paperContent";
 import type { PaperSectionData } from "@/lib/paperContent";
-import { ref, computed, provide, onMounted, onUnmounted, nextTick } from "vue";
-import { ArrowRight } from "lucide-vue-next";
+import { ref, reactive, computed, provide, onMounted, onUnmounted, nextTick } from "vue";
+import { ArrowRight, Undo2 } from "lucide-vue-next";
 
 // ── KaTeX with app-specific macros ─────────────────────────
 const macros: Record<string, string> = {
@@ -63,14 +63,19 @@ const {
     sidebarEl: sidebarNav,
 });
 
-/** Threshold (px) — if target is farther than this, fade-teleport instead of smooth scroll */
+// ── Scroll navigation ─────────────────────────────────────────
 const TELEPORT_THRESHOLD = 1200;
-const SCROLL_OFFSET = 16;
+
+/** Dynamic scroll offset: accounts for floating TOC bar on mobile */
+function getScrollOffset(): number {
+    const bar = document.querySelector('.floating-toc-bar') as HTMLElement | null;
+    if (bar) return bar.offsetHeight + 8;
+    return 16;
+}
 
 function ensureTargetLoaded(id: string) {
     const entry = treeIndex.get(id);
     if (entry) {
-        // Load up to target's root section + 1 buffer
         const needed = entry.rootIndex + 2;
         visibleCount.value = Math.max(
             visibleCount.value,
@@ -81,14 +86,12 @@ function ensureTargetLoaded(id: string) {
     }
 }
 
-function scrollTo(id: string) {
+function performScroll(id: string) {
     const scroller = scrollContainer.value;
     if (!scroller) { rawScrollTo(id); return; }
 
-    // Load only up to the target section instead of all content
     ensureTargetLoaded(id);
 
-    // Wait for the element to appear, then decide smooth vs teleport
     let attempts = 0;
     function tryNavigate() {
         const el = document.getElementById(id);
@@ -101,11 +104,11 @@ function scrollTo(id: string) {
         const scrollerRect = s.getBoundingClientRect();
         const elRect = el.getBoundingClientRect();
         const distance = Math.abs(elRect.top - scrollerRect.top);
+        const offset = getScrollOffset();
 
         if (distance < TELEPORT_THRESHOLD) {
-            // Close — smooth scroll
             const absoluteTop = elRect.top - scrollerRect.top + s.scrollTop;
-            s.scrollTo({ top: Math.max(0, absoluteTop - SCROLL_OFFSET), behavior: "smooth" });
+            s.scrollTo({ top: Math.max(0, absoluteTop - offset), behavior: "smooth" });
             return;
         }
 
@@ -117,8 +120,9 @@ function scrollTo(id: string) {
             const sc = scrollContainer.value;
             if (!sc) return;
             const freshRect = el.getBoundingClientRect();
+            const off = getScrollOffset();
             const absoluteTop = freshRect.top - sc.getBoundingClientRect().top + sc.scrollTop;
-            sc.scrollTo({ top: Math.max(0, absoluteTop - SCROLL_OFFSET), behavior: "instant" });
+            sc.scrollTo({ top: Math.max(0, absoluteTop - off), behavior: "instant" });
 
             requestAnimationFrame(() => {
                 sc.style.transition = "opacity 0.25s ease-in";
@@ -134,7 +138,51 @@ function scrollTo(id: string) {
     nextTick(() => requestAnimationFrame(tryNavigate));
 }
 
-_scrollTo = scrollTo;
+// ── Navigation stack (Kindle-style back traversal) ────────────
+const MAX_STACK = 20;
+const navStack = reactive<string[]>([]);
+let isBackNavigation = false;
+
+/** Navigate to a section, pushing current position to the back stack */
+function navigateTo(id: string) {
+    if (!isBackNavigation && activeId.value && activeId.value !== id) {
+        navStack.push(activeId.value);
+        if (navStack.length > MAX_STACK) navStack.shift();
+    }
+    performScroll(id);
+}
+
+/** Pop the navigation stack and scroll back */
+function navigateBack() {
+    if (navStack.length === 0) return;
+    isBackNavigation = true;
+    const prev = navStack.pop()!;
+    performScroll(prev);
+    setTimeout(() => { isBackNavigation = false; }, 500);
+}
+
+/** Scroll to top of paper */
+function scrollToTop() {
+    const s = scrollContainer.value;
+    if (!s) return;
+    if (s.scrollTop > TELEPORT_THRESHOLD) {
+        s.style.transition = "opacity 0.15s ease-out";
+        s.style.opacity = "0";
+        setTimeout(() => {
+            s.scrollTo({ top: 0, behavior: "instant" });
+            requestAnimationFrame(() => {
+                s.style.transition = "opacity 0.25s ease-in";
+                s.style.opacity = "1";
+                setTimeout(() => { s.style.transition = ""; s.style.opacity = ""; }, 300);
+            });
+        }, 150);
+    } else {
+        s.scrollTo({ top: 0, behavior: "smooth" });
+    }
+}
+
+// Wire all navigation (TOC clicks, cross-references) through navigateTo
+_scrollTo = navigateTo;
 
 const sections = computed(() => paperSections);
 
@@ -149,6 +197,28 @@ function getPreview(section: PaperSectionData): string {
 
     return parts.join(" \u00b7 ");
 }
+
+// ── Page number estimation from LaTeX content ─────────────────
+const pageMap = new Map<string, number>();
+let _cumPage = 1;
+function walkPages(secs: PaperSectionData[]) {
+    for (const sec of secs) {
+        pageMap.set(sec.id, Math.ceil(_cumPage));
+        const blocks = (sec.content?.length ?? 0)
+            + (sec.theorems?.length ?? 0) * 1.2
+            + (sec.figures?.length ?? 0) * 1.5;
+        _cumPage += blocks / 3;
+        if (sec.subsections) walkPages(sec.subsections);
+    }
+}
+walkPages(paperSections);
+const totalPages = Math.max(1, Math.ceil(_cumPage - 1));
+
+const currentPage = computed(() => {
+    const id = activeId.value;
+    if (!id) return 1;
+    return pageMap.get(id) ?? 1;
+});
 
 // ── Mobile floating TOC visibility ───────────────────────────
 const mobileNavRef = ref<HTMLElement | null>(null);
@@ -182,108 +252,139 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div ref="scrollContainer" class="paper-scroll">
-        <!-- Mobile floating TOC bar -->
-        <Transition name="slide-down">
-            <MobileFloatingToc
-                v-if="!mobileTocVisible"
-                :sections="sections"
-                :active-root-id="activeRootId"
-                :current-section="currentSection"
-                :scroll-to="scrollTo"
-                :render-title="renderTitle"
-                :scroll-container="scrollContainer"
-            />
-        </Transition>
-
-        <div class="paper-layout mx-auto max-w-5xl px-2 pt-2 pb-0 sm:py-14 sm:px-6">
-            <div class="paper-grid">
-                <!-- Desktop sidebar TOC -->
-                <PaperSidebar
-                    ref="sidebarRef"
+    <div class="paper-root">
+        <div ref="scrollContainer" class="paper-scroll">
+            <!-- Mobile floating TOC bar -->
+            <Transition name="slide-down">
+                <MobileFloatingToc
+                    v-if="!mobileTocVisible"
                     :sections="sections"
                     :active-root-id="activeRootId"
-                    :active-id="activeId"
-                    :scroll-to="scrollTo"
+                    :current-section="currentSection"
+                    :scroll-to="navigateTo"
+                    :scroll-to-top="scrollToTop"
                     :render-title="renderTitle"
-                    :tree-index="treeIndex"
-                    :is-active="isActive"
-                    :is-in-active-chain="isInActiveChain"
-                    :get-preview="getPreview"
+                    :scroll-container="scrollContainer"
                 />
+            </Transition>
 
-                <!-- Main article -->
-                <article class="paper-article leading-relaxed">
-                    <header class="mb-20 text-center">
-                        <h1
-                            class="cm-serif text-4xl font-bold tracking-tight sm:text-5xl md:text-[3.25rem] leading-[1.15]"
+            <div class="paper-layout mx-auto max-w-5xl px-2 pt-2 pb-0 sm:py-14 sm:px-6">
+                <div class="paper-grid">
+                    <!-- Desktop sidebar TOC -->
+                    <PaperSidebar
+                        ref="sidebarRef"
+                        :sections="sections"
+                        :active-root-id="activeRootId"
+                        :active-id="activeId"
+                        :scroll-to="navigateTo"
+                        :scroll-to-top="scrollToTop"
+                        :render-title="renderTitle"
+                        :tree-index="treeIndex"
+                        :is-active="isActive"
+                        :is-in-active-chain="isInActiveChain"
+                        :get-preview="getPreview"
+                    />
+
+                    <!-- Main article -->
+                    <article class="paper-article leading-relaxed">
+                        <header class="mb-20 text-center">
+                            <h1
+                                class="cm-serif text-4xl font-bold tracking-tight sm:text-5xl md:text-[3.25rem] leading-[1.15]"
+                            >
+                                An Introduction to<br /><span class="fourier-f">ℱ</span>ourier Analysis
+                            </h1>
+                        </header>
+
+                        <!-- Mobile-only inline TOC -->
+                        <nav ref="mobileNavRef" class="mb-14 cm-serif text-sm text-muted-foreground lg:hidden">
+                            <ol class="list-none space-y-1.5 pl-0">
+                                <li v-for="section in sections" :key="section.id">
+                                    <button
+                                        @click="navigateTo(section.id)"
+                                        class="text-left hover:text-foreground transition-colors duration-150 cursor-pointer"
+                                    >
+                                        <span>{{ section.number }}. </span><span v-html="renderTitle(section.title)" />
+                                    </button>
+                                </li>
+                            </ol>
+                        </nav>
+
+                        <PaperSectionContent
+                            v-for="(section, si) in sections.slice(0, visibleCount)"
+                            :key="section.id"
+                            :section="section"
+                            :depth="0"
+                            :section-index="si"
                         >
-                            An Introduction to<br /><span class="fourier-f">ℱ</span>ourier Analysis
-                        </h1>
-                    </header>
+                            <template #figure="{ figure }">
+                                <img
+                                    :src="`${baseUrl}assets/${figure.filename}`"
+                                    :alt="figure.caption"
+                                    class="max-w-full rounded-lg shadow-sm"
+                                    :class="figure.filename.includes('portrait') ? 'paper-portrait' : 'paper-figure'"
+                                    style="max-height: 400px"
+                                    loading="lazy"
+                                />
+                            </template>
+                            <template #callout="{ callout, section: sec }">
+                                <div class="interactive-callout">
+                                    <p class="cm-serif text-sm text-muted-foreground mb-3">{{ callout.text }}</p>
+                                    <router-link
+                                        :to="callout.link"
+                                        class="callout-btn"
+                                    >
+                                        <span class="fourier-f">ℱ</span>
+                                        <span>Open Visualizer</span>
+                                        <ArrowRight class="h-4 w-4" />
+                                    </router-link>
+                                </div>
+                            </template>
+                        </PaperSectionContent>
+                        <!-- Sentinel triggers loading next batch when scrolled near -->
+                        <div
+                            v-if="visibleCount < sections.length"
+                            ref="loadSentinel"
+                            class="load-sentinel"
+                        >
+                            <span class="text-muted-foreground/50 text-sm cm-serif">Loading…</span>
+                        </div>
+                        <!-- Bottom spacer so the last section can scroll fully into view -->
+                        <div v-else class="last-section-spacer" />
+                    </article>
+                </div>
+            </div>
+        </div>
 
-                    <!-- Mobile-only inline TOC -->
-                    <nav ref="mobileNavRef" class="mb-14 cm-serif text-sm text-muted-foreground lg:hidden">
-                        <ol class="list-none space-y-1.5 pl-0">
-                            <li v-for="section in sections" :key="section.id">
-                                <button
-                                    @click="scrollTo(section.id)"
-                                    class="text-left hover:text-foreground transition-colors duration-150 cursor-pointer"
-                                >
-                                    <span>{{ section.number }}. </span><span v-html="renderTitle(section.title)" />
-                                </button>
-                            </li>
-                        </ol>
-                    </nav>
+        <!-- Bottom overlay: back button + page indicator (outside scroll container for iOS) -->
+        <div class="paper-bottom-overlay">
+            <Transition name="fade-scale">
+                <button
+                    v-if="navStack.length > 0"
+                    class="overlay-btn overlay-back"
+                    @click="navigateBack"
+                    :title="`Back (${navStack.length} in history)`"
+                >
+                    <Undo2 class="h-4 w-4" />
+                    <span v-if="navStack.length > 1" class="overlay-badge">{{ navStack.length }}</span>
+                </button>
+            </Transition>
 
-                    <PaperSectionContent
-                        v-for="(section, si) in sections.slice(0, visibleCount)"
-                        :key="section.id"
-                        :section="section"
-                        :depth="0"
-                        :section-index="si"
-                    >
-                        <template #figure="{ figure }">
-                            <img
-                                :src="`${baseUrl}assets/${figure.filename}`"
-                                :alt="figure.caption"
-                                class="max-w-full rounded-lg shadow-sm"
-                                :class="figure.filename.includes('portrait') ? 'paper-portrait' : 'paper-figure'"
-                                style="max-height: 400px"
-                                loading="lazy"
-                            />
-                        </template>
-                        <template #callout="{ callout, section: sec }">
-                            <div class="interactive-callout">
-                                <p class="cm-serif text-sm text-muted-foreground mb-3">{{ callout.text }}</p>
-                                <router-link
-                                    :to="callout.link"
-                                    class="callout-btn"
-                                >
-                                    <span class="fourier-f">ℱ</span>
-                                    <span>Open Visualizer</span>
-                                    <ArrowRight class="h-4 w-4" />
-                                </router-link>
-                            </div>
-                        </template>
-                    </PaperSectionContent>
-                    <!-- Sentinel triggers loading next batch when scrolled near -->
-                    <div
-                        v-if="visibleCount < sections.length"
-                        ref="loadSentinel"
-                        class="load-sentinel"
-                    >
-                        <span class="text-muted-foreground/50 text-sm cm-serif">Loading…</span>
-                    </div>
-                    <!-- Bottom spacer so the last section can scroll fully into view -->
-                    <div v-else class="last-section-spacer" />
-                </article>
+            <div class="overlay-page fira-code">
+                pg {{ currentPage }}<span class="overlay-page-sep">/</span>{{ totalPages }}
             </div>
         </div>
     </div>
 </template>
 
 <style scoped>
+.paper-root {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
 .paper-scroll {
     flex: 1;
     min-height: 0;
@@ -337,6 +438,88 @@ onUnmounted(() => {
     height: 50vh;
 }
 
+/* ── Bottom overlay ────────────────────────────────────────── */
+.paper-bottom-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 15;
+    pointer-events: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 0.75rem 1rem;
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+}
+
+.overlay-btn {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: 1.5px solid hsl(var(--border));
+    background: hsl(var(--background) / 0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: hsl(var(--foreground) / 0.7);
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.overlay-btn:hover {
+    color: hsl(var(--foreground));
+    border-color: hsl(var(--foreground) / 0.25);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    transform: scale(1.05);
+}
+
+.overlay-btn:active {
+    transform: scale(0.95);
+}
+
+.overlay-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    font-size: 0.625rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
+    line-height: 1;
+}
+
+.overlay-page {
+    pointer-events: auto;
+    font-size: 0.6875rem;
+    color: hsl(var(--muted-foreground) / 0.7);
+    background: hsl(var(--background) / 0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid hsl(var(--border) / 0.5);
+    border-radius: 0.375rem;
+    padding: 0.25rem 0.5rem;
+    letter-spacing: 0.02em;
+    user-select: none;
+}
+
+.overlay-page-sep {
+    opacity: 0.4;
+    margin: 0 1px;
+}
+
 /* ── Transition: slide-down ──────────────────────────────── */
 .slide-down-enter-active,
 .slide-down-leave-active {
@@ -352,6 +535,22 @@ onUnmounted(() => {
 .slide-down-leave-to {
     transform: translateY(-100%);
     opacity: 0;
+}
+
+/* ── Transition: fade-scale (back button) ─────────────────── */
+.fade-scale-enter-active,
+.fade-scale-leave-active {
+    transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fade-scale-enter-from {
+    opacity: 0;
+    transform: scale(0.8);
+}
+
+.fade-scale-leave-to {
+    opacity: 0;
+    transform: scale(0.8);
 }
 
 /* Interactive callout */

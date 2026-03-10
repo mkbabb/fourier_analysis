@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, watch, nextTick } from "vue";
-import { ChevronDown } from "lucide-vue-next";
+import { ref, watch, nextTick, onUnmounted } from "vue";
+import { ChevronDown, ChevronUp } from "lucide-vue-next";
 import type { PaperSectionData } from "@/lib/paperContent";
 
 const props = defineProps<{
@@ -8,23 +8,25 @@ const props = defineProps<{
     activeRootId: string | null;
     currentSection: PaperSectionData | null;
     scrollTo: (id: string) => void;
+    scrollToTop: () => void;
     renderTitle: (title: string) => string;
     scrollContainer: HTMLElement | null;
 }>();
 
 const floatingTocOpen = ref(false);
 const dropdownRef = ref<HTMLElement | null>(null);
-const dropdownOverflows = ref(false);
 
-// Don't auto-close on section change — let the active highlight update live
+// Lock scroll container when dropdown is open (critical for iOS WebKit)
+watch(floatingTocOpen, (open) => {
+    if (props.scrollContainer) {
+        props.scrollContainer.style.overflow = open ? 'hidden' : '';
+    }
+});
 
-// Check if dropdown content overflows its max-height after it opens
-watch(floatingTocOpen, async (open) => {
-    if (!open) { dropdownOverflows.value = false; return; }
-    await nextTick();
-    const el = dropdownRef.value;
-    if (el) {
-        dropdownOverflows.value = el.scrollHeight > el.clientHeight;
+// Cleanup: restore scroll if component unmounts while open
+onUnmounted(() => {
+    if (props.scrollContainer) {
+        props.scrollContainer.style.overflow = '';
     }
 });
 
@@ -32,11 +34,15 @@ function selectSection(id: string) {
     floatingTocOpen.value = false;
     props.scrollTo(id);
 }
+
+function handleScrollToTop() {
+    floatingTocOpen.value = false;
+    props.scrollToTop();
+}
 </script>
 
 <template>
     <div class="floating-toc lg:hidden">
-        <!-- Wrapper gives the dropdown a real height reference for top: 100% -->
         <div class="floating-toc-anchor">
             <button class="floating-toc-bar" @click="floatingTocOpen = !floatingTocOpen">
                 <span class="floating-toc-section cm-serif">
@@ -50,8 +56,18 @@ function selectSection(id: string) {
                     v-if="floatingTocOpen"
                     ref="dropdownRef"
                     class="floating-toc-dropdown"
-                    :class="{ 'is-scrollable': dropdownOverflows }"
                 >
+                    <!-- Scroll to top -->
+                    <button
+                        class="floating-toc-item floating-toc-top cm-serif"
+                        @click="handleScrollToTop"
+                    >
+                        <ChevronUp class="floating-toc-top-icon" />
+                        Scroll to top
+                    </button>
+
+                    <div class="floating-toc-divider" />
+
                     <button
                         v-for="(section, si) in sections"
                         :key="section.id"
@@ -65,6 +81,13 @@ function selectSection(id: string) {
                     </button>
                 </div>
             </Transition>
+
+            <!-- Backdrop to close dropdown on outside tap -->
+            <div
+                v-if="floatingTocOpen"
+                class="floating-toc-backdrop"
+                @click="floatingTocOpen = false"
+            />
         </div>
     </div>
 </template>
@@ -78,7 +101,6 @@ function selectSection(id: string) {
     overflow: visible;
 }
 
-/* Anchor wrapper — has the bar's natural height so dropdown top: 100% works */
 .floating-toc-anchor {
     position: relative;
 }
@@ -128,6 +150,7 @@ function selectSection(id: string) {
     top: 100%;
     left: 0;
     right: 0;
+    z-index: 2;
     background: hsl(var(--background) / 0.95);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -139,6 +162,32 @@ function selectSection(id: string) {
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
     padding: 0.5rem;
+}
+
+.floating-toc-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+}
+
+.floating-toc-top {
+    display: flex !important;
+    align-items: center;
+    gap: 0.375rem;
+    color: hsl(var(--muted-foreground) / 0.7) !important;
+    font-size: 0.75rem !important;
+}
+
+.floating-toc-top-icon {
+    width: 0.875rem;
+    height: 0.875rem;
+    opacity: 0.6;
+}
+
+.floating-toc-divider {
+    height: 1px;
+    background: hsl(var(--border) / 0.5);
+    margin: 0.25rem 0.75rem;
 }
 
 .floating-toc-item {

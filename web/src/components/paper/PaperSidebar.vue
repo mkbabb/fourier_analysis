@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Tooltip from "@/components/ui/tooltip/Tooltip.vue";
 import type { PaperSectionData } from "@/lib/paperContent";
+import { ChevronUp } from "lucide-vue-next";
 
 import { ref } from "vue";
 
@@ -9,6 +10,7 @@ const props = defineProps<{
     activeRootId: string | null;
     activeId: string | null;
     scrollTo: (id: string) => void;
+    scrollToTop: () => void;
     renderTitle: (title: string) => string;
     treeIndex: Map<string, any>;
     isActive: (id: string, activeId: string | null) => boolean;
@@ -23,7 +25,16 @@ defineExpose({ sidebarNav });
 <template>
     <aside class="paper-sidebar">
         <nav ref="sidebarNav" class="sidebar-nav scrollbar-thin">
-            <p class="sidebar-label cm-serif">Contents</p>
+            <div class="sidebar-header">
+                <p class="sidebar-label cm-serif">Contents</p>
+                <button
+                    class="sidebar-top-btn"
+                    @click="scrollToTop"
+                    title="Scroll to top"
+                >
+                    <ChevronUp class="h-3 w-3" />
+                </button>
+            </div>
             <ol class="sidebar-list">
                 <li v-for="(section, si) in sections" :key="section.id">
                     <Tooltip :text="getPreview(section)" side="right">
@@ -112,14 +123,41 @@ defineExpose({ sidebarNav });
     box-shadow: 3px 3px 0px 0px hsl(var(--foreground) / 0.08);
 }
 
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
 .sidebar-label {
     font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: hsl(var(--muted-foreground) / 0.6);
-    padding: 0 0.75rem;
-    margin-bottom: 0.75rem;
+    margin: 0;
+}
+
+.sidebar-top-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.375rem;
+    height: 1.375rem;
+    border-radius: 0.25rem;
+    border: 1px solid hsl(var(--border) / 0.5);
+    background: none;
+    color: hsl(var(--muted-foreground) / 0.5);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.sidebar-top-btn:hover {
+    color: hsl(var(--foreground));
+    border-color: hsl(var(--border));
+    background: hsl(var(--muted) / 0.5);
 }
 
 .sidebar-list {
