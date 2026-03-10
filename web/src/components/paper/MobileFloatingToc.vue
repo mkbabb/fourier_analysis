@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, computed, watch, nextTick } from "vue";
 import { ChevronDown } from "lucide-vue-next";
 import type { PaperSectionData } from "@/lib/paperContent";
 
@@ -13,47 +13,59 @@ const props = defineProps<{
 }>();
 
 const floatingTocOpen = ref(false);
+const dropdownRef = ref<HTMLElement | null>(null);
+const dropdownOverflows = ref(false);
 
-watch(floatingTocOpen, (open) => {
-    const container = props.scrollContainer;
-    if (!container) return;
-    container.style.overflow = open ? "hidden" : "";
-});
+// Don't auto-close on section change — let the active highlight update live
 
-watch(() => props.activeRootId, () => {
-    floatingTocOpen.value = false;
+// Check if dropdown content overflows its max-height after it opens
+watch(floatingTocOpen, async (open) => {
+    if (!open) { dropdownOverflows.value = false; return; }
+    await nextTick();
+    const el = dropdownRef.value;
+    if (el) {
+        dropdownOverflows.value = el.scrollHeight > el.clientHeight;
+    }
 });
 
 function selectSection(id: string) {
-    props.scrollTo(id);
     floatingTocOpen.value = false;
+    props.scrollTo(id);
 }
 </script>
 
 <template>
     <div class="floating-toc lg:hidden">
-        <button class="floating-toc-bar" @click="floatingTocOpen = !floatingTocOpen">
-            <span class="floating-toc-section cm-serif">
-                <span class="fira-code text-xs opacity-50">{{ currentSection?.number }}.</span>
-                {{ currentSection?.title }}
-            </span>
-            <ChevronDown class="floating-toc-chevron" :class="{ 'rotate-180': floatingTocOpen }" />
-        </button>
-        <Transition name="toc-expand">
-            <div v-if="floatingTocOpen" class="floating-toc-dropdown">
-                <button
-                    v-for="(section, si) in sections"
-                    :key="section.id"
-                    class="floating-toc-item cm-serif"
-                    :class="{ 'is-active': activeRootId === section.id }"
-                    :style="activeRootId === section.id ? { color: `var(--section-color-${si})` } : {}"
-                    @click="selectSection(section.id)"
+        <!-- Wrapper gives the dropdown a real height reference for top: 100% -->
+        <div class="floating-toc-anchor">
+            <button class="floating-toc-bar" @click="floatingTocOpen = !floatingTocOpen">
+                <span class="floating-toc-section cm-serif">
+                    <span class="fira-code text-xs opacity-50">{{ currentSection?.number }}.</span>
+                    {{ currentSection?.title }}
+                </span>
+                <ChevronDown class="floating-toc-chevron" :class="{ 'rotate-180': floatingTocOpen }" />
+            </button>
+            <Transition name="toc-expand">
+                <div
+                    v-if="floatingTocOpen"
+                    ref="dropdownRef"
+                    class="floating-toc-dropdown"
+                    :class="{ 'is-scrollable': dropdownOverflows }"
                 >
-                    <span class="fira-code text-xs opacity-50">{{ section.number }}.</span>
-                    {{ section.title }}
-                </button>
-            </div>
-        </Transition>
+                    <button
+                        v-for="(section, si) in sections"
+                        :key="section.id"
+                        class="floating-toc-item cm-serif"
+                        :class="{ 'is-active': activeRootId === section.id }"
+                        :style="activeRootId === section.id ? { color: `var(--section-color-${si})` } : {}"
+                        @click="selectSection(section.id)"
+                    >
+                        <span class="fira-code text-xs opacity-50">{{ section.number }}.</span>
+                        {{ section.title }}
+                    </button>
+                </div>
+            </Transition>
+        </div>
     </div>
 </template>
 
@@ -66,13 +78,19 @@ function selectSection(id: string) {
     overflow: visible;
 }
 
+/* Anchor wrapper — has the bar's natural height so dropdown top: 100% works */
+.floating-toc-anchor {
+    position: relative;
+}
+
 .floating-toc-bar {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 0.5rem;
     width: 100%;
     padding: 0.625rem 1rem;
-    background: hsl(var(--background) / 0.85);
+    background: hsl(var(--background) / 0.92);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: none;
@@ -82,6 +100,8 @@ function selectSection(id: string) {
     font-size: 0.875rem;
     font-weight: 500;
     color: hsl(var(--foreground));
+    position: relative;
+    z-index: 2;
 }
 
 .floating-toc-section {
@@ -96,8 +116,11 @@ function selectSection(id: string) {
     width: 1rem;
     height: 1rem;
     flex-shrink: 0;
-    opacity: 0.5;
+    opacity: 0.6;
     transition: transform 0.2s ease;
+}
+.floating-toc-chevron.rotate-180 {
+    opacity: 0.8;
 }
 
 .floating-toc-dropdown {
@@ -111,8 +134,14 @@ function selectSection(id: string) {
     border-bottom: 1px solid hsl(var(--border));
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
     max-height: 60vh;
-    overflow-y: auto;
+    overflow-y: visible;
     padding: 0.5rem;
+}
+
+.floating-toc-dropdown.is-scrollable {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
 }
 
 .floating-toc-item {
