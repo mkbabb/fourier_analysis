@@ -84,45 +84,65 @@ const shortError = computed(() => {
     return msg.length > 60 ? msg.slice(0, 60) + "…" : msg;
 });
 
+let abortController: AbortController | null = null;
+
 async function runCompute() {
-    if (!store.hasImage || computing.value) return;
+    if (!store.hasImage) return;
+
+    // Abort any in-flight compute — prevents request pile-up
+    if (abortController) abortController.abort();
+    abortController = new AbortController();
+    const { signal } = abortController;
+
     computing.value = true;
     store.error = null;
-    await store.updateSettings({
-        parameters: {
-            strategy: strategy.value,
-            blur_sigma: blurSigma.value,
-            min_contour_area: minContourArea.value / 100,
-            max_contours: maxContours.value === 0 ? null : maxContours.value,
-            smooth_contours: smoothContours.value,
-            n_harmonics: props.nHarmonics,
-            n_points: props.nPoints,
-        },
-    });
-    const results = await Promise.allSettled([
-        store.runEpicycles({
-            n_harmonics: props.nHarmonics,
-            n_points: props.nPoints,
-        }),
-        store.runBases({
-            max_degree: props.nHarmonics,
-            n_points: props.nPoints,
-        }),
-    ]);
-    computing.value = false;
-    // Only auto-play if at least one computation succeeded
-    const anyOk = results.some((r) => r.status === "fulfilled");
-    if (anyOk && (store.epicycleData || store.basesData)) {
-        anim.reset();
-        anim.play();
+
+    try {
+        // Save settings and run both computes in parallel (3 requests → 2)
+        // Settings are passed inline to the compute endpoints, so updateSettings
+        // only needs to persist them — fire-and-forget.
+        store.updateSettings({
+            parameters: {
+                strategy: strategy.value,
+                blur_sigma: blurSigma.value,
+                min_contour_area: minContourArea.value / 100,
+                max_contours: maxContours.value === 0 ? null : maxContours.value,
+                smooth_contours: smoothContours.value,
+                n_harmonics: props.nHarmonics,
+                n_points: props.nPoints,
+            },
+        }); // no await — fire and forget
+
+        const results = await Promise.allSettled([
+            store.runEpicycles({
+                n_harmonics: props.nHarmonics,
+                n_points: props.nPoints,
+            }),
+            store.runBases({
+                max_degree: props.nHarmonics,
+                n_points: props.nPoints,
+            }),
+        ]);
+
+        // If aborted, a newer compute replaced us — bail silently
+        if (signal.aborted) return;
+
+        computing.value = false;
+        const anyOk = results.some((r) => r.status === "fulfilled");
+        if (anyOk && (store.epicycleData || store.basesData)) {
+            anim.reset();
+            anim.play();
+        }
+    } catch {
+        if (!signal.aborted) computing.value = false;
     }
 }
 
-// Auto-compute on settings change (debounced 800ms)
+// Auto-compute on settings change (debounced 1s to reduce request volume)
 watchDebounced(
     () => [strategy.value, blurSigma.value, minContourArea.value, maxContours.value, smoothContours.value, props.nHarmonics, props.nPoints],
     () => runCompute(),
-    { debounce: 800, immediate: false },
+    { debounce: 1000, immediate: false },
 );
 
 // Compute on mount if image exists but no data

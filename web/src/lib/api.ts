@@ -15,6 +15,8 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
         ...options,
     });
     if (!res.ok) {
+        // Don't throw on abort — let caller handle it silently
+        if (options?.signal?.aborted) throw new DOMException("Aborted", "AbortError");
         const body = await res.text();
         throw new Error(`API ${res.status}: ${body}`);
     }
