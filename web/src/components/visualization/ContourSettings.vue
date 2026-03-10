@@ -128,6 +128,16 @@ onMounted(() => {
 <template>
     <div class="cartoon-card px-3 py-2">
         <Collapsible title="Contour" subtitle="edge extraction settings" :default-open="false">
+            <template #actions>
+                <button
+                    class="reset-icon-btn"
+                    :class="{ 'is-default': isDefault }"
+                    title="Reset to defaults"
+                    @click.stop="resetDefaults"
+                >
+                    <RotateCcw class="h-3.5 w-3.5" />
+                </button>
+            </template>
             <div class="space-y-3 pt-1">
                 <!-- Strategy -->
                 <div>
@@ -218,12 +228,6 @@ onMounted(() => {
                     </CollapsibleContent>
                 </CollapsibleRoot>
 
-                <Transition name="fade">
-                    <button v-if="!isDefault" class="reset-btn" @click="resetDefaults">
-                        <RotateCcw class="h-3 w-3" />
-                        Reset
-                    </button>
-                </Transition>
             </div>
         </Collapsible>
 
@@ -289,32 +293,23 @@ onMounted(() => {
     grid-column: 1 / -1;
 }
 
-.reset-btn {
+.reset-icon-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.25rem;
-    margin-top: 0.5rem;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.375rem;
-    border: 1.5px solid hsl(var(--foreground) / 0.12);
+    justify-content: center;
+    padding: 0.25rem;
+    border: none;
     background: none;
-    font-size: 0.6875rem;
-    font-weight: 500;
     color: hsl(var(--muted-foreground));
     cursor: pointer;
-    transition: all 0.15s;
+    border-radius: 0.25rem;
+    transition: color 0.15s, opacity 0.2s;
 }
-.reset-btn:hover {
-    border-color: hsl(var(--foreground) / 0.25);
-    color: hsl(var(--foreground));
-}
-
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.2s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
+.reset-icon-btn.is-default {
     opacity: 0;
+    pointer-events: none;
+}
+.reset-icon-btn:hover {
+    color: hsl(var(--foreground));
 }
 </style>

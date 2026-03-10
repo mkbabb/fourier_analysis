@@ -20,7 +20,7 @@ const emit = defineEmits<{
     (e: "update:nPoints", v: number): void;
 }>();
 
-const harmonicsProgress = computed(() => (((props.nHarmonics ?? 200) - 1) / 499) * 100);
+const harmonicsProgress = computed(() => (((props.nHarmonics ?? 50) - 1) / 499) * 100);
 const pointsProgress = computed(() => (((props.nPoints ?? 1024) - 128) / (4096 - 128)) * 100);
 
 const selected = ref<string[]>(props.activeBases ?? ["fourier-epicycles"]);
@@ -114,6 +114,16 @@ function toggleBasis(key: string) {
 <template>
     <div class="cartoon-card px-3 py-2">
         <Collapsible title="Basis" subtitle="decomposition & resolution" :default-open="true">
+            <template #actions>
+                <button
+                    class="reset-icon-btn"
+                    :class="{ 'is-default': isDefault }"
+                    title="Reset to defaults"
+                    @click.stop="resetDefaults"
+                >
+                    <RotateCcw class="h-3.5 w-3.5" />
+                </button>
+            </template>
             <div class="flex flex-wrap gap-1.5 pt-1 pb-1">
                 <Tooltip v-for="(info, key) in basisDisplay" :key="key" :text="getBasisTooltip(key as string)">
                     <button
@@ -122,7 +132,7 @@ function toggleBasis(key: string) {
                         :style="isBasisActive(key as string) ? { '--pill-color': info.color } : {}"
                         @click="toggleBasis(key as string)"
                     >
-                        <span class="basis-icon cm-serif font-semibold">{{ info.icon }}</span>
+                        <span class="basis-icon cm-serif font-semibold" :class="{ 'basis-icon--fourier': key === 'fourier' }">{{ info.icon }}</span>
                         {{ getBasisLabel(key as string, info) }}
                     </button>
                 </Tooltip>
@@ -180,12 +190,6 @@ function toggleBasis(key: string) {
                         :style="{ '--progress': pointsProgress + '%', '--slider-color': VIZ_COLORS.chebyshev }"
                     />
                 </div>
-                <Transition name="fade">
-                    <button v-if="!isDefault" class="reset-btn" @click="resetDefaults">
-                        <RotateCcw class="h-3 w-3" />
-                        Reset
-                    </button>
-                </Transition>
             </div>
         </Collapsible>
     </div>
@@ -218,10 +222,16 @@ function toggleBasis(key: string) {
 .basis-icon {
     display: inline-flex;
     align-items: center;
-    font-size: 3em;
+    justify-content: center;
+    font-size: 1.5em;
     line-height: 1;
     min-width: 1.2em;
-    justify-content: center;
+    height: 1em;
+}
+.basis-icon--fourier {
+    font-size: 2.2em;
+    margin: -0.35em -0.1em;
+    transform: translateY(0.06em);
 }
 .basis-pill {
     display: flex;
@@ -248,32 +258,23 @@ function toggleBasis(key: string) {
     color: var(--pill-color);
 }
 
-.reset-btn {
+.reset-icon-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.25rem;
-    margin-top: 0.5rem;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.375rem;
-    border: 1.5px solid hsl(var(--foreground) / 0.12);
+    justify-content: center;
+    padding: 0.25rem;
+    border: none;
     background: none;
-    font-size: 0.6875rem;
-    font-weight: 500;
     color: hsl(var(--muted-foreground));
     cursor: pointer;
-    transition: all 0.15s;
+    border-radius: 0.25rem;
+    transition: color 0.15s, opacity 0.2s;
 }
-.reset-btn:hover {
-    border-color: hsl(var(--foreground) / 0.25);
-    color: hsl(var(--foreground));
-}
-
-.fade-enter-active,
-.fade-leave-active {
-    transition: opacity 0.2s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
+.reset-icon-btn.is-default {
     opacity: 0;
+    pointer-events: none;
+}
+.reset-icon-btn:hover {
+    color: hsl(var(--foreground));
 }
 </style>
