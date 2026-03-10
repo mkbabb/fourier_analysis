@@ -86,9 +86,14 @@ async def update_session(slug: str, update: SessionUpdate):
 
     update_doc: dict = {}
     if update.parameters is not None:
-        update_doc["parameters"] = update.parameters.model_dump()
+        # Deep-merge: overlay only the fields the client actually sent
+        existing = session.get("parameters", {})
+        incoming = update.parameters.model_dump(exclude_unset=True)
+        update_doc["parameters"] = {**existing, **incoming}
     if update.animation_settings is not None:
-        update_doc["animation_settings"] = update.animation_settings.model_dump()
+        existing = session.get("animation_settings", {})
+        incoming = update.animation_settings.model_dump(exclude_unset=True)
+        update_doc["animation_settings"] = {**existing, **incoming}
 
     if update_doc:
         # Refresh TTL
