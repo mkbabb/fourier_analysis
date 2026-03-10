@@ -124,7 +124,10 @@ export const useSessionStore = defineStore("session", () => {
             epicycleData.value = await api.computeEpicycles(slug.value, params);
         } catch (e: any) {
             error.value = e.message;
-            epicycleData.value = null;
+            // Preserve stale data on transient errors (503, network) so UI doesn't collapse
+            if (!e.message?.includes("503")) {
+                epicycleData.value = null;
+            }
         } finally {
             loading.value = false;
         }
@@ -143,7 +146,9 @@ export const useSessionStore = defineStore("session", () => {
             basesData.value = await api.computeBases(slug.value, params);
         } catch (e: any) {
             error.value = e.message;
-            basesData.value = null;
+            if (!e.message?.includes("503")) {
+                basesData.value = null;
+            }
         } finally {
             loading.value = false;
         }

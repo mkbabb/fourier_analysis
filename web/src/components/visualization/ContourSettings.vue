@@ -11,7 +11,7 @@ import {
     SelectItem,
     SelectTrigger,
 } from "@/components/ui/select";
-import { Wand2, ChevronRight, RotateCcw } from "lucide-vue-next";
+import { Wand2, ChevronRight, RotateCcw, RefreshCw } from "lucide-vue-next";
 import { Tooltip } from "@/components/ui/tooltip";
 import { CollapsibleRoot, CollapsibleTrigger, CollapsibleContent } from "reka-ui";
 import SliderControl from "@/components/ui/SliderControl.vue";
@@ -77,9 +77,17 @@ function resetDefaults() {
     smoothContours.value = DEFAULTS.smoothContours;
 }
 
+const shortError = computed(() => {
+    const msg = store.error ?? "";
+    if (msg.includes("503")) return "Server busy — try again";
+    if (msg.includes("fetch")) return "Network error";
+    return msg.length > 60 ? msg.slice(0, 60) + "…" : msg;
+});
+
 async function runCompute() {
     if (!store.hasImage || computing.value) return;
     computing.value = true;
+    store.error = null;
     await store.updateSettings({
         parameters: {
             strategy: strategy.value,
@@ -231,6 +239,16 @@ onMounted(() => {
             </div>
         </Collapsible>
 
+        <!-- Retry banner for transient errors -->
+        <Transition name="slide-down">
+            <div v-if="store.error" class="retry-banner">
+                <span class="retry-msg fira-code">{{ shortError }}</span>
+                <button class="retry-btn" @click="runCompute" :disabled="computing">
+                    <RefreshCw class="h-3.5 w-3.5" :class="{ 'animate-spin': computing }" />
+                    Retry
+                </button>
+            </div>
+        </Transition>
     </div>
 </template>
 
@@ -311,5 +329,68 @@ onMounted(() => {
 }
 .reset-icon-btn:hover {
     color: hsl(var(--foreground));
+}
+
+/* Retry banner */
+.retry-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    margin-top: 0.5rem;
+    border-radius: 0.5rem;
+    background: hsl(var(--destructive) / 0.08);
+    border: 1px solid hsl(var(--destructive) / 0.2);
+}
+
+.retry-msg {
+    font-size: 0.6875rem;
+    color: hsl(var(--destructive));
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.retry-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.625rem;
+    border-radius: 0.375rem;
+    border: 1px solid hsl(var(--destructive) / 0.3);
+    background: hsl(var(--destructive) / 0.1);
+    color: hsl(var(--destructive));
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: background 0.15s, border-color 0.15s;
+}
+.retry-btn:hover {
+    background: hsl(var(--destructive) / 0.18);
+    border-color: hsl(var(--destructive) / 0.4);
+}
+.retry-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.slide-down-enter-active {
+    transition: all 0.25s ease-out;
+}
+.slide-down-leave-active {
+    transition: all 0.15s ease-in;
+}
+.slide-down-enter-from {
+    opacity: 0;
+    transform: translateY(-4px);
+}
+.slide-down-leave-to {
+    opacity: 0;
+    transform: translateY(-4px);
 }
 </style>
