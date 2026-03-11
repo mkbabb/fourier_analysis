@@ -1,18 +1,23 @@
 <script setup lang="ts">
 import {
-    PaperSectionContent,
-    usePaperReader,
     useKatex,
     PAPER_CONTEXT,
     type PaperContext,
+    flattenPaperSections,
+    useClickDelegate,
+    useTreeIndex,
+    useVirtualSectionWindow,
 } from "@mkbabb/latex-paper/vue";
 import "@mkbabb/latex-paper/theme";
 import PaperSidebar from "./PaperSidebar.vue";
 import MobileFloatingToc from "./MobileFloatingToc.vue";
-import { paperSections, labelMap } from "@/lib/paperContent";
+import PaperArticleWindow from "./PaperArticleWindow.vue";
+import { getPaperPreview, paperSectionToTreeNode } from "./paperTree";
+import { useScrollNavigation } from "./useScrollNavigation";
+import { paperSections, labelMap, totalPages, pageMap } from "@/lib/paperContent";
 import type { PaperSectionData } from "@/lib/paperContent";
-import { ref, reactive, computed, provide, onMounted, onUnmounted, nextTick } from "vue";
-import { ArrowRight, Undo2 } from "lucide-vue-next";
+import { ref, computed, provide, onMounted, onUnmounted, nextTick, watch } from "vue";
+import { Undo2 } from "lucide-vue-next";
 
 // ── KaTeX with app-specific macros ─────────────────────────
 const macros: Record<string, string> = {
@@ -29,9 +34,13 @@ const macros: Record<string, string> = {
 const { renderInline, renderDisplay, renderTitle } = useKatex(macros);
 
 const scrollContainer = ref<HTMLElement | null>(null);
+const sectionWindowRoot = ref<HTMLElement | null>(null);
+const sectionStartOffsetPx = ref(0);
 const sidebarRef = ref<InstanceType<typeof PaperSidebar> | null>(null);
-const sidebarNav = computed(() => sidebarRef.value?.sidebarNav ?? null);
 const baseUrl = import.meta.env.BASE_URL;
+const flatSections = flattenPaperSections(paperSections);
+const treeNodes = paperSections.map(paperSectionToTreeNode);
+const { index: treeIndex, isActive, isInActiveChain } = useTreeIndex(treeNodes);
 
 // ── Build PaperContext and wire up tracking ────────────────
 let _scrollTo: (id: string) => void = () => {};
@@ -49,220 +58,91 @@ const paperContext: PaperContext = {
 provide(PAPER_CONTEXT, paperContext);
 
 const {
-    visibleCount,
-    loadSentinel,
-    treeIndex,
-    isActive,
-    isInActiveChain,
+    visibleItems,
+    topSpacerPx,
+    bottomSpacerPx,
+    measureSection,
+    ensureTargetWindow,
+    getOffsetFor,
     activeId,
     activeRootId,
-    scrollTo: rawScrollTo,
-    forceRecalculate,
-} = usePaperReader({
-    context: paperContext,
+    recalculate,
+} = useVirtualSectionWindow({
+    items: flatSections,
     scrollContainer,
-    sidebarEl: sidebarNav,
+    overscanBeforePx: 240,
+    overscanAfterPx: 720,
+    leadingOffsetPx: sectionStartOffsetPx,
+    warmTargetBefore: 2,
+    warmTargetAfter: 3,
 });
 
-// ── Scroll navigation ─────────────────────────────────────────
-const TELEPORT_THRESHOLD = 1200;
+useClickDelegate({
+    container: scrollContainer,
+    selector: ".paper-ref",
+    attribute: "data-ref",
+    resolve: (refKey) => {
+        const info = labelMap[refKey];
+        if (!info) return null;
+        return info.elementId ?? info.sectionId;
+    },
+    scrollTo: (id) => _scrollTo(id),
+});
 
-/** Dynamic scroll offset: accounts for floating TOC bar on mobile */
-function getScrollOffset(): number {
-    const bar = document.querySelector('.floating-toc-bar') as HTMLElement | null;
-    if (bar) return bar.offsetHeight + 8;
-    return 16;
-}
-
-function ensureTargetLoaded(id: string) {
-    const entry = treeIndex.get(id);
-    if (entry) {
-        const needed = entry.rootIndex + 2;
-        visibleCount.value = Math.max(
-            visibleCount.value,
-            Math.min(needed, paperSections.length),
-        );
-    } else {
-        visibleCount.value = paperSections.length;
-    }
-}
-
-/**
- * Overlay-based teleport: covers content, jumps, corrects until layout
- * stabilizes, then reveals.  Content rendering (images, math) can shift
- * the target element for several frames after Vue mounts new sections.
- */
-function teleportTo(sc: HTMLElement, target: HTMLElement | null, offset: number, scrollTop?: number) {
-    const overlay = sc.querySelector('.teleport-overlay') as HTMLElement | null;
-
-    const jumpOnce = () => {
-        if (target) {
-            target.scrollIntoView({ behavior: "instant", block: "start" });
-            sc.scrollBy({ top: -offset, behavior: "instant" });
-        } else if (scrollTop !== undefined) {
-            sc.scrollTo({ top: scrollTop, behavior: "instant" });
-        }
-    };
-
-    /** Keep re-scrolling to target until scrollHeight stops changing. */
-    const jumpUntilStable = (onDone: () => void) => {
-        let lastHeight = -1;
-        let stableFrames = 0;
-        const correct = () => {
-            jumpOnce();
-            const h = sc.scrollHeight;
-            if (Math.abs(h - lastHeight) < 2) {
-                if (++stableFrames >= 5) { onDone(); return; }
-            } else {
-                stableFrames = 0;
-            }
-            lastHeight = h;
-            requestAnimationFrame(correct);
-        };
-        correct();
-    };
-
-    if (!overlay) {
-        jumpUntilStable(() => forceRecalculate());
-        return;
-    }
-
-    // Phase 1: fade overlay in
-    overlay.style.transition = "opacity 80ms ease-out";
-    overlay.style.opacity = "1";
-    overlay.style.pointerEvents = "auto";
-
-    let started = false;
-    const startJump = () => {
-        if (started) return;
-        started = true;
-
-        // Phase 2: jump + correct while overlay hides everything
-        jumpUntilStable(() => {
-            forceRecalculate();
-            // Phase 3: reveal
-            requestAnimationFrame(() => {
-                overlay.style.transition = "opacity 120ms ease-in";
-                overlay.style.opacity = "0";
-                overlay.style.pointerEvents = "none";
-            });
-        });
-    };
-
-    overlay.addEventListener("transitionend", startJump, { once: true });
-    setTimeout(startJump, 120);
-}
-
-function performScroll(id: string) {
-    const scroller = scrollContainer.value;
-    if (!scroller) { rawScrollTo(id); return; }
-
-    ensureTargetLoaded(id);
-
-    let attempts = 0;
-    function tryNavigate() {
-        const el = document.getElementById(id);
-        const s = scrollContainer.value;
-        if (!el || !s) {
-            if (attempts++ < 60) requestAnimationFrame(tryNavigate);
-            return;
-        }
-
-        const elRect = el.getBoundingClientRect();
-        const scrollerRect = s.getBoundingClientRect();
-        const offset = getScrollOffset();
-        const distance = Math.abs(elRect.top - scrollerRect.top);
-
-        if (distance < TELEPORT_THRESHOLD) {
-            el.scrollIntoView({ behavior: "smooth", block: "start" });
-            s.scrollBy({ top: -offset, behavior: "smooth" });
-            return;
-        }
-
-        // Far — overlay fade, teleport, reveal
-        teleportTo(s, el, offset);
-    }
-
-    nextTick(() => requestAnimationFrame(tryNavigate));
-}
-
-// ── Navigation stack (Kindle-style back traversal) ────────────
-const MAX_STACK = 20;
-const navStack = reactive<string[]>([]);
-let isBackNavigation = false;
-
-/** Navigate to a section, pushing current position to the back stack */
-function navigateTo(id: string) {
-    if (!isBackNavigation && activeId.value && activeId.value !== id) {
-        navStack.push(activeId.value);
-        if (navStack.length > MAX_STACK) navStack.shift();
-    }
-    performScroll(id);
-}
-
-/** Pop the navigation stack and scroll back */
-function navigateBack() {
-    if (navStack.length === 0) return;
-    isBackNavigation = true;
-    const prev = navStack.pop()!;
-    performScroll(prev);
-    setTimeout(() => { isBackNavigation = false; }, 500);
-}
-
-/** Scroll to top of paper */
-function scrollToTop() {
-    const s = scrollContainer.value;
-    if (!s) return;
-    if (s.scrollTop > TELEPORT_THRESHOLD) {
-        teleportTo(s, null, 0, 0);
-    } else {
-        s.scrollTo({ top: 0, behavior: "smooth" });
-    }
-}
+const { navigateTo, navigateBack, scrollToTop, navStack } = useScrollNavigation({
+    scrollContainer,
+    contentStartOffsetPx: sectionStartOffsetPx,
+    activeId,
+    ensureTargetWindow,
+    getOffsetFor,
+    recalculate,
+});
 
 // Wire all navigation (TOC clicks, cross-references) through navigateTo
 _scrollTo = navigateTo;
 
 const sections = computed(() => paperSections);
+const currentPage = ref(pageMap[flatSections[0]?.id] ?? 1);
 
-function getPreview(section: PaperSectionData): string {
-    const text = section.content?.find((b): b is string => typeof b === "string") ?? "";
-    const clean = text.replace(/\$[^$]+\$/g, "\u2026").replace(/<[^>]+>/g, "");
-    const preview = clean.length > 100 ? clean.slice(0, 100) + "\u2026" : clean;
-
-    const parts: string[] = [];
-    if (preview) parts.push(preview);
-    if (section.summary) parts.push(section.summary);
-
-    return parts.join(" \u00b7 ");
-}
-
-// ── Page number estimation from LaTeX content ─────────────────
-const pageMap = new Map<string, number>();
-let _cumPage = 1;
-function walkPages(secs: PaperSectionData[]) {
-    for (const sec of secs) {
-        pageMap.set(sec.id, Math.ceil(_cumPage));
-        const blocks = (sec.content?.length ?? 0)
-            + (sec.theorems?.length ?? 0) * 1.2
-            + (sec.figures?.length ?? 0) * 1.5;
-        _cumPage += blocks / 3;
-        if (sec.subsections) walkPages(sec.subsections);
-    }
-}
-walkPages(paperSections);
-const totalPages = Math.max(1, Math.ceil(_cumPage - 1));
-
-const currentPage = computed(() => {
-    const id = activeId.value;
-    if (!id) return 1;
-    return pageMap.get(id) ?? 1;
-});
+watch(
+    activeId,
+    (id) => {
+        if (!id) return;
+        const page = pageMap[id];
+        if (page !== undefined) currentPage.value = page;
+    },
+    { immediate: true },
+);
 
 // ── Mobile floating TOC visibility ───────────────────────────
 const mobileNavRef = ref<HTMLElement | null>(null);
 const mobileTocVisible = ref(true);
 let mobileTocObserver: IntersectionObserver | null = null;
+
+function updateSectionStartOffset() {
+    const root = sectionWindowRoot.value;
+    const scroller = scrollContainer.value;
+    if (!root || !scroller) return;
+    sectionStartOffsetPx.value =
+        root.getBoundingClientRect().top -
+        scroller.getBoundingClientRect().top +
+        scroller.scrollTop;
+}
+
+function registerWindowRoot(el: HTMLElement | null) {
+    if (sectionWindowRoot.value === el) return;
+    sectionWindowRoot.value = el;
+    if (!el) return;
+    nextTick(() => {
+        updateSectionStartOffset();
+        recalculate();
+    });
+}
+
+function handleWindowResize() {
+    updateSectionStartOffset();
+    recalculate();
+}
 
 const currentSection = computed(() => {
     if (!activeRootId.value) return null;
@@ -282,11 +162,26 @@ onMounted(() => {
     );
     nextTick(() => {
         if (mobileNavRef.value) mobileTocObserver!.observe(mobileNavRef.value);
+        updateSectionStartOffset();
+        recalculate();
+    });
+    window.addEventListener("resize", handleWindowResize);
+});
+
+watch([scrollContainer, sectionWindowRoot], ([scroller, root]) => {
+    if (!scroller || !root) {
+        updateSectionStartOffset();
+        return;
+    }
+    updateSectionStartOffset();
+    nextTick(() => {
+        recalculate();
     });
 });
 
 onUnmounted(() => {
     mobileTocObserver?.disconnect();
+    window.removeEventListener("resize", handleWindowResize);
 });
 </script>
 
@@ -322,7 +217,7 @@ onUnmounted(() => {
                         :tree-index="treeIndex"
                         :is-active="isActive"
                         :is-in-active-chain="isInActiveChain"
-                        :get-preview="getPreview"
+                        :get-preview="getPaperPreview"
                     />
 
                     <!-- Main article -->
@@ -349,47 +244,13 @@ onUnmounted(() => {
                             </ol>
                         </nav>
 
-                        <PaperSectionContent
-                            v-for="(section, si) in sections.slice(0, visibleCount)"
-                            :key="section.id"
-                            :section="section"
-                            :depth="0"
-                            :section-index="si"
-                        >
-                            <template #figure="{ figure }">
-                                <img
-                                    :src="`${baseUrl}assets/${figure.filename}`"
-                                    :alt="figure.caption"
-                                    class="max-w-full rounded-lg shadow-sm"
-                                    :class="figure.filename.includes('portrait') ? 'paper-portrait' : 'paper-figure'"
-                                    style="max-height: 400px"
-                                    loading="lazy"
-                                />
-                            </template>
-                            <template #callout="{ callout, section: sec }">
-                                <div class="interactive-callout">
-                                    <p class="cm-serif text-sm text-muted-foreground mb-3">{{ callout.text }}</p>
-                                    <router-link
-                                        :to="callout.link"
-                                        class="callout-btn"
-                                    >
-                                        <span class="fourier-f">ℱ</span>
-                                        <span>Open Visualizer</span>
-                                        <ArrowRight class="h-4 w-4" />
-                                    </router-link>
-                                </div>
-                            </template>
-                        </PaperSectionContent>
-                        <!-- Sentinel triggers loading next batch when scrolled near -->
-                        <div
-                            v-if="visibleCount < sections.length"
-                            ref="loadSentinel"
-                            class="load-sentinel"
-                        >
-                            <span class="text-muted-foreground/50 text-sm cm-serif">Loading…</span>
-                        </div>
-                        <!-- Bottom spacer so the last section can scroll fully into view -->
-                        <div v-else class="last-section-spacer" />
+                        <PaperArticleWindow
+                            :visible-items="visibleItems"
+                            :top-spacer-px="topSpacerPx"
+                            :bottom-spacer-px="bottomSpacerPx"
+                            :register-root="registerWindowRoot"
+                            :measure-section="measureSection"
+                        />
                     </article>
                 </div>
             </div>
@@ -440,6 +301,8 @@ onUnmounted(() => {
     background: hsl(var(--background));
     opacity: 0;
     pointer-events: none;
+    transition: opacity 120ms cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity;
 }
 
 .paper-article {
@@ -475,16 +338,6 @@ onUnmounted(() => {
         grid-template-columns: 220px minmax(0, 48rem);
         gap: 2rem;
     }
-}
-
-.load-sentinel {
-    display: flex;
-    justify-content: center;
-    padding: 2rem 0;
-}
-
-.last-section-spacer {
-    height: 50vh;
 }
 
 /* ── Bottom overlay ────────────────────────────────────────── */
@@ -600,40 +453,5 @@ onUnmounted(() => {
 .fade-scale-leave-to {
     opacity: 0;
     transform: scale(0.8);
-}
-
-/* Interactive callout */
-.interactive-callout {
-    margin: 1.5rem 0;
-    padding: 1.25rem 1.5rem;
-    border: 1px solid hsl(var(--border));
-    border-radius: 0.75rem;
-    background: hsl(var(--muted) / 0.25);
-    text-align: center;
-}
-
-.callout-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.625rem 1.5rem;
-    font-size: 0.9375rem;
-    font-weight: 600;
-    color: hsl(var(--primary-foreground));
-    background: hsl(var(--primary));
-    border-radius: 9999px;
-    text-decoration: none;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: 0 2px 8px hsl(var(--primary) / 0.25);
-}
-
-.callout-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 16px hsl(var(--primary) / 0.35);
-}
-
-.callout-btn .fourier-f {
-    font-size: 1.1em;
-    opacity: 0.85;
 }
 </style>
