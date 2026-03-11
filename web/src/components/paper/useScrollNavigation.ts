@@ -13,6 +13,7 @@ export interface ScrollNavigationOptions {
 export function useScrollNavigation(opts: ScrollNavigationOptions) {
     const TELEPORT_THRESHOLD = 1400;
     const MAX_STACK = 20;
+    const MIN_OVERLAY_VISIBLE_MS = 90;
     const navStack = reactive<string[]>([]);
     let isBackNavigation = false;
 
@@ -52,14 +53,23 @@ export function useScrollNavigation(opts: ScrollNavigationOptions) {
         }
 
         let finished = false;
+        const shownAt = performance.now();
         const finish = () => {
             if (finished) return;
             finished = true;
-            opts.recalculate();
-            requestAnimationFrame(() => {
-                overlay.style.opacity = "0";
-                overlay.style.pointerEvents = "none";
-            });
+            const finalize = () => {
+                opts.recalculate();
+                requestAnimationFrame(() => {
+                    overlay.style.opacity = "0";
+                    overlay.style.pointerEvents = "none";
+                });
+            };
+            const remaining = Math.max(0, MIN_OVERLAY_VISIBLE_MS - (performance.now() - shownAt));
+            if (remaining === 0) {
+                finalize();
+                return;
+            }
+            window.setTimeout(finalize, remaining);
         };
 
         overlay.style.pointerEvents = "auto";
