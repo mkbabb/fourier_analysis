@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Page, type Locator } from "@playwright/test";
 
 const MAX_MOUNTED_SECTIONS = 18;
 const DESKTOP_SCROLL_OFFSET_PX = 16;
@@ -84,6 +84,31 @@ async function overlayOpacity(page: Page): Promise<number> {
     );
 }
 
+async function activateTocEntry(page: Page, id: string) {
+    await page
+        .locator(`[data-toc-id="${id}"]`)
+        .evaluate((element) => (element as HTMLButtonElement).click());
+    await expect(page.locator(`#${id}`)).toBeVisible({ timeout: 10_000 });
+}
+
+async function scrollUntilVisible(
+    page: Page,
+    locator: Locator,
+    checkpoints: number[],
+): Promise<boolean> {
+    for (const top of checkpoints) {
+        await scrollPaperTo(page, top);
+        if (await locator.count()) {
+            const target = locator.first();
+            if (await target.isVisible().catch(() => false)) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 test.describe("Paper performance", () => {
     test.describe.configure({ mode: "serial" });
 
@@ -120,9 +145,9 @@ test.describe("Paper performance", () => {
         await waitForPaperReady(page);
 
         await page.locator('[data-toc-id="the-discrete-fourier-transform"]').click();
+        await expect.poll(() => overlayOpacity(page), { timeout: 1_000 }).toBeGreaterThan(0.05);
         await expect(page.locator('[data-toc-id="dft-as-matrix-multiplication"]')).toBeVisible();
         await page.locator('[data-toc-id="dft-as-matrix-multiplication"]').click();
-        await expect.poll(() => overlayOpacity(page), { timeout: 1_000 }).toBeGreaterThan(0.05);
 
         await expect
             .poll(async () => {
@@ -181,5 +206,44 @@ test.describe("Paper performance", () => {
                 (message) => !message.includes("favicon") && !message.includes("404"),
             ),
         ).toEqual([]);
+    });
+
+    test("appendix proofs, code listings, and bibliography render real content", async ({ page }) => {
+        await waitForPaperReady(page);
+
+        await activateTocEntry(page, "sturm-liouville-completeness");
+        const sturmSection = page.locator("#sturm-liouville-completeness");
+        await expect(sturmSection.locator(".paper-proof-block")).toContainText("Proof of Theorem", {
+            timeout: 10_000,
+        });
+        await expect(sturmSection.locator(".paper-proof-body")).toContainText("This operator is:", {
+            timeout: 10_000,
+        });
+
+        await activateTocEntry(page, "chebyshev-and-legendre-series-via-polynomial-fitting");
+        const chebyshevSection = page.locator("#chebyshev-and-legendre-series-via-polynomial-fitting");
+        await expect(chebyshevSection.locator(".paper-code-caption").filter({
+            hasText: "Chebyshev coefficient computation",
+        })).toBeVisible({ timeout: 10_000 });
+        await expect(chebyshevSection.locator(".paper-code-pre").filter({
+            hasText: "def chebyshev_fit(signal, degree):",
+        })).toBeVisible({ timeout: 10_000 });
+
+        const { maxScrollTop } = await getScrollMetrics(page);
+        const referencesHeading = page.locator(".paper-bibliography-heading", {
+            hasText: "References",
+        });
+        const bibliographyFound = await scrollUntilVisible(
+            page,
+            referencesHeading,
+            Array.from({ length: 18 }, (_, index) =>
+                Math.round((maxScrollTop * index) / 17),
+            ),
+        );
+
+        expect(bibliographyFound).toBe(true);
+        await expect(page.locator(".paper-bibliography")).toContainText("Fourier", {
+            timeout: 5_000,
+        });
     });
 });

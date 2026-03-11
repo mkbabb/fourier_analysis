@@ -5,6 +5,7 @@ import {
     type PaperContext,
     flattenPaperSections,
     useClickDelegate,
+    useSidebarFollow,
     useTreeIndex,
     useVirtualSectionWindow,
 } from "@mkbabb/latex-paper/vue";
@@ -144,6 +145,14 @@ function handleWindowResize() {
     recalculate();
 }
 
+const sidebarNavEl = computed(() => sidebarRef.value?.sidebarNav ?? null);
+const { queueSidebarFollow } = useSidebarFollow({
+    sidebarEl: sidebarNavEl,
+    activeId,
+    activeRootId,
+    scrollSource: scrollContainer,
+});
+
 const currentSection = computed(() => {
     if (!activeRootId.value) return null;
     const entry = treeIndex.get(activeRootId.value);
@@ -164,6 +173,7 @@ onMounted(() => {
         if (mobileNavRef.value) mobileTocObserver!.observe(mobileNavRef.value);
         updateSectionStartOffset();
         recalculate();
+        queueSidebarFollow(true);
     });
     window.addEventListener("resize", handleWindowResize);
 });
@@ -176,6 +186,7 @@ watch([scrollContainer, sectionWindowRoot], ([scroller, root]) => {
     updateSectionStartOffset();
     nextTick(() => {
         recalculate();
+        queueSidebarFollow(true);
     });
 });
 
