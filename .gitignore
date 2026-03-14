@@ -58,6 +58,10 @@ mongo_data/
 # Dev
 .dev.pids
 
+# Debug/screenshot artifacts
+*.png
+!assets/**/*.png
+
 # Playwright
 web/test-results/
 web/playwright-report/
