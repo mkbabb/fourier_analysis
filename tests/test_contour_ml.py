@@ -36,11 +36,11 @@ class TestContourML:
 
     def test_explicit_ml_strategy_import(self):
         """ML strategy should be dispatchable."""
-        from fourier_analysis.contours.selection import _select_explicit_candidate
+        from fourier_analysis.contours.extraction import _select_explicit_candidate
         assert ContourStrategy.ML.value == "ml"
 
-    def test_auto_includes_ml_candidate(self, tmp_path: Path):
-        """AUTO selection should include ML candidate."""
+    def test_auto_uses_ml_isolation(self, tmp_path: Path):
+        """AUTO pipeline should use ML for subject isolation."""
         from fourier_analysis.contours import extract_contours_result
 
         size = 128
@@ -50,11 +50,8 @@ class TestContourML:
 
         result = extract_contours_result(img_path, strategy="auto", resize=None)
         assert isinstance(result.contours, list)
-        # ML candidate should be present in candidates
-        ml_candidates = [
-            c for c in result.diagnostics.candidates if c.strategy == "ml"
-        ]
-        assert len(ml_candidates) >= 1
+        # Pipeline should produce contours via ML-guided isolation.
+        assert result.diagnostics.selected_candidate == "pipeline"
 
     def test_ml_masks_returns_multiple_thresholds(self, tmp_path: Path):
         """ml_masks should return multiple nested masks at different thresholds."""

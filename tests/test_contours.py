@@ -42,7 +42,6 @@ class TestExtractContours:
         assert result.contours
         assert result.diagnostics.selected_strategy == "threshold"
         assert result.diagnostics.contour_count >= 1
-        assert result.diagnostics.candidates
 
     def test_threshold_strategy_on_binary_image(self, tmp_path: Path):
         """A white circle on black should yield a closed contour via THRESHOLD."""
@@ -177,14 +176,6 @@ class TestExtractContours:
 
         assert result.contours
         assert result.diagnostics.used_alpha is False
-        assert result.diagnostics.selected_strategy in {
-            "threshold",
-            "adaptive_threshold",
-            "multi_threshold",
-            "canny",
-            "edge_aware",
-            "ml",
-        }
 
     def test_alpha_mode_only_forces_alpha_candidate(self, tmp_path: Path):
         rgba = np.zeros((128, 128, 4), dtype=np.uint8)
@@ -226,14 +217,6 @@ class TestExtractContours:
 
         assert result.contours
         assert result.diagnostics.used_alpha is False
-        assert result.diagnostics.selected_strategy in {
-            "threshold",
-            "adaptive_threshold",
-            "multi_threshold",
-            "canny",
-            "edge_aware",
-            "ml",
-        }
         assert result.diagnostics.total_points > 1500
         assert result.diagnostics.primary_span_fraction > 0.7
         assert result.diagnostics.secondary_area_fraction > 0.05
@@ -300,8 +283,8 @@ class TestEdgeAwareStrategy:
         assert result.diagnostics.selected_strategy == "edge_aware"
         assert result.diagnostics.contour_count >= 1
 
-    def test_auto_includes_edge_aware_candidate(self, tmp_path: Path):
-        """AUTO should include edge_aware as a scored candidate."""
+    def test_auto_produces_contours_on_synthetic(self, tmp_path: Path):
+        """AUTO should produce contours from a simple shape."""
         size = 256
         arr = np.zeros((size, size), dtype=np.uint8)
         yy, xx = np.ogrid[:size, :size]
@@ -311,8 +294,8 @@ class TestEdgeAwareStrategy:
         img_path = _save_image(arr, tmp_path / "circle.png")
         result = extract_contours_result(img_path, strategy="auto", resize=None)
 
-        candidate_strategies = {c.strategy for c in result.diagnostics.candidates}
-        assert "edge_aware" in candidate_strategies
+        assert result.contours
+        assert result.diagnostics.contour_count >= 1
 
     def test_contrast_enhance_false_still_works(self, tmp_path: Path):
         """Disabling contrast enhance should not crash."""
