@@ -33,6 +33,7 @@
 
 
 \DeclareMathOperator{\deriv}{d}
+\DeclareMathOperator{\tr}{tr}
 \newcommand{\ihat}{\boldsymbol{\hat{\imath}}}
 \newcommand{\jhat}{\boldsymbol{\hat{\jmath}}}
 \newcommand{\khat}{\boldsymbol{\hat{\kmath}}}
@@ -103,7 +104,7 @@ Chapter~\ref{ch:origin} derives Fourier series from Fourier's \textit{``Théorie
 
 It is a frustration of the author that mathematical texts frequently leave proofs ``as an exercise to the reader.'' Whenever a theorem is offered here, a proof is provided directly, or the reader is directed to one in another text. Theorems involving prerequisite material are labeled as ``definitions'' when the result is likely known to the reader.
 
-However, one must have a set of basal mathematical knowledge before reading the proceeding paper to fully grasp each concept mentioned and used within. The following concepts are then listed as prerequisites for full understanding:
+However, one must have a set of basal mathematical knowledge before reading the following paper to fully grasp each concept mentioned and used within. The following concepts are then listed as prerequisites for full understanding:
 
 \begin{enumerate}
     \item Basic knowledge of linear algebra. Particularly surrounding the notions of vector spaces and linear transformations.
@@ -179,10 +180,11 @@ That is, $u$ is not a function of time; it is unchanging in this dimension. Equa
         \nabla \dott \nabla u(x, y)                                                         & = 0 \\
         \nabla^2u(x, y)                                                                     & = 0
     \end{align}
+    Equivalently, the Laplacian is the trace of the Hessian matrix: $\Delta u = \tr(H_u) = \sum_i \partial^2 u / \partial x_i^2$. The trace captures the average curvature of $u$ across coordinate directions---a connection developed further in Chapters~\ref{ch:eigentheory_foundations} and \ref{ch:eigentheory}.
 \end{aside}
 
 \section{A Solution}
-To solve \eqref{eq:f2}, we'll proceed as Fourier did, utilizing separation of variables. To do as such, we will make the assumption that $u(x, y)$ may be represented by the product of two potential functions as follows:
+To solve \eqref{eq:f2}, we'll proceed as Fourier did, utilizing separation of variables. To do so, we will make the assumption that $u(x, y)$ may be represented by the product of two potential functions as follows:
 \begin{align}
     u      & = X(x)Y(y)\label{eq:assum1} \\
     u_{xx} & = X''(x)Y(y)\label{eq:xx}   \\
@@ -297,7 +299,7 @@ Let's prove it:
         (\lambda_n - \lambda_m)\int_{a}^{b}y_ny_mw(x) \deriv{x} & = p(x)y_ny'_m \Big|_a^b - p(x)y_my_n' \Big|_a^b
     \end{align}
 
-    Since the boundary condition of $y(a) = y(b) = 0$ was given, the left hand side vanishes. This then gives the following:
+    Since the boundary condition of $y(a) = y(b) = 0$ was given, the right-hand side vanishes. This then gives the following:
     \begin{equation}
         (\lambda_n - \lambda_m)\int_{a}^{b}y_ny_mw(x) \deriv{x} = 0
     \end{equation}
@@ -479,7 +481,7 @@ As $\lambda$ can take on any integer value greater than one, a general solution 
 \end{align}
 
 Notice the values of $B_n$ and $C_n$ were combined into one ultimate constant, $c_n$.\\
-Wonderful, a general solution! But what of the constants $c_n$? Fourier uses a series (no pun intended) of ingenious and rather complicated steps to calculate a closed form expression for them. Notwithstanding the above, we can bypass much of the tedious calculation by using the results of our detour into Sturm-Liouville theory. Recall that the solution to equation \eqref{eq:sturm2} was guaranteed to be orthogonal on the interval from $[-\dfrac{\pi}{2}, \dfrac{\pi}{2}]$. We'll exploit this orthogonality using the following technique, which was subsequently used later by Fourier himself; ``Fourier's trick'' \cite{heat_fourier}. First, we will impose the boundary condition of $u(0, y) = 1, y \in [-\dfrac{\pi}{2}, \dfrac{\pi}{2}]$:
+We have a general solution. But what of the constants $c_n$? Fourier uses a series (no pun intended) of ingenious and rather complicated steps to calculate a closed form expression for them. Notwithstanding the above, we can bypass much of the tedious calculation by using the results of our detour into Sturm-Liouville theory. Recall that the solution to equation \eqref{eq:sturm2} was guaranteed to be orthogonal on the interval from $[-\dfrac{\pi}{2}, \dfrac{\pi}{2}]$. We'll exploit this orthogonality using the following technique, which was subsequently used later by Fourier himself; ``Fourier's trick'' \cite{heat_fourier}. First, we will impose the boundary condition of $u(0, y) = 1, y \in [-\dfrac{\pi}{2}, \dfrac{\pi}{2}]$:
 
 \begin{equation}
     1 = \sum_{n=0}^{\infty} c_n\cos((2n+1)y)
@@ -499,7 +501,7 @@ If we multiply both sides of \eqref{eq:f4} by $\cos((2m+1)y)$, and then integrat
     \label{eq:dotted1}
 \end{equation}
 
-Since our assumption is that the sum on the right is convergent, we may switch the summation and integrals signs (thanks, Fubini!), yielding:
+Since our assumption is that the sum on the right is convergent, we may switch the summation and integrals signs (by Fubini's theorem), yielding:
 \begin{equation}
     \int_{-\dfrac{\pi}{2}}^{\dfrac{\pi}{2}} \cos((2m+1)y)dy = \sum_{n=0}^{\infty}c_n\int_{-\dfrac{\pi}{2}}^{\dfrac{\pi}{2}}\cos((2m+1)y)\cos((2n+1)y)dy
 \end{equation}
@@ -510,7 +512,7 @@ If the $m \neq n$, the integral on the right vanishes, which is exactly what was
     c_m                   & = \dfrac{4(-1)^m}{(2m + 1)\pi}
 \end{align}
 
-We've found a closed form expression for all values of $c$. Fourier arrived at the same result on page 144 of the original work \cite{heat_fourier}, but required nearly six pages of arithmetic to prove it---Sturm-Liouville orthogonality bypasses all of that.
+We've found a closed form expression for all values of $c$. Fourier arrived at the same result on page 144 of the original work \cite{heat_fourier}, but required nearly six pages of arithmetic to prove it. Sturm-Liouville orthogonality bypasses all of that.
 
 Putting this together, we now have the following Fourier cosine series representation for the constant 1:
 \begin{equation}
@@ -518,7 +520,7 @@ Putting this together, we now have the following Fourier cosine series represent
     \label{eq:seriesfor1}
 \end{equation}
 
-And a definition, which may be extrapolated from the original problem byway of boundary change:
+And a definition, which may be extrapolated from the original problem by way of boundary change:
 
 \begin{definition}[Fourier Cosine Series]
     \begin{align}
@@ -528,7 +530,7 @@ And a definition, which may be extrapolated from the original problem byway of b
     \end{align}
 \end{definition}
 
-An amazing result from this is the Leibniz formula for $\pi$ when y = 0:
+A notable consequence is the Leibniz formula for $\pi$ when y = 0:
 
 \begin{equation}
     \dfrac{\pi}{4} = \sum_{n=0}^{\infty} \dfrac{(-1)^n}{2n+1}
@@ -589,7 +591,7 @@ Recall then the euclidean inner product for two arbitrary vectors of dimension $
     \begin{equation}
         \mathrm{proj}_{\vec{v}}\vec{u} = \dfrac{\langle \vec{u}, \vec{v} \rangle}{\langle \vec{v}, \vec{v} \rangle}\vec{v} = \dfrac{8}{16 + 1 + 4}\vec{v} = \dfrac{8}{21}(4, -1, 2)
     \end{equation}
-    This is the component of $\vec{u}$ in the direction of $\vec{v}$---the same operation that, extended to $\mathbf{L}^2$, produces Fourier coefficients.
+    This is the component of $\vec{u}$ in the direction of $\vec{v}$, the same operation that produces Fourier coefficients when extended to $\mathbf{L}^2$.
 \end{example}
 
 Notice the vector space that one is operating in is $\mathbb{R}^N$. The above logic applies to vectors of dimension $N$, but what if one wished to apply the same logic to continuous functions? How does this translate? As a first attempt, one may think of a continuous function as a vector of infinite dimension. Let's see a discrete time example of this:
@@ -634,7 +636,7 @@ Notice the vector space that one is operating in is $\mathbb{R}^N$. The above lo
 
 \paragraph{The abstraction ladder.} Before we can extend the concept of vectors to continuous functions (vectors of then infinite dimension), we'll need a few definitions to build up to the final result: $\mathbf{L}^2$ Hilbert space. To do so, we will move downwards in abstraction using the following hierarchy:\\
 Metric spaces $\rightarrow$ Normed vector spaces $\rightarrow$ Banach spaces $\rightarrow$ Inner product spaces $\rightarrow$ Hilbert space\\
-A Banach space is a complete normed vector space---one in which every \textit{Cauchy} sequence converges. A Hilbert space additionally requires an inner product that induces the norm. The distinction matters: $\mathbf{L}^p$ for $p \neq 2$ is Banach but not Hilbert.
+A Banach space is a complete normed vector space, one in which every \textit{Cauchy} sequence converges. A Hilbert space additionally requires an inner product that induces the norm. The distinction matters: $\mathbf{L}^p$ for $p \neq 2$ is Banach but not Hilbert.
 
 \begin{aside}
     It is assumed that the reader is aware of the definition of an inner product space, thereby the definition is implicit therein.
@@ -772,7 +774,7 @@ Using the above notion of a metric, or distance within a metric space, we will b
     \end{align}
 \end{proof}
 
-A proof of the Triangle Inequality may be easily derived using then the Cauchy-Schwarz Inequality. For further reading regarding the above topics, see \cite{holland_schwarz}\\
+A proof of the Triangle Inequality follows from the Cauchy-Schwarz Inequality; see \cite{holland_schwarz} for the derivation.\\
 The above axioms make a great deal of sense when viewed through the lens of a metric. If a norm, $||x||$ is defined as a metric, $d(x, y)$ then certainly this distance is only 0 when d is zero. For an intuitive reasoning for the Triangle inequality:
 
 Let $||x||$ be the distance from point A to B, and let $||y||$ be the distance from A to C. Certainly, the path from A to B to C is always longer than the direct path from A to C.\\
@@ -781,7 +783,7 @@ From the definition of a normed vector space, we arrive at the following (rather
 Collating all of the preceding information into one respective concept, we may now finally define Hilbert space.
 
 \section{Hilbert Space}
-We now have all of the tools required to properly define a Hilbert space! Without further ado:
+We now have all of the tools required to properly define a Hilbert space.
 
 \begin{definition}[Hilbert Space]
     Hilbert space, $\mathbf{H}$, is a real or complex inner product space that is additionally a Cauchy metric space w.r.t the distance function, $d$ defined by said inner product. The inner product is then defined as $\langle f, g \rangle$, with a norm defined as:
@@ -790,7 +792,7 @@ We now have all of the tools required to properly define a Hilbert space! Withou
     \end{equation}
 \end{definition}
 
-One can see now why the preceding sections were needed! All of the nice features of each component required to construct a Hilbert space is therein inherited by said space, which is great!\\
+One can see now why the preceding sections were needed: all of the features of each component required to construct a Hilbert space are therein inherited by said space.\\
 One may look at the definition and wonder what differentiates a Hilbert space from a standard real or complex inner product space. The key differentiating factor is thus: a Hilbert space is a Cauchy metric space, whilst an inner product space may be not. This is crucial, because this qualifier is the key to then extending the notion of finite dimensional vectors to ones of infinite dimension. Why? Let's look at an example:
 
 Take a real inner product space, $\mathbf{X}$, defined with an inner product of:
@@ -883,7 +885,7 @@ This yields:
     f(x) = \sum_{n=0}^{\infty}c_n\cos(nx)
 \end{equation}
 
-Like the result found at the end of Chapter~\ref{ch:origin}, this is the Fourier cosine series representation of $f$---the same structure, now derived purely from orthogonality in $\mathbf{L}^2$. To find the constants, simply dot both sides of the equation by $\cos(mx)$:
+Like the result found at the end of Chapter~\ref{ch:origin}, this is the Fourier cosine series representation of $f$---the same structure, here derived purely from orthogonality in $\mathbf{L}^2$. To find the constants, simply dot both sides of the equation by $\cos(mx)$:
 
 \begin{align}
     \langle f(x), \cos(mx) \rangle & = \sum_{n=0}^{\infty}a_n \langle \cos(nx), \cos(mx) \rangle
@@ -920,7 +922,7 @@ Remembering that the orthogonal projection was a \textit{transformation} from on
     \end{equation}
 \end{definition}
 
-From these two succinct equations above, we have not only derived the Fourier cosine series, but we have also derived the Fourier cosine transform! To finish off the full derivation of Fourier series and transform, we must add an additional set of basis vectors to our series above. Notice that, if $f(x)$ was in the above case odd, the integral would evaluate to zero. And since we know that the only solution to:
+From these two succinct equations above, we have derived both the Fourier cosine series and the Fourier cosine transform. To finish off the full derivation of Fourier series and transform, we must add an additional set of basis vectors to our series above. Notice that, if $f(x)$ was in the above case odd, the integral would evaluate to zero. And since we know that the only solution to:
 
 \begin{equation}
     \mathbf{A}\vec{x} = \vec{0}
@@ -1017,7 +1019,9 @@ That $T_n$ is indeed a polynomial follows from the cosine addition formula. The 
     The right-hand side is the Fourier cosine inner product on $[0, \pi]$, which evaluates to the stated cases by the product-to-sum identity.
 \end{proof}
 
-The weight $w(x) = 1/\sqrt{1-x^2}$ is not an arbitrary choice---it's the Jacobian of the substitution $x = \cos\theta$. Chebyshev orthogonality is Fourier orthogonality in disguise.
+\paragraph{The Jacobian of substitution.} The weight $w(x) = 1/\sqrt{1-x^2}$ is not an arbitrary choice. In the substitution $x = g(\theta) = \cos\theta$, the differential transforms as $\deriv x = g'(\theta)\,\deriv\theta = -\sin\theta\,\deriv\theta$, and $|g'(\theta)| = \sin\theta = \sqrt{1-x^2}$ is the $1 \times 1$ Jacobian determinant of the map $g$. The denominator $\sqrt{1-x^2}$ in the Chebyshev weight cancels this stretching exactly, so that orthogonality with respect to $w(x)\,\deriv x$ is orthogonality with respect to $\deriv\theta$---the uniform measure (cf.\ \S\ref{sec:wronskian} and \S\ref{sec:trace_det_volume}).
+
+\paragraph{Weight functions as Jacobian artifacts.} This pattern generalizes: in each family of classical orthogonal polynomials, the weight function compensates the Jacobian of the natural substitution. The Chebyshev weight $1/\sqrt{1-x^2}$ undoes $x = \cos\theta$; the Gegenbauer weights $(1-x^2)^{\alpha - 1/2}$ generalize to higher-dimensional spheres; the Legendre weight $w(x) = 1$ corresponds to the identity substitution, where no compensation is needed. In every case, the weight redefines the geometry of the function space so that the resulting basis is orthonormal with respect to the natural measure.
 
 \paragraph{The S-L problem.} Differentiating $T_n(x) = \cos(n\arccos x)$ with the chain rule and simplifying yields the Chebyshev differential equation:
 \begin{equation}
@@ -1210,24 +1214,30 @@ Since $T_n$ and $P_k$ are both polynomials of degree $n$ and $k$ respectively, $
 \subsection{Lagrange Interpolation}
 \label{sec:lagrange}
 
-The orthogonal polynomials above were developed as \textit{basis} functions for $\mathbf{L}^2$ expansions. A complementary problem is \textit{interpolation}: given $n + 1$ data points $(x_0, y_0), \ldots, (x_n, y_n)$ with distinct nodes $x_i$, find the unique polynomial $p$ of degree $\leq n$ satisfying $p(x_i) = y_i$.
+The orthogonal polynomials above were developed as \textit{basis} functions for $\mathbf{L}^2$ expansions. A complementary problem is \textit{interpolation}: given $n + 1$ data points $(x_0, y_0), \ldots, (x_n, y_n)$ with distinct nodes $x_i$, find the unique polynomial $p$ of degree $\leq n$ satisfying $p(x_i) = y_i$. In matrix form, this amounts to solving the Vandermonde system $Va = y$, where $V_{ij} = x_i^j$. The matrix $V$ is nonsingular whenever the nodes are distinct (its determinant is $\prod_{i > j}(x_i - x_j) \neq 0$), so a unique solution exists. The Lagrange construction sidesteps the system entirely, producing the interpolant without ever forming or inverting $V$.
 
-\begin{definition}[Lagrange Basis Polynomials]
-    For distinct nodes $x_0, \ldots, x_n$, the Lagrange basis polynomials are:
+\begin{theorem}[Lagrange Basis Polynomials]
+    \label{thm:lagrange_basis}
+    For distinct nodes $x_0, \ldots, x_n$, there exist unique polynomials $L_0, \ldots, L_n$ of degree $n$ satisfying $L_i(x_j) = \delta_{ij}$, given by:
     \begin{equation}
         L_i(x) = \prod_{\substack{j=0 \\ j \neq i}}^{n} \dfrac{x - x_j}{x_i - x_j}, \quad i = 0, \ldots, n
     \end{equation}
-    These satisfy $L_i(x_j) = \delta_{ij}$.
-\end{definition}
+    The interpolating polynomial is $p(x) = \sum_{i=0}^{n} y_i L_i(x)$.
+\end{theorem}
 
-The interpolating polynomial is then $p(x) = \sum_{i=0}^{n} y_i L_i(x)$.
+\begin{proof}
+    We seek a polynomial $L_i$ of degree $\leq n$ that vanishes at each $x_j$ with $j \neq i$ and satisfies $L_i(x_i) = 1$. The $n$ vanishing conditions force $L_i(x)$ to be divisible by the nodal polynomial $\omega_i(x) = \prod_{j \neq i}(x - x_j)$, which has degree $n$. Since $\deg L_i \leq n$, the quotient $L_i(x)/\omega_i(x)$ must be a constant. The normalization $L_i(x_i) = 1$ fixes this constant to $1/\omega_i(x_i)$, yielding the stated formula. Uniqueness of $p$ follows: if $q$ also interpolates the data, then $p - q$ is a polynomial of degree $\leq n$ with $n + 1$ roots, hence identically zero.
+\end{proof}
+
+The Lagrange basis exhibits the action of $V^{-1}$ without ever forming $V$ itself.
 
 \begin{theorem}[Uniqueness of Polynomial Interpolation]
+    \label{thm:interp_unique}
     The interpolating polynomial of degree $\leq n$ through $n + 1$ distinct points is unique.
 \end{theorem}
 
 \begin{proof}
-    If $p$ and $q$ both interpolate the data, then $p - q$ is a polynomial of degree $\leq n$ with $n + 1$ roots. By the fundamental theorem of algebra, $p - q \equiv 0$.
+    Immediate from the proof of Theorem~\ref{thm:lagrange_basis}: the difference of two interpolants has $n + 1$ roots with degree $\leq n$.
 \end{proof}
 
 \begin{theorem}[Interpolation Error]
@@ -1258,7 +1268,7 @@ The interpolating polynomial is then $p(x) = \sum_{i=0}^{n} y_i L_i(x)$.
 
 Orthogonal polynomials solve an interpolation problem; they also solve a \textit{quadrature} problem. The question is: how should one choose $n$ nodes and weights to integrate as large a class of functions as possible?
 
-Newton-Cotes quadrature fixes equispaced nodes and determines weights---$n$ parameters in total, exact for polynomials of degree $\leq n - 1$. Gauss's idea: free the nodes as well. With $n$ nodes and $n$ weights, there are $2n$ parameters, so one might hope to integrate polynomials of degree $\leq 2n - 1$ exactly. This is achieved precisely when the nodes are the zeros of an orthogonal polynomial.
+Newton-Cotes quadrature fixes equispaced nodes and determines weights---$n$ parameters total, exact for polynomials of degree $\leq n - 1$. Gauss's idea: free the nodes as well. With $n$ nodes and $n$ weights, there are $2n$ parameters, so one might hope to integrate polynomials of degree $\leq 2n - 1$ exactly. This is achieved precisely when the nodes are the zeros of an orthogonal polynomial.
 
 \begin{theorem}[Gaussian Quadrature]
     Let $\{P_n\}$ be orthogonal polynomials with respect to the weight $w(x)$ on $[a, b]$, and let $x_1, \ldots, x_n$ be the zeros of $P_n$. Then there exist unique weights $w_1, \ldots, w_n$ such that:
@@ -1302,7 +1312,7 @@ Gauss-Legendre with $n = 2$ achieves the same exactness (degree 3) as Simpson's 
 
 \section{Fourier Series; Real and Complex Forms}
 
-Opposite to the case of the cosine series, if the function being expressed by the sine series is even, the result will yield only zero. If we could combine the two into one master series, our problems would be resolved. This can be done only if both sine and cosine are orthogonal to each other. Luckily for us, they indeed are!:
+Opposite to the case of the cosine series, if the function being expressed by the sine series is even, the result will yield only zero. If we could combine the two into one master series, our problems would be resolved. This can be done only if both sine and cosine are orthogonal to each other. They are indeed orthogonal:
 
 
 \begin{align}
@@ -1333,13 +1343,11 @@ The complex form comes directly from \eqref{defn:real_fourier}. One could substi
      & e^{-ix} = \cos(x) - i\sin(x)\label{eq:euler2}
 \end{align}
 
-It can be easily shown that the above are orthogonal on any interval that both cosine and sine are. Using the results from Sturm-Liouville theory, one can deduce this fact rather quickly without any additional integration: recall \eqref{eq:yofy}. This result was derived via a method of characteristics; substituting in an \textit{Ansatz} of $Y(y) = e^{\lambda y}$. Before any simplification the resultant function was complex:
-
+The complex exponentials $e^{ix}$ and $e^{-ix}$ are orthogonal on every interval where cosine and sine are. This follows directly from the Sturm-Liouville framework without additional computation. Recall the general solution to \eqref{eq:yofy}, derived via the \textit{Ansatz} $Y(y) = e^{\lambda y}$:
 \begin{equation}
     Ce^{i\sqrt{\lambda}y} + De^{-i\sqrt{\lambda}y}
 \end{equation}
-
-Though the above did not yield a sine term in Chapter~\ref{ch:origin}, it can be postulated that a similar equation, given the appropriate boundary conditions, could. Therefore, it can be concluded that, as both $e^{ix}$ and $e^{-ix}$ are potential solutions to a Sturm-Liouville differential equation, that they must then be orthogonal on some predefined interval.\\
+The general solution always contained both exponentials (cf.\ the case analysis at equations \eqref{eq:sturm1}--\eqref{eq:sturm2}); the boundary conditions of Chapter~\ref{ch:origin} forced $D = 0$ because the even data selected cosine. Different boundary conditions---odd data, or a domain without reflection symmetry---would retain the sine term. Since both $e^{i\sqrt{\lambda}y}$ and $e^{-i\sqrt{\lambda}y}$ are eigenfunctions of the same Sturm-Liouville operator with distinct eigenvalues, their orthogonality is immediate from Theorem~\ref{thm:sturm_proof}.\\
 Though the orthogonality of the two equations above is trivial, transforming the final result into its complex form requires a bit more work. We may continue using the same approach that was used in the derivation of \eqref{defn:real_fourier} with only slight modification. Thereupon our operation in a complex vector space, we must first define a new complex inner product:
 
 \begin{definition}[Hermitian Inner Product for $\mathbb{C}^n$]
@@ -1358,7 +1366,7 @@ The conjugation is necessary: without it, the ``inner product'' $\langle x, x \r
     Given the defining axioms (conjugate symmetry $\langle x, y \rangle = \overline{\langle y, x \rangle}$, antilinearity in the first argument $\langle cx, y \rangle = \bar{c}\langle x, y \rangle$, additivity, and positive definiteness), linearity in the second argument follows: $\langle x, cy \rangle = \overline{\langle cy, x \rangle} = \overline{\bar{c}\langle y, x \rangle} = c\overline{\langle y, x \rangle} = c\langle x, y \rangle$. Additivity in the second argument follows similarly via conjugate symmetry.
 \end{proof}
 
-Seeing as the Hermitian inner product is needed for complex vectors spaces in $\mathbb{C}^n$, we will switch to a newline defined inner product for complex $\mathbf{L}^2[a, b]$:
+Seeing as the Hermitian inner product is needed for complex vectors spaces in $\mathbb{C}^n$, we will switch to a newly defined inner product for complex $\mathbf{L}^2[a, b]$:
 
 \begin{definition}[$\mathbf{L}^2{[a, b]}$, Complex, Hilbert Space]
     Define $\mathbf{L}^2[a, b]$ as a complex Hilbert space. Define $f(\vec{x})$ and  $g(\vec{x})$ to be vectors within $\mathbf{L}^2[a, b]$.
@@ -1696,7 +1704,7 @@ The spectral theorem above states \textit{that} a symmetric matrix can be diagon
     \end{equation}
 \end{definition}
 
-Geometrically, $A$ acts on $v$ by scaling it---not rotating, reflecting, or shearing. The eigenvectors are the directions that $A$ preserves; the eigenvalues are the corresponding scaling factors. To find them, observe that $Av = \lambda v$ is equivalent to $(A - \lambda I)v = 0$, which has a nonzero solution if and only if:
+Geometrically, $A$ acts on $v$ by scaling it---not rotating, reflecting, or shearing. The eigenvectors are the directions of pure dilation: $\lambda > 0$ stretches, $\lambda < 0$ reverses orientation, and $\lambda \in \mathbb{C} \setminus \mathbb{R}$ rotates. A rotation matrix $R_\theta = \begin{pmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{pmatrix}$ has eigenvalues $e^{\pm i\theta}$---no real eigenvectors, because rotation admits no invariant direction. Every real matrix, however tangled its off-diagonal entries, becomes diagonal---pure scaling---once expressed in the right coordinates. To find the eigenvalues, observe that $Av = \lambda v$ is equivalent to $(A - \lambda I)v = 0$, which has a nonzero solution if and only if:
 \begin{equation}
     \det(A - \lambda I) = 0
     \label{eq:char_poly}
@@ -1708,7 +1716,7 @@ This is the \textit{characteristic polynomial}, a polynomial of degree $n$ in $\
     \begin{equation}
         \det\begin{pmatrix} 3 - \lambda & 1 \\ 0 & 2 - \lambda \end{pmatrix} = (3 - \lambda)(2 - \lambda) = 0
     \end{equation}
-    so $\lambda_1 = 3$, $\lambda_2 = 2$. For $\lambda_1 = 3$: $(A - 3I)v = 0$ gives $v_1 = \begin{pmatrix} 1 \\ 0 \end{pmatrix}$. For $\lambda_2 = 2$: $(A - 2I)v = 0$ gives $v_2 = \begin{pmatrix} -1 \\ 1 \end{pmatrix}$. The matrix $A$ stretches the $v_1$ direction by 3 and the $v_2$ direction by 2---no rotation in either direction.
+    so $\lambda_1 = 3$, $\lambda_2 = 2$. For $\lambda_1 = 3$: $(A - 3I)v = 0$ gives $v_1 = \begin{pmatrix} 1 \\ 0 \end{pmatrix}$. For $\lambda_2 = 2$: $(A - 2I)v = 0$ gives $v_2 = \begin{pmatrix} -1 \\ 1 \end{pmatrix}$. The matrix $A$ stretches the $v_1$ direction by 3 and the $v_2$ direction by 2---no rotation in either direction. Their sum equals $\tr(A) = 5$, their product equals $\det(A) = 6$---relationships developed in \S\ref{sec:trace_det_volume}.
 \end{example}
 
 \section{Diagonalization}
@@ -1733,6 +1741,33 @@ In the eigenbasis, the matrix acts by pure scaling---raising it to any power jus
     \end{equation}
     The spectral theorem (Theorem~\ref{thm:spectral}) guarantees this works for all symmetric matrices, with the additional benefit that $P$ is orthogonal ($P^{-1} = P^T$), so there's no numerical cost to inverting the change of basis.
 \end{example}
+
+\section{Trace, Determinant, and Volume}
+\label{sec:trace_det_volume}
+
+Eigenvalues encode two fundamental scalar summaries of a linear map: the \textit{trace} (their sum) and the \textit{determinant} (their product). Both have transparent geometric meanings once diagonalization is in hand.
+
+\paragraph{Trace.} The trace of $A \in \mathbb{R}^{n \times n}$ is the sum of its diagonal entries:
+\begin{equation}
+    \tr(A) = \sum_{i=1}^{n} a_{ii} = \sum_{i=1}^{n} \lambda_i
+\end{equation}
+The second equality follows from $A = PDP^{-1}$ and the cyclic property $\tr(PDP^{-1}) = \tr(D)$. The cyclic property itself is elementary: $\tr(AB) = \sum_i (AB)_{ii} = \sum_{i,j} A_{ij}B_{ji} = \tr(BA)$. In our running example, $\tr(A) = 3 + 2 = 5$. Geometrically, the trace is the total stretch across all eigendirections---a first-order summary of the map's action.
+
+\paragraph{Determinant as volume scaling.} The determinant equals the product of the eigenvalues:
+\begin{equation}
+    \det(A) = \prod_{i=1}^{n} \lambda_i
+\end{equation}
+To see this, evaluate the characteristic polynomial $\det(A - \lambda I) = \prod_i(\lambda_i - \lambda)$ at $\lambda = 0$. The quantity $|\det(A)|$ measures the signed volume of the image of the unit cube under $A$. For the $2 \times 2$ case, the columns of $A$ span a parallelogram whose area equals $|\det(A)|$: a matrix with columns $(3, 0)^T$ and $(1, 2)^T$ spans area $|3 \cdot 2 - 1 \cdot 0| = 6 = \det(A)$. In $\mathbb{R}^3$, the cross product $u \times v$ yields a vector whose magnitude equals the parallelogram area spanned by $u$ and $v$, the two-dimensional analogue of the determinant's volume interpretation.
+
+\paragraph{Wronskian connection.} The Wronskian introduced in \S\ref{sec:wronskian} is the determinant of the fundamental matrix $[y_1, y_2; y_1', y_2']$. The geometric reading of the determinant makes the Wronskian's independence-test role immediate: $W(y_1, y_2) \neq 0$ precisely when the solution vectors span a nondegenerate parallelogram in phase space, i.e., they are linearly independent.
+
+\paragraph{The Jacobian determinant.} For a smooth map $g: \mathbb{R}^n \to \mathbb{R}^n$, the Jacobian matrix $J_g$ has entries $(J_g)_{ij} = \partial g_i / \partial \theta_j$. Its determinant $|{\det J_g}|$ measures local volume scaling: the image of an infinitesimal cube of volume $\deriv V$ has volume $|{\det J_g}|\,\deriv V$. The change-of-variables formula
+\begin{equation}
+    \int f(g(\theta))\,|{\det J_g(\theta)}|\,\deriv\theta = \int f(x)\,\deriv x
+\end{equation}
+makes this precise. Consider the substitution $x = \cos\theta$: the $1 \times 1$ Jacobian determinant is $|{-\sin\theta}| = \sin\theta = \sqrt{1 - x^2}$, so $\deriv x = \sin\theta\,\deriv\theta$. Inverting, $\deriv\theta = \deriv x / \sqrt{1 - x^2}$, which is exactly the Chebyshev weight function $w(x) = 1/\sqrt{1 - x^2}$. The weight compensates the Jacobian: orthogonality with respect to $w(x)\,\deriv x$ is orthogonality with respect to $\deriv\theta$ in disguise (cf.\ the Chebyshev orthogonality proof in \S\ref{sec:orthogonal_polynomials}).
+
+\paragraph{Summary.} Trace captures the first-order summary of a map (total stretch); the determinant captures the top-order summary (total volume change); the Jacobian determinant localizes the volume-change measurement to a single point. When the matrix is rectangular, the singular values replace the eigenvalues in these roles---the subject of SVD in Chapter~\ref{ch:eigentheory}.
 
 \section{From Finite to Infinite Dimensions}
 \label{sec:finite_to_infinite}
@@ -1791,6 +1826,15 @@ The infinite-dimensional spectral theorem undergirds the whole picture: a self-a
 
 In the discrete setting, $F_N$ plays the same role: as we'll show in Chapter~\ref{ch:dft}, it simultaneously diagonalizes all circulant matrices, which are the discrete analogues of translation-invariant operators.
 
+\paragraph{Eigenvalues in nature.} The eigenvalue equation $\mathcal{L}[\phi] = \lambda\phi$ recurs across the sciences; in each instance, the physics selects an operator and the eigenvalues are thereafter determined---not chosen, but discovered.
+\begin{itemize}
+    \item \textbf{Vibrating strings}: $\phi'' + \lambda\phi = 0$ with fixed endpoints yields eigenvalues $\lambda_n = (n\pi/L)^2$, the squared harmonic frequencies. This is Fourier's original problem.
+    \item \textbf{Quantum mechanics}: the time-independent Schr\"{o}dinger equation $\hat{H}\psi = E\psi$ is an eigenvalue problem for the Hamiltonian operator. The eigenvalues $E$ are the allowed energy levels; the eigenfunctions $\psi$ are the stationary states.
+    \item \textbf{Principal axes of inertia}: the eigenvectors of the inertia tensor $I$ are the body's principal axes, the directions about which it can spin without wobble. The eigenvalues are the corresponding moments of inertia.
+    \item \textbf{Leslie matrices}: in population dynamics, the dominant eigenvalue of the Leslie matrix governs the asymptotic growth rate, and its eigenvector gives the stable age distribution.
+    \item \textbf{PageRank}: the dominant eigenvector of the stochastic transition matrix of the web graph determines the stationary distribution, i.e., page importance.
+\end{itemize}
+
 \paragraph{The transform pipeline as change of diagonalization.} Converting between eigenbases is a change of basis---a unitary rotation in function space. The pipeline developed throughout this paper:
 \begin{equation}
     \text{Fourier basis} \xleftrightarrow{x = \cos\theta} \text{Chebyshev basis} \xleftrightarrow{\text{connection matrix}} \text{Legendre basis}
@@ -1808,6 +1852,12 @@ Each basis diagonalizes a different operator:
     \end{tabular}
 \end{center}
 The fast algorithms---FFT, FCT, FLT---make these conversions $O(N \log N)$ or $O(N \log^2 N)$. In finite dimensions, the same principle leads to eigendecomposition, then to SVD, then to PCA, and finally to compression: the subjects of Chapter~\ref{ch:eigentheory}.
+
+\paragraph{The multivariate chain rule and the Jacobian matrix.} The one-dimensional Jacobian $g'(\theta)$ encountered in the Chebyshev substitution generalizes to higher dimensions via the Jacobian matrix. For a smooth map $g: \mathbb{R}^m \to \mathbb{R}^n$, the Jacobian $J_g \in \mathbb{R}^{n \times m}$ has entries $(J_g)_{ij} = \partial g_i / \partial \theta_j$:
+\begin{equation}
+    J_g = \begin{pmatrix} \partial g_1/\partial \theta_1 & \cdots & \partial g_1/\partial \theta_m \\ \vdots & \ddots & \vdots \\ \partial g_n/\partial \theta_1 & \cdots & \partial g_n/\partial \theta_m \end{pmatrix}
+\end{equation}
+The multivariate chain rule takes the form $\nabla_\theta(f \circ g) = J_g^T \nabla_x f$, and the change-of-variables formula $\int f(g(\theta))\,|\det J_g(\theta)|\,\deriv\theta = \int f(x)\,\deriv x$ replaces the absolute value of the single-variable derivative with the absolute value of the determinant (cf.\ \S\ref{sec:trace_det_volume}). This Jacobian matrix reappears in gradient-based optimization (e.g., the PCA Lagrangian of Chapter~\ref{ch:eigentheory}) and in the Hessian's role as the Jacobian of the gradient.
 
 \chapter{Lens II: Complex Analysis}
 \label{ch:complex_analysis}
@@ -1903,7 +1953,7 @@ The Taylor series representation requires $f$ to be holomorphic on a disk center
     \label{thm:laurent}
 \end{theorem}
 
-Notice the striking similarity between \eqref{eq:laurent} and the Taylor series: the Laurent series simply extends the summation to include negative powers of $(z - z_0)$. The terms with $n \geq 0$ form the \textit{analytic part}, while those with $n < 0$ form the \textit{principal part}. When $f$ has no singularity at $z_0$ (i.e., $r_1 = 0$), all coefficients with $n < 0$ vanish, and we recover the Taylor series---a tidy elision of the more general case.
+Notice the striking similarity between \eqref{eq:laurent} and the Taylor series: the Laurent series simply extends the summation to include negative powers of $(z - z_0)$. The terms with $n \geq 0$ form the \textit{analytic part}, while those with $n < 0$ form the \textit{principal part}. When $f$ has no singularity at $z_0$ (i.e., $r_1 = 0$), all coefficients with $n < 0$ vanish, and we recover the Taylor series---a tidy elision of the general case.
 
 \begin{figure}[htbp]
     \centering
@@ -1912,7 +1962,7 @@ Notice the striking similarity between \eqref{eq:laurent} and the Taylor series:
     \label{fig:laurent_annulus}
 \end{figure}
 
-For a proof of this theorem---including the derivation of the coefficient formula via Cauchy's integral formula---see \cite{ahlfors_complex}.
+For a proof of this theorem, including the derivation of the coefficient formula via Cauchy's integral formula---see \cite{ahlfors_complex}.
 
 \section{From Laurent Series to Fourier Series}
 \label{sec:laurent_to_fourier}
@@ -1996,7 +2046,7 @@ where $\gamma$ is any simple closed contour encircling $z = x$. This is the \tex
 \begin{equation}
     \dfrac{\deriv^n}{\deriv x^n}(x^2 - 1)^n = \dfrac{n!}{2\pi i}\oint_\gamma \dfrac{(z^2 - 1)^n}{(z - x)^{n+1}}\deriv{z}
 \end{equation}
-Dividing by $2^n n!$ recovers Rodrigues' formula from the contour integral. The Gram-Schmidt construction of Chapter~\ref{ch:linear_algebra} and the residue computation above yield the same polynomials---the two lenses produce the same object.
+Dividing by $2^n n!$ recovers Rodrigues' formula from the contour integral. The Gram-Schmidt construction of Chapter~\ref{ch:linear_algebra} and the residue computation above yield the same polynomials; the two lenses produce the same object.
 
 \paragraph{The generating function.} The generating function $\frac{1}{\sqrt{1 - 2xt + t^2}} = \sum_{n=0}^{\infty} P_n(x) t^n$ is the Coulomb potential in $\mathbb{R}^3$, expanded in powers of the distance ratio $t$. This too can be derived from the Schl\"{a}fli integral via residue computation, with $t$ playing the role of the expansion parameter in the Laurent series of the kernel.
 
@@ -2092,7 +2142,7 @@ Though this may look different in comparison to standard vector projection in $\
 \chapter{The Discrete Fourier Transform}
 \label{ch:dft}
 
-Throughout the preceding chapters (Chapters~\ref{ch:linear_algebra}--\ref{ch:complex_analysis}), we derived the Fourier series and transform for continuous functions in $\mathbf{L}^2$. In practice, however, one works with discrete, finite data. The natural question is: what is the discrete analogue of the Fourier transform? The answer is the Discrete Fourier Transform (DFT), which is not merely an approximation of the continuous transform, but a rich algebraic object in its own right.
+Throughout the preceding chapters (Chapters~\ref{ch:linear_algebra}--\ref{ch:complex_analysis}), we derived the Fourier series and transform for continuous functions in $\mathbf{L}^2$. In practice, however, one works with discrete, finite data. The natural question is: what is the discrete analogue of the Fourier transform? The answer is the Discrete Fourier Transform (DFT), which is a rich algebraic object in its own right, beyond a mere approximation of the continuous transform.
 
 \section{DFT as Matrix Multiplication}
 \label{sec:dft_matrix}
@@ -2214,32 +2264,9 @@ This is the convolution theorem (Theorem~\ref{thm:convolution}) in the discrete 
 \section{The Fast Fourier Transform}
 \label{sec:fft}
 
-A direct computation of the DFT requires $O(N^2)$ operations. The Fast Fourier Transform (FFT), discovered by Cooley and Tukey in 1965 \cite{cooley_tukey}, reduces this to $O(N \log N)$ by exploiting the algebraic structure of $\omega_N$.
+A direct computation of the DFT requires $O(N^2)$ operations. The Fast Fourier Transform (FFT), discovered by Cooley and Tukey in 1965 \cite{cooley_tukey}, reduces this to $O(N \log N)$ by exploiting the algebraic structure of $\omega_N$. The central idea is not specific to powers of two: any factorization $N = N_1 \cdot N_2$ yields a decomposition of the 1-D DFT into smaller transforms.
 
-\subsection{The Radix-2 Idea}
-
-The simplest case is $N = 2M$. Split the input into even- and odd-indexed subsequences:
-\begin{align}
-    X_k & = \sum_{n=0}^{N-1} x_n \omega_N^{kn}                                                                               \\
-        & = \sum_{m=0}^{M-1} x_{2m} \omega_M^{km} + \omega_N^k \sum_{m=0}^{M-1} x_{2m+1} \omega_M^{km}                       \\
-        & = E_k + \omega_N^k \cdot O_k
-\end{align}
-
-where $E_k$ and $O_k$ are the length-$M$ DFTs of the even and odd samples, and $\omega_N^k$ is the \textit{twiddle factor}. Since $E_k$ and $O_k$ are periodic with period $M$, the ``butterfly'' operation
-\begin{align}
-    X_k     & = E_k + \omega_N^k O_k \\
-    X_{k+M} & = E_k - \omega_N^k O_k
-\end{align}
-computes two outputs from each pair. Applying this recursively yields $\log_2 N$ stages of $N/2$ butterflies each, for a total of $O(N \log N)$ operations. This is the Cooley--Tukey radix-2 decimation-in-time (DIT) algorithm---limited to power-of-two lengths. We'll now generalize.
-
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.85\textwidth]{../assets/f15_butterfly.pdf}
-    \caption{Butterfly diagram for the radix-2 Cooley--Tukey FFT with $N = 8$. Bit-reversed input on the left, natural-order output on the right, with twiddle factors $W^k_N$ annotated at each stage.}
-    \label{fig:butterfly}
-\end{figure}
-
-\subsection{The Mixed-Radix Decomposition}
+\subsection{Reshape and Transform}
 
 When $N = N_1 \cdot N_2$, a 1-D index $n$ can be decomposed via mixed-radix representation as
 \begin{equation}
@@ -2250,31 +2277,97 @@ where $n_1 \in [0, N_1)$, $n_2 \in [0, N_2)$, $k_1 \in [0, N_1)$, $k_2 \in [0, N
     X[k_1 N_2 + k_2] = \sum_{n_2=0}^{N_2-1} \left[\sum_{n_1=0}^{N_1-1} x[n_1 + n_2 N_1]\, \omega_{N_1}^{n_1 k_1}\right] \omega_N^{n_1 k_2}\, \omega_{N_2}^{n_2 k_2}
 \end{equation}
 
-This decomposes the length-$N$ DFT into three phases:
+This decomposes the length-$N$ DFT into a three-phase pipeline:
 \begin{enumerate}
     \item \textbf{Column FFTs}: $N_2$ independent length-$N_1$ DFTs (the inner sum over $n_1$).
     \item \textbf{Twiddle multiplication}: pointwise multiplication by $\omega_N^{n_1 k_2}$.
     \item \textbf{Row FFTs}: $N_1$ independent length-$N_2$ DFTs (the outer sum over $n_2$).
 \end{enumerate}
 
+\paragraph{Programming intuition.} The decomposition amounts to \texttt{x.reshape(N2, N1)}: lay the 1-D signal into an $N_2 \times N_1$ matrix, transform down the columns, apply twiddle factors, then transform across the rows. The Cooley--Tukey radix-2 algorithm is the one-sentence special case $N_1 = 2$: split into even and odd samples, compute two half-length DFTs, and combine via the butterfly
+\begin{align}
+    X_k     & = E_k + \omega_N^k O_k \\
+    X_{k+M} & = E_k - \omega_N^k O_k
+\end{align}
+where $E_k$ and $O_k$ are the length-$M$ DFTs of the even and odd samples ($M = N/2$). Applying this recursively yields $\log_2 N$ stages of $N/2$ butterflies each.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{../assets/f15_butterfly.pdf}
+    \caption{Butterfly diagram for the radix-2 Cooley--Tukey FFT with $N = 8$. Bit-reversed input on the left, natural-order output on the right, with twiddle factors $W^k_N$ annotated at each stage.}
+    \label{fig:butterfly}
+\end{figure}
+
 For a general factorization $N = f_1 \cdot f_2 \cdots f_k$, the process recurses through each factor, yielding a total operation count of $O\bigl(N \sum_i f_i\bigr)$---hence the preference for small prime factors.
 
+\subsection{The Stride Permutation}
+
+The reshape step implicitly reorders the input: converting between the ``column-phase'' and ``row-phase'' orderings requires a stride permutation $L_{N_1}^N$ (also called the perfect shuffle). Concretely, $L_{N_1}^N$ maps index $j$ to
+\begin{equation}
+    L_{N_1}^N: \quad j \;\longmapsto\; (j \bmod N_1) \cdot N_2 + \lfloor j / N_1 \rfloor
+\end{equation}
+This is the permutation that transposes an $N_2 \times N_1$ matrix stored in column-major order to row-major order.
+
+\paragraph{Programming intuition.} The stride permutation is \texttt{x.reshape(N2, N1).T.ravel()}: reshape, transpose, and flatten. It reindexes between the column-major layout (needed for column DFTs) and the row-major layout (needed for row DFTs). Without this reindexing, the column and row phases would read from misaligned memory.
+
+\begin{example}[Stride permutation for $N = 6$]
+    With $N_1 = 2$, $N_2 = 3$, the permutation $L_2^6$ maps $(0,1,2,3,4,5) \mapsto (0,3,1,4,2,5)$---interleaving the two groups of three, or equivalently transposing a $3 \times 2$ matrix.
+\end{example}
+
 \subsection{Kronecker Product Formulation}
+
+\begin{definition}[Kronecker Product]
+    For $A \in \mathbb{R}^{m \times n}$ and $B \in \mathbb{R}^{p \times q}$, the Kronecker product $A \otimes B \in \mathbb{R}^{mp \times nq}$ is the block matrix:
+    \begin{equation}
+        A \otimes B = \begin{pmatrix} a_{11}B & a_{12}B & \cdots & a_{1n}B \\ a_{21}B & a_{22}B & \cdots & a_{2n}B \\ \vdots & \vdots & \ddots & \vdots \\ a_{m1}B & a_{m2}B & \cdots & a_{mn}B \end{pmatrix}
+    \end{equation}
+\end{definition}
+
+\begin{example}[Kronecker product with the identity]
+    With $F_2 = \begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix}$, the product $F_2 \otimes I_2$ is:
+    \begin{equation}
+        F_2 \otimes I_2 = \begin{pmatrix} 1 \cdot I_2 & 1 \cdot I_2 \\ 1 \cdot I_2 & -1 \cdot I_2 \end{pmatrix} = \begin{pmatrix} 1 & 0 & 1 & 0 \\ 0 & 1 & 0 & 1 \\ 1 & 0 & -1 & 0 \\ 0 & 1 & 0 & -1 \end{pmatrix}
+    \end{equation}
+    This applies the 2-point DFT to pairs of elements---the matrix version of ``for each group of 2: apply $F_2$.''
+\end{example}
+
+\paragraph{Programming intuition.} If you have written a nested loop that applies one operation along rows and another along columns, you have computed a Kronecker product. The matrix $A \otimes I_n$ is the matrix version of \texttt{for each group: apply A}; $I_m \otimes B$ applies $B$ independently within each group. The mixed-product property $(A \otimes B)(C \otimes D) = (AC) \otimes (BD)$ encodes the fact that the two operations commute when they act on orthogonal index sets.
 
 Following Van Loan \cite{van_loan_fft}, the two-factor decomposition admits a clean matrix factorization:
 \begin{equation}
     F_N = \bigl(F_{N_1} \otimes I_{N_2}\bigr)\, T\, \bigl(I_{N_1} \otimes F_{N_2}\bigr)\, L
     \label{eq:kron_fft}
 \end{equation}
-where $L$ is a stride permutation (the ``perfect shuffle'' that reindexes between column and row phases), $T = \mathrm{diag}(\omega_N^{jk})$ is the twiddle diagonal for the appropriate index pairs, $\otimes$ denotes the Kronecker product, and $I_m$ is the $m \times m$ identity. The left factor applies $N_2$-point DFTs across $N_1$ groups, the right factor applies $N_1$-point DFTs across $N_2$ groups, and the twiddle diagonal mediates between stages.
+where $L$ is the stride permutation, $T = \mathrm{diag}(\omega_N^{jk})$ is the twiddle diagonal, and $I_m$ is the $m \times m$ identity. The left factor applies $N_2$-point DFTs across $N_1$ groups, the right factor applies $N_1$-point DFTs across $N_2$ groups, and the twiddle diagonal mediates between stages.
 
 This formulation makes the recursive structure of the FFT algebraically explicit: the full $N$-point DFT matrix is a product of sparse, structured factors---Kronecker products with identities and diagonal twiddle matrices---rather than a single dense $N \times N$ multiply.
+
+\subsection{Multi-Factor Decomposition and the Hypercube}
+\label{sec:nd_fft}
+
+The Kronecker formulation extends naturally to multiple factors. For $N = f_1 \cdot f_2 \cdots f_k$, the DFT factors as a product of $k$ sparse stages, each involving a Kronecker product $I \otimes F_{f_s} \otimes I$ (with appropriate twiddle diagonals and stride permutations between stages). More importantly, the $N$-dimensional DFT of an array with shape $(s_0, s_1, \ldots, s_{d-1})$ is separable:
+\begin{equation}
+    F_{s_0 \times s_1 \times \cdots \times s_{d-1}} = F_{s_0} \otimes F_{s_1} \otimes \cdots \otimes F_{s_{d-1}}
+\end{equation}
+This means independent 1-D DFTs along each axis produce the full $N$-D result---each Kronecker factor acts on one dimension while leaving the others untouched (cf.\ the mixed-product property). The order in which axes are processed is immaterial.
+
+Here is the punchline: a 1-D mixed-radix FFT of length $N = f_1 \cdot f_2 \cdots f_k$ \textit{is} a $k$-dimensional FFT on an $f_1 \times f_2 \times \cdots \times f_k$ hypercube. The mixed-radix decomposition reshapes a flat vector into a multi-dimensional array, transforms along each axis in turn, and flattens the result. The twiddle factors are the phase corrections needed because the 1-D data isn't truly separable---they encode the ``cross terms'' between dimensions. A length-30 FFT is a 3-D FFT on a $2 \times 3 \times 5$ cube; a length-$2^n$ FFT is an $n$-dimensional FFT on a binary hypercube.
+
+\subsection{Worked Example: $N = 30 = 2 \times 3 \times 5$}
+
+To make the multi-factor decomposition concrete, consider $N = 30$ with factor sequence $(f_1, f_2, f_3) = (2, 3, 5)$. The algorithm proceeds in three passes:
+
+\paragraph{Pass 1 (factor 2).} $p_{\mathrm{div}} = 1$, $p_{\mathrm{mul}} = 2$, groups $= 15$. Each of the 15 groups contains one radix-2 butterfly operating on elements at stride 1: indices $\{2m, 2m+1\}$ for $m = 0, \ldots, 14$. No twiddle factors at $j = 0$. Total: 15 butterflies, each a simple add/subtract.
+
+\paragraph{Pass 2 (factor 3).} $p_{\mathrm{div}} = 2$, $p_{\mathrm{mul}} = 6$, groups $= 5$. Each group contains 2 independent radix-3 butterflies operating on elements at stride 2. For group $m$ and block $j \in \{0, 1\}$, the three butterfly inputs are at indices $6m + j + k \cdot 2$ for $k \in \{0, 1, 2\}$. Total: 10 radix-3 butterflies.
+
+\paragraph{Pass 3 (factor 5).} $p_{\mathrm{div}} = 6$, $p_{\mathrm{mul}} = 30$, groups $= 1$. The single group contains 6 independent radix-5 butterflies, each reading 5 elements at stride 6: indices $j + 6k$ for $k \in \{0, 1, 2, 3, 4\}$. Total: 6 radix-5 butterflies.
+
+Each pass builds on the sub-DFTs assembled by the previous pass. After three passes, the output is the complete length-30 DFT, in natural order (assuming Temperton's self-sorting digit-reversal was applied to the input).
 
 \subsection{Temperton's Self-Sorting Algorithm}
 
 The permutation matrices $L$ in \eqref{eq:kron_fft} are an inconvenience: a na\"ive implementation would require a separate digit-reversal pass to reorder the output. Temperton's (1983) contribution \cite{temperton_self_sorting} is a \textit{self-sorting} formulation that absorbs these permutations into the indexing scheme. The input is pre-permuted via mixed-radix digit-reversal; then $k$ butterfly stages are applied (one per prime factor), building up from small DFTs to the full transform. The output lands in natural order without any post-processing.
-
-The cost of this elision is two arrays that swap roles at each stage---ping-pong buffers---so that each butterfly reads from one and writes to the other. In practice, the ping-pong swap is absorbed into the indexing, so the algorithm operates on a single working array.
 
 Concretely, at stage $s$ with factor $f_s$ and cumulative product $p_{\mathrm{div}} = f_1 \cdot f_2 \cdots f_{s-1}$:
 \begin{enumerate}
@@ -2289,23 +2382,15 @@ The index for element $k$ of the butterfly at group $m$, block $j$ is:
     \label{eq:butterfly_index}
 \end{equation}
 
-Each butterfly operates on a disjoint set of indices, so the computation is fully in-place. The DIT butterflies premultiply their inputs by twiddle factors drawn from a precomputed flat table (described below), then apply the short $f_s$-point DFT.
+Each butterfly operates on a disjoint set of indices, so the computation is fully in-place. The DIT butterflies premultiply their inputs by twiddle factors drawn from a precomputed flat table, then apply the short $f_s$-point DFT.
 
-\subsection{Twiddle Factor Precomputation}
-
-The twiddle factors are the diagonal matrices in Temperton's factorization. They encode the complex exponentials needed between butterfly stages:
+\paragraph{Twiddle factor precomputation.} The twiddle factors encode the complex exponentials needed between butterfly stages:
 \begin{equation}
     \mathrm{tw}[j, k] = \exp\!\left(\frac{-2\pi i \cdot j \cdot k}{f_s \cdot p_{\mathrm{div}}}\right)
 \end{equation}
-where $j$ indexes the block element ($0$ to $p_{\mathrm{div}} - 1$), $k$ indexes the butterfly input ($1$ to $f_s - 1$), and $p_{\mathrm{div}}$ is the cumulative product of all previous factors.
+where $j$ indexes the block element ($0$ to $p_{\mathrm{div}} - 1$), $k$ indexes the butterfly input ($1$ to $f_s - 1$), and $p_{\mathrm{div}}$ is the cumulative product of all previous factors. These are precomputed into a flat list, laid out by stage, then by block element, then by twiddle index. At $j = 0$, all twiddles are $1$, so the butterfly reduces to an untwiddled short DFT.
 
-These are precomputed into a flat list, laid out by stage, then by block element, then by twiddle index within the butterfly. For stage $s$ with factor $f_s$ and cumulative product $p_{\mathrm{div}}$, the table contains $p_{\mathrm{div}} \cdot (f_s - 1)$ entries. At $j = 0$ (the first block element), all twiddles are $1$, so the butterfly reduces to an untwiddled short DFT. The offset into the flat table for stage $s$ is the sum of entries from all previous stages.
-
-This precomputation strategy avoids recomputing transcendentals inside the innermost loop---a nontrivial savings when $N$ is large.
-
-\subsection{Optimized Butterflies}
-
-Hand-optimized radix-$2$, $3$, $4$, $5$, and $7$ butterflies exploit the algebraic structure of the roots of unity at each radix to minimize the real operation count. These match Temperton's Table~I \cite{temperton_self_sorting}:
+\paragraph{Optimized butterflies.} Hand-optimized radix-$2$, $3$, $4$, $5$, and $7$ butterflies exploit the algebraic structure of the roots of unity to minimize the real operation count, matching Temperton's Table~I \cite{temperton_self_sorting}:
 
 \begin{center}
 \begin{tabular}{c c c}
@@ -2321,31 +2406,13 @@ Hand-optimized radix-$2$, $3$, $4$, $5$, and $7$ butterflies exploit the algebra
 \end{tabular}
 \end{center}
 
-The key observations per radix:
-\begin{itemize}
-    \item \textbf{Radix 2}: The 2nd root of unity is $-1$; no multiplications needed---just add/subtract.
-    \item \textbf{Radix 3}: Uses $\cos(2\pi/3) = -1/2$ and $\sin(2\pi/3) = \sqrt{3}/2$.
-    \item \textbf{Radix 4}: Powers of $i$ (the 4th root of unity) are $\{1, -i, -1, i\}$, eliminating all real multiplications.
-    \item \textbf{Radix 5}: Precomputed $\sin/\cos$ constants for the 5th roots, with careful grouping of symmetric and antisymmetric terms.
-    \item \textbf{Radix 7}: Same symmetric structure, using precomputed $\cos(2k\pi/7)$ and $\sin(2k\pi/7)$ for $k = 1, 2, 3$.
-\end{itemize}
+Radix 2 and 4 need no multiplications because their roots of unity are $\pm 1$ and $\pm i$. A generic fallback handles arbitrary prime factors via $O(n^2)$ direct DFT. Since $n$ is small (just one factor in the decomposition), the quadratic cost is acceptable.
 
-A generic fallback handles arbitrary prime factors within a composite $N$ via $O(n^2)$ direct DFT. Since $n$ is small---just one factor in the decomposition---the quadratic cost is acceptable.
-
-\section{The $N$-Dimensional FFT via Hypercube Dimensional Gliding}
-\label{sec:nd_fft}
-
-\subsection{Separability}
-
-The $N$-dimensional DFT of an array with shape $(s_0, s_1, \ldots, s_{d-1})$ is separable: it decomposes as a Kronecker product of 1-D transforms,
-\begin{equation}
-    F_{s_0 \times s_1 \times \cdots \times s_{d-1}} = F_{s_0} \otimes F_{s_1} \otimes \cdots \otimes F_{s_{d-1}}
-\end{equation}
-This means independent 1-D DFTs along each axis produce the full $N$-D result. The order in which axes are processed doesn't matter; each pass transforms one dimension while leaving the others untouched.
+\paragraph{Cache and memory access.} Temperton's formulation reads and writes elements in sequential sweeps through the array, with stride increasing by the current factor at each pass. This sequential access pattern is cache-friendly compared to the bit-reversal scatter required by the standard Cooley--Tukey formulation, where the initial permutation touches every element in a non-sequential pattern. For large $N$, this cache behavior dominates the practical performance difference.
 
 \subsection{Hypercube Dimensional Gliding}
 
-The question is how to implement this identity on a flat contiguous buffer without reshaping, transposing, or allocating intermediate arrays. The answer is \textit{hypercube dimensional gliding}: stride-based fiber extraction on the flat buffer, treating it as an $N$-dimensional array via a stride vector.
+For genuinely multi-dimensional data (e.g., images or volumetric grids), the separability of the $N$-D DFT must be implemented on a flat contiguous buffer without reshaping, transposing, or allocating intermediate arrays. The answer is \textit{hypercube dimensional gliding}: stride-based fiber extraction on the flat buffer, treating it as an $N$-dimensional array via a stride vector.
 
 An $N$-dimensional array of shape $(s_0, s_1, \ldots, s_{d-1})$ is stored as a flat buffer. The stride vector $(\sigma_0, \sigma_1, \ldots, \sigma_{d-1})$ maps multi-indices to flat offsets:
 \begin{equation}
@@ -2356,7 +2423,7 @@ For row-major layout, $\sigma_0 = 1$ and $\sigma_k = s_0 \cdot s_1 \cdots s_{k-1
 
 The dimensional gliding algorithm proceeds as follows. For each axis $a$ with size $n_a$ and stride $\sigma_a$:
 \begin{enumerate}
-    \item Enumerate all \textit{fibers}---1-D slices along axis $a$---by iterating over all coordinates in the orthogonal $(d-1)$-dimensional hyperplane.
+    \item Enumerate all \textit{fibers} (1-D slices along axis $a$) by iterating over all coordinates in the orthogonal $(d-1)$-dimensional hyperplane.
     \item For each fiber, compute the base offset from the orthogonal coordinates, then extract $n_a$ elements at positions $\mathrm{base} + k \cdot \sigma_a$ for $k \in [0, n_a)$.
     \item Apply the 1-D FFT (staged or Bluestein, as appropriate) to the fiber.
     \item Write results back to the same positions.
@@ -2366,10 +2433,10 @@ The algorithm requires no reshaping, transposing, or intermediate buffers. The s
 
 The inverse $N$-D transform uses the conjugate trick: $\mathrm{IDFT}(\vec{X}) = \overline{\mathrm{DFT}(\overline{\vec{X}})} / N$, inheriting the same dimensional gliding algorithm from the forward transform.
 
-\subsection{1-D FFT Dispatch and Bluestein's Algorithm}
+\subsection{Bluestein's Algorithm}
 \label{sec:bluestein_dispatch}
 
-Each fiber extracted by dimensional gliding is transformed by the 1-D FFT. The complete dispatch logic is straightforward:
+The staged mixed-radix algorithm requires $N$ to be composite. When $N$ itself is prime (and $N > 4$), Bluestein's chirp-z algorithm \cite{bluestein_chirp} reduces the problem to a circular convolution, achieving $O(N \log N)$ even for prime lengths. The complete dispatch logic is:
 \begin{equation}
     \mathrm{FFT}(x) = \begin{cases}
         \mathrm{identity}             & N \leq 1 \\
@@ -2379,9 +2446,7 @@ Each fiber extracted by dimensional gliding is transformed by the 1-D FFT. The c
     \end{cases}
 \end{equation}
 
-The na\"ive base case handles $N \leq 4$ directly at $O(N^2)$ cost---cheap enough that the overhead of factorization and twiddle precomputation isn't worth it. For $N > 4$, the algorithm bifurcates: composite lengths enter the Temperton staged pipeline; prime lengths are routed through Bluestein.
-
-The staged mixed-radix algorithm requires $N$ to be composite. When $N$ itself is prime (and $N > 4$), Bluestein's chirp-z algorithm \cite{bluestein_chirp} reduces the problem to a circular convolution, achieving $O(N \log N)$ even for prime lengths. The identity
+The identity
 \begin{equation}
     kn = -\dfrac{(k-n)^2}{2} + \dfrac{k^2}{2} + \dfrac{n^2}{2}
 \end{equation}
@@ -2397,9 +2462,7 @@ where $\chi_n = e^{-i\pi n^2/N}$ is the chirp sequence. The inner sum is a \text
     \item \textbf{Post-multiply}: $X_k = \chi_k \cdot c_k$.
 \end{enumerate}
 
-Since $M$ is a power of two, the staged algorithm handles the inner FFTs efficiently (all radix-2 butterflies). Phase reduction ($n^2 \bmod 2N$) keeps exponents small for numerical stability.
-
-An important structural note: Bluestein's algorithm calls the staged FFT on power-of-two lengths (always composite). The staged FFT dispatches to the generic quadratic butterfly for prime factors \textit{within} a composite $N$---it never invokes Bluestein, so there's no circular dependency.
+Since $M$ is a power of two, the staged algorithm handles the inner FFTs efficiently. Phase reduction ($n^2 \bmod 2N$) keeps exponents small for numerical stability. Bluestein calls the staged FFT on power-of-two lengths (always composite); the staged FFT dispatches to the generic quadratic butterfly for prime factors \textit{within} a composite $N$---it never invokes Bluestein, so there is no circular dependency.
 
 \begin{figure}[htbp]
     \centering
@@ -2437,7 +2500,7 @@ The DCT and DST are the discrete analogues of the continuous cosine and sine tra
 
 \textit{Gibbs connection.} The boundary jumps in the DFT's periodic extension redistribute energy into high-frequency coefficients that the DCT doesn't need. This makes a practical difference during quantization: JPEG aggressively zeroes small high-frequency DCT coefficients, relying on the fact that most of the block's energy is concentrated in the low-frequency corner. With the DFT, the same quantization would discard genuine signal information that was redistributed by boundary artifacts.
 
-\textit{Historical note.} JPEG 2000 replaced the DCT with the CDF 9/7 wavelet transform---a multi-resolution evolution of the same principle. Wavelets provide better localization in both space and frequency, eliminating the blocking artifacts that arise from JPEG's $8 \times 8$ block structure, at the cost of greater algorithmic complexity.
+\textit{Historical note.} JPEG 2000 replaced the DCT with the CDF 9/7 wavelet transform---a multi-resolution evolution of the same principle. Wavelets provide better localization in both space and frequency, eliminating the blocking artifacts that arise from JPEG's $8 \times 8$ block structure, at the cost of greater algorithmic complexity (see \S\ref{sec:wavelets}).
 
 \paragraph{Diagonalization perspective.} The DCT matrix $C_N$ diagonalizes the discrete Laplacian with Neumann boundary conditions, just as the DFT matrix diagonalizes it with periodic ones. Same operator, different BCs, different eigenbasis.
 
@@ -2659,6 +2722,8 @@ The quadratic form $w^TCw$ is the variance of the data projected onto direction 
 \end{equation}
 At the optimum, the covariance operator acts on $w$ by pure scaling---$w$ is an eigenvector, and the maximized variance is $\lambda$. This is the same principle that makes Fourier modes optimal: they are the directions in which the operator (here $C$, there $\nabla^2$) acts by scaling. The $k$-th principal component maximizes variance subject to orthogonality to all previous components; by induction (the Courant-Fischer minimax principle), it's the $k$-th eigenvector.
 
+\paragraph{The Hessian as curvature of the variance landscape.} The Hessian of the Lagrangian $\mathcal{L}(w) = w^TCw - \lambda(w^Tw - 1)$ is $H = 2(C - \lambda I)$, which is negative semidefinite at the top eigenvector (all remaining eigenvalues $\leq \lambda_1$), confirming a maximum. More broadly, the covariance matrix $C$ is itself the Hessian of the quadratic form $Q(w) = w^TCw$; its eigenvectors are the principal curvature directions of this paraboloid. Note the callback to the Laplacian: $\Delta u = \tr(H_u)$, so the Laplacian captures the ``average curvature'' of a function across coordinate directions---the trace of its Hessian.
+
 \paragraph{PCA as SVD.} If $X = U\Sigma V^T$ is the SVD of the centered data matrix, then:
 \begin{equation}
     C = \dfrac{1}{n-1}X^TX = V\dfrac{\Sigma^2}{n-1}V^T
@@ -2734,7 +2799,7 @@ At matched compression ratios, SVD produces smooth global blur, the DFT produces
 \section{The Convolution Theorem}
 \label{sec:convolution}
 
-One of the most useful results in all of Fourier analysis is the convolution theorem: convolution in the time domain corresponds to pointwise multiplication in the frequency domain. An operation that's expensive in one domain becomes trivial in the other---a recurring theme.
+One of the most useful results in all of Fourier analysis is the convolution theorem: convolution in the time domain corresponds to pointwise multiplication in the frequency domain. An operation that is expensive in one domain becomes trivial in the other, a recurring theme.
 
 \begin{theorem}[Convolution Theorem]
     Let $f, g \in \mathbf{L}^1(\mathbb{R})$. Then:
@@ -2823,12 +2888,28 @@ Corporeal applications of spectral analysis abound:
 \begin{itemize}
     \item \textbf{Audio processing}: identifying the fundamental frequency and harmonics of a musical note.
     \item \textbf{Signal filtering}: excising unwanted frequency components by zeroing their coefficients.
-    \item \textbf{Data compression}: retaining only the largest coefficients---a form of lossy compression, but an effective one. For a thorough treatment of image compression via SVD, DCT, and DFT, see Chapter~\ref{ch:eigentheory}.
+    \item \textbf{Data compression}: retaining only the largest coefficients, a form of lossy compression, but an effective one. For a thorough treatment of image compression via SVD, DCT, and DFT, see Chapter~\ref{ch:eigentheory}.
     \item \textbf{Tidal analysis}: decomposing tidal height data into constituent frequencies to predict future tides.
 \end{itemize}
 
-In each case, the Fourier transform furnishes the passage between the time (or spatial) domain and the frequency domain, enabling analysis and manipulation that would be difficult---or outright impossible---in the original domain.
+In each case, the Fourier transform furnishes the passage between the time (or spatial) domain and the frequency domain, enabling analysis and manipulation that would be difficult, or outright impossible, in the original domain.
 
+\section{Wavelets: Time-Frequency Localization}
+\label{sec:wavelets}
+
+The Fourier basis functions $e^{in\theta}$ extend over the entire domain: each has perfect frequency localization but zero time (or spatial) localization. For stationary signals---those whose frequency content does not change over time---this is ideal. For non-stationary signals (speech, seismic data, transient phenomena), it is not: a spike at $t = 0.5$ contributes to \textit{every} Fourier coefficient, smearing its temporal information across the entire frequency axis.
+
+\paragraph{The short-time Fourier transform.} A natural first attempt is the short-time Fourier transform (STFT): multiply the signal by a sliding window $g(t - b)$ and take the Fourier transform within each window. This produces a time-frequency representation, but the window size is fixed, imposing a rigid resolution tradeoff. A narrow window yields good time resolution but poor frequency resolution; a wide window yields the reverse. The Heisenberg-Gabor uncertainty principle makes this tradeoff fundamental: no linear transform can achieve perfect localization in both domains simultaneously.
+
+\paragraph{The wavelet idea.} Wavelets resolve this by replacing the fixed-frequency, infinite-extent Fourier basis with a family of functions that are simultaneously localized in time and frequency. A \textit{mother wavelet} $\psi(t)$ is a localized, oscillatory function with zero mean ($\int \psi\,\deriv t = 0$). Translating and scaling it produces a family:
+\begin{equation}
+    \psi_{a,b}(t) = |a|^{-1/2}\,\psi\!\left(\frac{t - b}{a}\right), \quad a \neq 0,\; b \in \mathbb{R}
+\end{equation}
+The continuous wavelet transform (CWT) is the inner product $\langle f, \psi_{a,b} \rangle$---the same projection framework used throughout this paper. Large $|a|$ captures low frequencies with coarse time resolution; small $|a|$ captures high frequencies with fine time resolution. The wavelet transform thus tiles the time-frequency plane with rectangles of varying aspect ratio, adapting resolution to the signal's local structure.
+
+\paragraph{Key wavelets.} The Haar wavelet (1909)---a step function---is the simplest: it captures whether a signal goes up or down in a given interval. The Daubechies wavelets \cite{daubechies1992} are compactly supported and maximally smooth for a given support width; the CDF 9/7 variant is the basis of JPEG 2000 compression (cf.\ the historical note in \S\ref{sec:dct_dst}). The Morlet wavelet---a Gaussian-windowed sinusoid---connects wavelets directly to the STFT.
+
+\paragraph{Multi-resolution analysis.} Where the Fourier transform tiles the frequency axis uniformly (each coefficient occupies the same bandwidth), the dyadic wavelet transform tiles it logarithmically: low frequencies get wide frequency bands and long time windows, high frequencies get narrow bands and short windows. This logarithmic tiling matches the multi-scale structure of many natural signals. The wavelet transform diagonalizes operators with multi-scale structure---differential operators with spatially varying coefficients, or fractal self-similarity---just as the Fourier transform diagonalizes translation-invariant operators. The inner-product, basis-expansion, and spectral machinery developed throughout this paper carries over directly \cite{mallat2009}.
 
 \bibliographystyle{plain}
 \bibliography{fourier_paper}
