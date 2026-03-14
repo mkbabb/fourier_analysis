@@ -34,6 +34,8 @@ async def compute_contours(slug: str, req: ComputeContourRequest):
             min_contour_area=req.min_contour_area,
             max_contours=req.max_contours,
             smooth_contours=req.smooth_contours,
+            ml_threshold=req.ml_threshold,
+            ml_detail_threshold=req.ml_detail_threshold,
         )
     finally:
         os.unlink(image_path)
@@ -52,11 +54,13 @@ async def compute_epicycles(slug: str, req: ComputeEpicyclesRequest):
             n_points=req.n_points,
             strategy=params.get("strategy", "auto"),
             resize=params.get("resize", 512),
-            blur_sigma=params.get("blur_sigma", 2.0),
+            blur_sigma=params.get("blur_sigma", 1.0),
             min_contour_length=params.get("min_contour_length", 40),
-            min_contour_area=params.get("min_contour_area", 0.01),
-            max_contours=params.get("max_contours", 5),
-            smooth_contours=params.get("smooth_contours", 0.1),
+            min_contour_area=params.get("min_contour_area", 0.001),
+            max_contours=params.get("max_contours", 12),
+            smooth_contours=params.get("smooth_contours", 0.0),
+            ml_threshold=params.get("ml_threshold", 0.5),
+            ml_detail_threshold=params.get("ml_detail_threshold", 0.3),
         )
     finally:
         os.unlink(image_path)
@@ -75,11 +79,13 @@ async def compute_bases(slug: str, req: ComputeBasesRequest):
             n_points=req.n_points,
             strategy=params.get("strategy", "auto"),
             resize=params.get("resize", 512),
-            blur_sigma=params.get("blur_sigma", 2.0),
+            blur_sigma=params.get("blur_sigma", 1.0),
             min_contour_length=params.get("min_contour_length", 40),
-            min_contour_area=params.get("min_contour_area", 0.01),
-            max_contours=params.get("max_contours", 5),
-            smooth_contours=params.get("smooth_contours", 0.1),
+            min_contour_area=params.get("min_contour_area", 0.001),
+            max_contours=params.get("max_contours", 12),
+            smooth_contours=params.get("smooth_contours", 0.0),
+            ml_threshold=params.get("ml_threshold", 0.5),
+            ml_detail_threshold=params.get("ml_detail_threshold", 0.3),
             levels=req.levels,
             n_eval=req.n_eval,
         )

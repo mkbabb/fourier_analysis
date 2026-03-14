@@ -12,19 +12,21 @@ from fastapi import HTTPException
 from fourier_analysis.bases import approximate_curve, build_animation_data
 from fourier_analysis.contours import extract_contours, resample_arc_length
 from fourier_analysis.epicycles import EpicycleChain
-from fourier_analysis.shortest_tour import order_contours
+from fourier_analysis.shortest_tour import build_contour_tour
 
 
 async def compute_contours(
     image_path: Path,
     strategy: str = "auto",
     resize: int = 512,
-    blur_sigma: float = 2.0,
+    blur_sigma: float = 1.0,
     n_classes: int = 3,
     min_contour_length: int = 40,
-    min_contour_area: float = 0.01,
-    max_contours: int | None = 5,
-    smooth_contours: float = 0.1,
+    min_contour_area: float = 0.001,
+    max_contours: int | None = 12,
+    smooth_contours: float = 0.0,
+    ml_threshold: float = 0.5,
+    ml_detail_threshold: float = 0.3,
 ) -> dict[str, Any]:
     def _run():
         contours = extract_contours(
@@ -37,6 +39,8 @@ async def compute_contours(
             min_contour_area=min_contour_area,
             max_contours=max_contours,
             smooth_contours=smooth_contours,
+            ml_threshold=ml_threshold,
+            ml_detail_threshold=ml_detail_threshold,
         )
         return [
             {"x": c.real.tolist(), "y": c.imag.tolist(), "n_points": len(c)}
@@ -53,11 +57,13 @@ async def compute_epicycles(
     n_points: int = 1024,
     strategy: str = "auto",
     resize: int = 512,
-    blur_sigma: float = 2.0,
+    blur_sigma: float = 1.0,
     min_contour_length: int = 40,
-    min_contour_area: float = 0.01,
-    max_contours: int | None = 5,
-    smooth_contours: float = 0.1,
+    min_contour_area: float = 0.001,
+    max_contours: int | None = 12,
+    smooth_contours: float = 0.0,
+    ml_threshold: float = 0.5,
+    ml_detail_threshold: float = 0.3,
 ) -> dict[str, Any]:
     def _run():
         contours = extract_contours(
@@ -69,6 +75,8 @@ async def compute_epicycles(
             min_contour_area=min_contour_area,
             max_contours=max_contours,
             smooth_contours=smooth_contours,
+            ml_threshold=ml_threshold,
+            ml_detail_threshold=ml_detail_threshold,
         )
         if not contours:
             raise HTTPException(
@@ -76,7 +84,7 @@ async def compute_epicycles(
                 detail="No contours extracted — try lowering min area or changing strategy",
             )
 
-        path = order_contours(contours)
+        path = build_contour_tour(contours).path
         path = resample_arc_length(path, n_points)
         chain = EpicycleChain.from_signal(path, n_harmonics=n_harmonics)
 
@@ -109,11 +117,13 @@ async def compute_bases(
     n_points: int = 1024,
     strategy: str = "auto",
     resize: int = 512,
-    blur_sigma: float = 2.0,
+    blur_sigma: float = 1.0,
     min_contour_length: int = 40,
-    min_contour_area: float = 0.01,
-    max_contours: int | None = 5,
-    smooth_contours: float = 0.1,
+    min_contour_area: float = 0.001,
+    max_contours: int | None = 12,
+    smooth_contours: float = 0.0,
+    ml_threshold: float = 0.5,
+    ml_detail_threshold: float = 0.3,
     levels: list[int] | None = None,
     n_eval: int = 1000,
 ) -> dict[str, Any]:
@@ -127,6 +137,8 @@ async def compute_bases(
             min_contour_area=min_contour_area,
             max_contours=max_contours,
             smooth_contours=smooth_contours,
+            ml_threshold=ml_threshold,
+            ml_detail_threshold=ml_detail_threshold,
         )
         if not contours:
             raise HTTPException(
@@ -134,7 +146,7 @@ async def compute_bases(
                 detail="No contours extracted — try lowering min area or changing strategy",
             )
 
-        path = order_contours(contours)
+        path = build_contour_tour(contours).path
         path = resample_arc_length(path, n_points)
         return build_animation_data(path, max_degree, levels=levels, n_eval=n_eval)
 
