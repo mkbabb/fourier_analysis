@@ -12,7 +12,7 @@ from pathlib import Path
 from fourier_analysis.animation import FourierAnimation
 from fourier_analysis.contours import extract_contours
 from fourier_analysis.epicycles import EpicycleChain
-from fourier_analysis.shortest_tour import order_contours
+from fourier_analysis.shortest_tour import build_contour_tour
 
 
 def main() -> None:
@@ -32,7 +32,7 @@ def main() -> None:
     contours = extract_contours(args.image, canny_sigma=2.0, resize=256)
     print(f"Found {len(contours)} contours, {sum(len(c) for c in contours)} total points")
 
-    path = order_contours(contours)
+    path = build_contour_tour(contours).path
     print(f"Ordered path: {len(path)} points")
 
     chain = EpicycleChain.from_signal(path, n_harmonics=args.harmonics)

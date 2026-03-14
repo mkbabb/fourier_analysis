@@ -23,9 +23,9 @@ def plot_reconstruction(
     from fourier_analysis.figures.style import BLUE, setup_style
 
     setup_style()
-    fig, ax = plt.subplots(figsize=(8, 8))
-    ax.plot(original.real, original.imag, color="gray", linewidth=0.4, alpha=0.4, label="Contour")
-    ax.plot(recon.real, recon.imag, color=BLUE, linewidth=0.8, label=f"$N = {n_harmonics}$")
+    fig, ax = plt.subplots(figsize=(10, 10))
+    ax.plot(original.real, original.imag, color="gray", linewidth=0.35, alpha=0.35, label="Contour")
+    ax.plot(recon.real, recon.imag, color=BLUE, linewidth=0.4, label=f"$N = {n_harmonics}$")
     ax.set_aspect("equal")
     ax.set_xlabel(r"$\mathrm{Re}$")
     ax.set_ylabel(r"$\mathrm{Im}$")
@@ -34,7 +34,7 @@ def plot_reconstruction(
     fig.tight_layout()
 
     if output:
-        fig.savefig(output)
+        fig.savefig(output, dpi=200)
         plt.close(fig)
     else:
         plt.show()

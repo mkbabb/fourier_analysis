@@ -15,7 +15,7 @@ import numpy as np
 from fourier_analysis.contours import extract_contours, resample_arc_length
 from fourier_analysis.epicycles import EpicycleChain
 from fourier_analysis.figures.style import BLUE, save_figure, setup_style
-from fourier_analysis.shortest_tour import order_contours
+from fourier_analysis.shortest_tour import build_contour_tour
 
 PORTRAIT_PATH = Path(__file__).resolve().parents[3] / "assets" / "portraits" / "joseph-fourier.png"
 
@@ -25,7 +25,7 @@ def _load_contour(n_points: int = 1024) -> np.ndarray:
     if PORTRAIT_PATH.exists():
         contours = extract_contours(PORTRAIT_PATH, resize=256)
         if contours:
-            path = order_contours(contours)
+            path = build_contour_tour(contours).path
             return resample_arc_length(path, n_points)
 
     # Fallback: parametric rounded-square

@@ -69,7 +69,7 @@ def _cmd_epicycles(args: argparse.Namespace) -> int:
         resample_arc_length,
     )
     from fourier_analysis.epicycles import EpicycleChain
-    from fourier_analysis.shortest_tour import order_contours
+    from fourier_analysis.shortest_tour import build_contour_tour
 
     image_path = Path(args.image)
     if not image_path.exists():
@@ -91,14 +91,14 @@ def _cmd_epicycles(args: argparse.Namespace) -> int:
     print(f"Extracted {len(contours)} contour(s), "
           f"{sum(len(c) for c in contours)} total points")
 
-    path = order_contours(contours)
+    path = build_contour_tour(contours).path
     path = resample_arc_length(path, args.points)
 
     chain = EpicycleChain.from_signal(path, n_harmonics=args.harmonics)
     print(f"Epicycle chain: {len(chain)} components, "
           f"N={args.harmonics} harmonics")
 
-    ts = np.linspace(0, 1, 3000)
+    ts = np.linspace(0, 1, 8192)
     recon = chain.evaluate(ts)
 
     from fourier_analysis.cli_plotting import plot_reconstruction
@@ -155,7 +155,7 @@ def _cmd_animate(args: argparse.Namespace) -> int:
     from fourier_analysis.animation import FourierAnimation
     from fourier_analysis.contours import extract_contours, resample_arc_length
     from fourier_analysis.epicycles import EpicycleChain
-    from fourier_analysis.shortest_tour import order_contours
+    from fourier_analysis.shortest_tour import build_contour_tour
 
     image_path = Path(args.image)
     if not image_path.exists():
@@ -175,7 +175,7 @@ def _cmd_animate(args: argparse.Namespace) -> int:
 
     print(f"Extracted {len(contours)} contour(s)")
 
-    path = order_contours(contours)
+    path = build_contour_tour(contours).path
     path = resample_arc_length(path, args.points)
 
     chain = EpicycleChain.from_signal(path, n_harmonics=args.harmonics)
@@ -219,13 +219,13 @@ def build_parser() -> argparse.ArgumentParser:
     # -- epicycles --
     p_epi = sub.add_parser("epicycles", help="Epicycle reconstruction from image")
     p_epi.add_argument("image", help="Input image (PNG, JPG, BMP, TIFF)")
-    p_epi.add_argument("-n", "--harmonics", type=int, default=200, help="Number of harmonics (default: 200)")
-    p_epi.add_argument("-p", "--points", type=int, default=1024, help="Resampled contour points (default: 1024)")
+    p_epi.add_argument("-n", "--harmonics", type=int, default=400, help="Number of harmonics (default: 400)")
+    p_epi.add_argument("-p", "--points", type=int, default=4096, help="Resampled contour points (default: 4096)")
     p_epi.add_argument("-o", "--output", help="Output image path (PNG/PDF); omit for interactive display")
-    p_epi.add_argument("--strategy", default="auto", choices=["auto", "threshold", "multi_threshold", "canny"],
+    p_epi.add_argument("--strategy", default="auto", choices=["auto", "threshold", "adaptive_threshold", "multi_threshold", "canny", "edge_aware", "ml"],
                         help="Contour extraction strategy (default: auto)")
-    p_epi.add_argument("--resize", type=int, default=512, help="Resize longest dimension (default: 512)")
-    p_epi.add_argument("--blur", type=float, default=1.0, help="Gaussian pre-blur sigma (default: 1.0)")
+    p_epi.add_argument("--resize", type=int, default=768, help="Resize longest dimension (default: 768)")
+    p_epi.add_argument("--blur", type=float, default=0.5, help="Gaussian pre-blur sigma (default: 0.5)")
     p_epi.add_argument("--min-length", type=int, default=40, help="Minimum contour length (default: 40)")
 
     # -- series --
@@ -238,13 +238,13 @@ def build_parser() -> argparse.ArgumentParser:
     # -- animate --
     p_anim = sub.add_parser("animate", help="Render epicycle animation from image")
     p_anim.add_argument("image", help="Input image (PNG, JPG, BMP, TIFF)")
-    p_anim.add_argument("-n", "--harmonics", type=int, default=200, help="Number of harmonics (default: 200)")
-    p_anim.add_argument("-p", "--points", type=int, default=1024, help="Resampled contour points (default: 1024)")
+    p_anim.add_argument("-n", "--harmonics", type=int, default=400, help="Number of harmonics (default: 400)")
+    p_anim.add_argument("-p", "--points", type=int, default=4096, help="Resampled contour points (default: 4096)")
     p_anim.add_argument("-o", "--output", help="Output video path (MP4/GIF); omit for interactive")
-    p_anim.add_argument("--strategy", default="auto", choices=["auto", "threshold", "multi_threshold", "canny"],
+    p_anim.add_argument("--strategy", default="auto", choices=["auto", "threshold", "adaptive_threshold", "multi_threshold", "canny", "edge_aware", "ml"],
                         help="Contour extraction strategy (default: auto)")
-    p_anim.add_argument("--resize", type=int, default=512, help="Resize longest dimension (default: 512)")
-    p_anim.add_argument("--blur", type=float, default=1.0, help="Gaussian pre-blur sigma (default: 1.0)")
+    p_anim.add_argument("--resize", type=int, default=768, help="Resize longest dimension (default: 768)")
+    p_anim.add_argument("--blur", type=float, default=0.5, help="Gaussian pre-blur sigma (default: 0.5)")
     p_anim.add_argument("--duration", type=float, default=30.0, help="Animation duration in seconds (default: 30)")
     p_anim.add_argument("--fps", type=int, default=30, help="Frames per second (default: 30)")
     p_anim.add_argument("--max-circles", type=int, default=80, help="Max visible epicycles (default: 80)")
@@ -256,7 +256,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_bases.add_argument("-p", "--points", type=int, default=1024, help="Resampled contour points (default: 1024)")
     p_bases.add_argument("-o", "--output", help="Output image path (PNG/PDF)")
     p_bases.add_argument("--degrees", default="3,10,50,200", help="Comma-separated degrees (default: 3,10,50,200)")
-    p_bases.add_argument("--strategy", default="auto", choices=["auto", "threshold", "multi_threshold", "canny"])
+    p_bases.add_argument("--strategy", default="auto", choices=["auto", "threshold", "adaptive_threshold", "multi_threshold", "canny", "edge_aware", "ml"])
     p_bases.add_argument("--resize", type=int, default=512)
     p_bases.add_argument("--blur", type=float, default=1.0)
     p_bases.add_argument("--min-length", type=int, default=40)
@@ -268,7 +268,7 @@ def _cmd_bases(args: argparse.Namespace) -> int:
     """Compare basis approximations for an image contour."""
     from fourier_analysis.bases import approximate_curve
     from fourier_analysis.contours import extract_contours, resample_arc_length
-    from fourier_analysis.shortest_tour import order_contours
+    from fourier_analysis.shortest_tour import build_contour_tour
 
     image_path = Path(args.image)
     if not image_path.exists():
@@ -288,7 +288,7 @@ def _cmd_bases(args: argparse.Namespace) -> int:
         return 1
 
     print(f"Extracted {len(contours)} contour(s)")
-    path = order_contours(contours)
+    path = build_contour_tour(contours).path
     path = resample_arc_length(path, args.points)
 
     degrees = [int(d) for d in args.degrees.split(",")]

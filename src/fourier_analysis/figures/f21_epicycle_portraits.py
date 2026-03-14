@@ -21,7 +21,7 @@ from PIL import Image
 from fourier_analysis.contours import extract_contours, resample_arc_length
 from fourier_analysis.epicycles import EpicycleChain
 from fourier_analysis.figures.style import COLORS, BLUE, save_figure, setup_style
-from fourier_analysis.shortest_tour import order_contours
+from fourier_analysis.shortest_tour import build_contour_tour
 
 PORTRAITS_DIR = Path(__file__).resolve().parents[3] / "assets" / "portraits"
 
@@ -49,7 +49,7 @@ def _process_portrait(
         img_arr = np.array(img.convert("L"))
 
     contours = extract_contours(image_path, resize=256)
-    path = order_contours(contours)
+    path = build_contour_tour(contours).path
     path = resample_arc_length(path, n_points)
 
     chain = EpicycleChain.from_signal(path, n_harmonics=n_harmonics)

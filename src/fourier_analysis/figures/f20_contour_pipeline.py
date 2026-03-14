@@ -20,7 +20,7 @@ from skimage import filters, measure  # type: ignore[import-untyped]
 from fourier_analysis.contours import extract_contours, resample_arc_length
 from fourier_analysis.epicycles import EpicycleChain
 from fourier_analysis.figures.style import BLUE, RED, save_figure, setup_style
-from fourier_analysis.shortest_tour import order_contours
+from fourier_analysis.shortest_tour import build_contour_tour
 
 PORTRAIT_PATH = Path(__file__).resolve().parents[3] / "assets" / "portraits" / "joseph-fourier.png"
 
@@ -35,7 +35,7 @@ def generate(image_path: str | Path | None = None) -> None:
 
     if image_path is not None:
         contours = extract_contours(image_path, resize=256)
-        path = order_contours(contours)
+        path = build_contour_tour(contours).path
         path = resample_arc_length(path, 1024)
 
         # (a) Original image

@@ -20,17 +20,38 @@ direction within that subsequence, since the traversal direction reverses.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 import numpy as np
 from numpy.typing import NDArray
 from scipy.spatial import KDTree  # type: ignore[import-untyped]
 
 
-def order_contours(
+@dataclass(frozen=True)
+class ContourTour:
+    """Result of ordering and concatenating contours.
+
+    Attributes
+    ----------
+    ordered_contours : tuple of NDArray[complex128]
+        Contours in traversal order (possibly reversed).
+    gap_lengths : tuple of float
+        Distance between the end of contour *i* and the start of *i+1*.
+    path : NDArray[complex128]
+        Single concatenated path (the main output).
+    """
+
+    ordered_contours: tuple[NDArray[np.complex128], ...]
+    gap_lengths: tuple[float, ...]
+    path: NDArray[np.complex128]
+
+
+def build_contour_tour(
     contours: list[NDArray[np.complex128]],
     *,
     method: str = "nearest_2opt",
-) -> NDArray[np.complex128]:
-    """Order and concatenate contours into a single smooth path.
+) -> ContourTour:
+    """Order and concatenate contours into a smooth tour.
 
     Parameters
     ----------
@@ -42,30 +63,47 @@ def order_contours(
 
     Returns
     -------
-    NDArray[complex128]
-        Single concatenated path.
+    ContourTour
+        Ordered contours, gap lengths, and concatenated path.
     """
     if not contours:
-        return np.array([], dtype=np.complex128)
+        return ContourTour(
+            ordered_contours=(),
+            gap_lengths=(),
+            path=np.array([], dtype=np.complex128),
+        )
 
     if method not in ("nearest", "nearest_2opt"):
         raise ValueError(f"Unknown method: {method!r}")
 
     if len(contours) == 1:
-        return contours[0].copy()
+        c = contours[0].copy()
+        return ContourTour(
+            ordered_contours=(c,),
+            gap_lengths=(),
+            path=c,
+        )
 
     if method == "nearest":
         order, reversed_flags = _nearest_neighbor(contours)
-    elif method == "nearest_2opt":
+    else:
         order, reversed_flags = _nearest_neighbor(contours)
         order, reversed_flags = _two_opt(contours, order, reversed_flags)
 
-    result: list[NDArray[np.complex128]] = []
+    ordered: list[NDArray[np.complex128]] = []
     for idx, rev in zip(order, reversed_flags):
         c = contours[idx]
-        result.append(c[::-1] if rev else c)
+        ordered.append(c[::-1] if rev else c)
 
-    return np.concatenate(result)
+    gaps: list[float] = []
+    for i in range(len(ordered) - 1):
+        gaps.append(float(abs(ordered[i][-1] - ordered[i + 1][0])))
+
+    return ContourTour(
+        ordered_contours=tuple(ordered),
+        gap_lengths=tuple(gaps),
+        path=np.concatenate(ordered),
+    )
 
 
 def _complex_to_xy(z: complex) -> tuple[float, float]:
