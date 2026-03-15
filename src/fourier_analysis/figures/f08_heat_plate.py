@@ -33,7 +33,7 @@ def generate() -> None:
     ax.annotate(
         r"$u(0, y) = 1$",
         xy=(0, 0),
-        xytext=(-0.8, 0),
+        xytext=(0.5, 0.8),
         fontsize=10,
         ha="center",
         arrowprops=dict(arrowstyle="->", color="white"),
