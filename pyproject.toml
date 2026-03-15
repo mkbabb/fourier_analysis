@@ -8,7 +8,7 @@ dependencies = [
     "numpy>=1.26",
     "matplotlib>=3.8",
     "scikit-image>=0.22",
-    "Pillow>=10.0",
+    "Pillow>=10.1",
     "scipy>=1.12",
     "onnxruntime>=1.17",
 ]
@@ -25,6 +25,7 @@ web = [
     "cachetools>=5.5",
     "coolname>=2.2",
     "pydantic-settings>=2.7",
+    "pillow-heif>=0.16",
 ]
 
 [project.scripts]

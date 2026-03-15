@@ -2,7 +2,7 @@
 import { ref, computed, watch } from "vue";
 import { useWorkspaceStore } from "@/stores/workspace";
 import { useImageUpload } from "./composables/useImageUpload";
-import { imageUrl } from "@/lib/api";
+import { thumbnailUrl } from "@/lib/api";
 import { ImagePlus, Upload, ImageOff } from "lucide-vue-next";
 
 const store = useWorkspaceStore();
@@ -57,7 +57,7 @@ function onImgError() {
             </div>
             <img
                 v-else
-                :src="preview || (store.imageSlug ? imageUrl(store.imageSlug) : '')"
+                :src="preview || (store.imageSlug ? thumbnailUrl(store.imageSlug) : '')"
                 alt="Uploaded image"
                 class="w-full max-h-[200px] object-contain transition-all duration-300"
                 @error="onImgError"

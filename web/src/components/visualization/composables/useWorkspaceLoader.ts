@@ -1,20 +1,22 @@
 import { ref, watch, onMounted } from "vue";
 import type { Ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useWorkspaceStore } from "@/stores/workspace";
 import { useAnimationStore } from "@/stores/animation";
 import type { EasingName } from "@/stores/animation";
 import { useToast } from "@/composables/useToast";
 import { isAbortError } from "@/lib/api";
+import { CONTOUR_DEFAULTS } from "@/lib/defaults";
 
 export function useWorkspaceLoader(activeBases: Ref<string[]>) {
     const route = useRoute();
+    const router = useRouter();
     const store = useWorkspaceStore();
     const anim = useAnimationStore();
     const { toast } = useToast();
 
     // Seed contour settings from workspace (defaults applied immediately)
-    const nHarmonics = ref(store.contourSettings?.n_harmonics ?? 50);
+    const nHarmonics = ref(store.contourSettings?.n_harmonics ?? CONTOUR_DEFAULTS.n_harmonics);
     const nPoints = ref(store.contourSettings?.n_points ?? 1024);
 
     // Route-based loading on mount
@@ -25,6 +27,8 @@ export function useWorkspaceLoader(activeBases: Ref<string[]>) {
             await store.loadSnapshot(imageSlug, snapshotHash);
         } else if (imageSlug) {
             await store.loadWorkspace(imageSlug);
+        } else if (store.imageSlug) {
+            router.replace(`/w/${store.imageSlug}`);
         }
     });
 
@@ -35,7 +39,10 @@ export function useWorkspaceLoader(activeBases: Ref<string[]>) {
         async ([newSlug, newHash]) => {
             const slug = newSlug as string | undefined;
             const hash = newHash as string | undefined;
-            if (!slug) return;
+            if (!slug) {
+                if (store.imageSlug) router.replace(`/w/${store.imageSlug}`);
+                return;
+            }
             // Skip if we already have this workspace loaded (uploadImage just set it)
             if (slug === store.imageSlug && !hash) return;
             if (slug && hash) {
@@ -51,10 +58,7 @@ export function useWorkspaceLoader(activeBases: Ref<string[]>) {
         () => store.animationSettings,
         (as) => {
             if (as?.active_bases?.length) {
-                // Normalize legacy "fourier" → "fourier-epicycles"
-                activeBases.value = as.active_bases.map((b: string) =>
-                    b === "fourier" ? "fourier-epicycles" : b,
-                );
+                activeBases.value = [...as.active_bases];
             }
             if (as?.easing) anim.easing = as.easing as EasingName;
             if (as?.speed) anim.speed = as.speed;
@@ -67,7 +71,7 @@ export function useWorkspaceLoader(activeBases: Ref<string[]>) {
         () => store.contourSettings,
         (cs) => {
             if (cs) {
-                nHarmonics.value = cs.n_harmonics ?? 50;
+                nHarmonics.value = cs.n_harmonics ?? CONTOUR_DEFAULTS.n_harmonics;
                 nPoints.value = cs.n_points ?? 1024;
             }
         },
@@ -78,7 +82,7 @@ export function useWorkspaceLoader(activeBases: Ref<string[]>) {
     watch(
         () => store.imageSlug,
         () => {
-            nHarmonics.value = 50;
+            nHarmonics.value = CONTOUR_DEFAULTS.n_harmonics;
         },
     );
 

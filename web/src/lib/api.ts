@@ -83,6 +83,21 @@ async function apiFetch<T>(
 
 // ── Images ──
 
+export async function computeSha256(file: File): Promise<string> {
+    const buf = await file.arrayBuffer();
+    const hash = await crypto.subtle.digest("SHA-256", buf);
+    return Array.from(new Uint8Array(hash))
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join("");
+}
+
+export async function checkImageHash(hash: string): Promise<ImageMeta | null> {
+    const res = await fetch(`${BASE}/api/images/by-hash/${hash}`);
+    if (res.status === 404) return null;
+    if (!res.ok) throw new Error(`Hash check failed: ${res.status}`);
+    return res.json();
+}
+
 export async function uploadImage(file: File): Promise<ImageMeta> {
     const form = new FormData();
     form.append("file", file);
@@ -98,6 +113,14 @@ export async function getImageMeta(imageSlug: string): Promise<ImageMeta> {
 
 export function imageUrl(imageSlug: string): string {
     return `${BASE}/api/images/${imageSlug}/blob`;
+}
+
+export function thumbnailUrl(imageSlug: string): string {
+    return `${BASE}/api/images/${imageSlug}/thumbnail`;
+}
+
+export function overlayUrl(imageSlug: string, resize: number = 768): string {
+    return `${BASE}/api/images/${imageSlug}/overlay?resize=${resize}`;
 }
 
 export async function extractContour(
