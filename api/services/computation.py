@@ -67,6 +67,21 @@ async def compute_contours(
     ml_detail_threshold: float = 0.3,
 ) -> dict[str, Any]:
     def _run():
+        from PIL import Image, ImageOps
+
+        # Get resized dimensions without running the full extraction pipeline.
+        # Mirrors the resize logic in load_image_inputs (including EXIF transpose).
+        img = Image.open(image_path)
+        img = ImageOps.exif_transpose(img)
+        orig_w, orig_h = img.size
+        img.close()
+        if resize is not None:
+            ratio = resize / max(orig_w, orig_h)
+            rw = int(orig_w * ratio)
+            rh = int(orig_h * ratio)
+        else:
+            rw, rh = orig_w, orig_h
+
         contours = extract_contours(
             image_path,
             strategy=strategy,
@@ -80,13 +95,27 @@ async def compute_contours(
             ml_threshold=ml_threshold,
             ml_detail_threshold=ml_detail_threshold,
         )
-        return [
+        contour_data = [
             {"x": c.real.tolist(), "y": c.imag.tolist(), "n_points": len(c)}
             for c in contours
         ]
 
-    contour_data = await submit_compute_job("contours", _run)
-    return {"n_contours": len(contour_data), "contours": contour_data}
+        # Image bounds in contour data space:
+        # x = col - w/2, y = h/2 - row
+        image_bounds = {
+            "minX": -rw / 2,
+            "maxX": rw / 2,
+            "minY": -rh / 2,
+            "maxY": rh / 2,
+        }
+
+        return {
+            "n_contours": len(contour_data),
+            "contours": contour_data,
+            "image_bounds": image_bounds,
+        }
+
+    return await submit_compute_job("contours", _run)
 
 
 async def compute_epicycles(

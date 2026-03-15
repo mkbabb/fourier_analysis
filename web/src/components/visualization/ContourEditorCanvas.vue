@@ -10,7 +10,8 @@ import {
     unzipPoints,
     type Point2D,
 } from "@/lib/contourEditing";
-import * as api from "@/lib/api";
+import { overlayUrl } from "@/lib/api";
+import { useWorkspaceStore } from "@/stores/workspace";
 import { useContourHistory } from "./composables/useContourHistory";
 import { usePointDrag } from "./composables/usePointDrag";
 
@@ -26,6 +27,8 @@ const emit = defineEmits<{
 }>();
 
 const MARGIN = 0.15;
+
+const wStore = useWorkspaceStore();
 
 // State
 const points = ref<Point2D[]>([]);
@@ -81,54 +84,27 @@ const viewBox = computed(() => {
 // Spline path
 const splinePath = computed(() => closedSplinePath(points.value));
 
-// Image overlay URL
-const overlayUrl = computed(() =>
-    props.imageSlug ? api.imageUrl(props.imageSlug) : null,
-);
+// Image overlay: use the resized overlay endpoint + image_bounds for positioning.
+// Derive resize from image_bounds so the overlay always matches the extraction dimensions.
+const overlayHref = computed(() => {
+    if (!props.imageSlug) return null;
+    const ib = props.contour.image_bounds;
+    const resize = ib
+        ? Math.round(Math.max(ib.maxX - ib.minX, ib.maxY - ib.minY))
+        : (wStore.contourSettings?.resize ?? 768);
+    return overlayUrl(props.imageSlug, resize);
+});
 
-// Image overlay natural size for aspect-ratio-correct rendering
-const overlayNaturalSize = ref<{ w: number; h: number } | null>(null);
-let overlayGeneration = 0;
-
-watch(overlayUrl, (url) => {
-    const gen = ++overlayGeneration;
-    if (!url) { overlayNaturalSize.value = null; return; }
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.src = url;
-    // decode() pre-loads the image into the browser cache so the SVG <image>
-    // element renders without a visible delay on first paint.
-    img.decode().then(() => {
-        if (gen !== overlayGeneration) return;
-        overlayNaturalSize.value = { w: img.naturalWidth, h: img.naturalHeight };
-    }).catch(() => {
-        if (gen !== overlayGeneration) return;
-        // Fallback: use naturalWidth/Height if decode() fails (e.g. old browser)
-        if (img.naturalWidth > 0) {
-            overlayNaturalSize.value = { w: img.naturalWidth, h: img.naturalHeight };
-        }
-    });
-}, { immediate: true });
-
+// Image bounds from contour document (authoritative data-space rectangle).
 const imageOverlayRect = computed(() => {
-    const b = bounds.value;
-    const ns = overlayNaturalSize.value;
-    if (!ns || ns.w === 0 || ns.h === 0) return { x: b.minX, y: b.minY, w: b.width, h: b.height };
-    const imgAR = ns.w / ns.h;
-    const boxAR = b.width / b.height;
-    let w: number, h: number;
-    if (imgAR > boxAR) {
-        // Image wider than box — fit to width
-        w = b.width;
-        h = b.width / imgAR;
-    } else {
-        // Image taller — fit to height
-        h = b.height;
-        w = b.height * imgAR;
-    }
-    const x = b.minX + (b.width - w) / 2;
-    const y = b.minY + (b.height - h) / 2;
-    return { x, y, w, h };
+    const ib = props.contour.image_bounds;
+    if (!ib) return null;
+    return {
+        x: ib.minX,
+        y: ib.minY,
+        w: ib.maxX - ib.minX,
+        h: ib.maxY - ib.minY,
+    };
 });
 
 // Wrapped undo/redo with side effects
@@ -265,17 +241,17 @@ defineExpose({
             @click.self="onBgClick"
         >
             <g transform="scale(1,-1)">
-                <!-- Image overlay -->
+                <!-- Image overlay — positioned using authoritative image_bounds -->
                 <image
-                    v-if="showImageOverlay && overlayUrl"
-                    :href="overlayUrl"
+                    v-if="showImageOverlay && overlayHref && imageOverlayRect"
+                    :href="overlayHref"
                     :x="imageOverlayRect.x"
                     :y="imageOverlayRect.y"
                     :width="imageOverlayRect.w"
                     :height="imageOverlayRect.h"
                     :transform="`translate(0, ${imageOverlayRect.y * 2 + imageOverlayRect.h}) scale(1, -1)`"
                     style="opacity: 0.28; pointer-events: none"
-                    preserveAspectRatio="none"
+                    preserveAspectRatio="xMidYMid meet"
                 />
 
                 <!-- Spline path -->

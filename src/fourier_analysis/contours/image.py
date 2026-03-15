@@ -5,7 +5,7 @@ from pathlib import Path
 
 import numpy as np
 from numpy.typing import NDArray
-from PIL import Image
+from PIL import Image, ImageOps
 from skimage import color as skcolor, exposure, filters
 
 from fourier_analysis.contours.models import ContourConfig
@@ -32,6 +32,7 @@ def load_image_inputs(
 ) -> LoadedImage:
     """Load and normalize grayscale/alpha inputs for contour extraction."""
     img_raw = Image.open(image_path)
+    img_raw = ImageOps.exif_transpose(img_raw)
 
     alpha_arr: NDArray[np.float64] | None = None
     if img_raw.mode in ("RGBA", "LA", "PA"):

@@ -18,6 +18,7 @@ def contour_response(asset: dict) -> ContourAssetResponse:
         source=asset["source"],
         point_count=asset["point_count"],
         bbox=asset["bbox"],
+        image_bounds=asset.get("image_bounds"),
         preview_path=asset.get("preview_path", ""),
         created_at=asset["created_at"],
         last_accessed_at=asset["last_accessed_at"],

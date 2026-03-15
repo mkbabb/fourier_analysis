@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { ref, watch, toRaw, onScopeDispose } from "vue";
+import { ref, shallowRef, watch, toRaw, markRaw, onScopeDispose } from "vue";
 import { useRouter } from "vue-router";
 import type {
     ImageMeta,
@@ -13,32 +13,7 @@ import type {
 } from "@/lib/types";
 import * as api from "@/lib/api";
 import { saveDraft, loadDraft, listDrafts } from "@/lib/draftStorage";
-
-function defaultContourSettings(): ContourSettings {
-    return {
-        strategy: "auto",
-        resize: 800,
-        blur_sigma: 2.0,
-        n_harmonics: 100,
-        n_points: 1024,
-        n_classes: 3,
-        min_contour_length: 40,
-        min_contour_area: 0.01,
-        max_contours: 5,
-        smooth_contours: 0.1,
-    };
-}
-
-function defaultAnimationSettings(): AnimationSettings {
-    return {
-        fps: 60,
-        duration: 5000,
-        max_circles: 100,
-        easing: "sine",
-        speed: 1,
-        active_bases: ["fourier"],
-    };
-}
+import { defaultContourSettings, defaultAnimationSettings } from "@/lib/defaults";
 
 export const useWorkspaceStore = defineStore("workspace", () => {
     const router = useRouter();
@@ -46,9 +21,9 @@ export const useWorkspaceStore = defineStore("workspace", () => {
     // State
     const imageSlug = ref<string | null>(null);
     const imageMeta = ref<ImageMeta | null>(null);
-    const contour = ref<ContourAsset | null>(null);
-    const epicycleData = ref<EpicycleData | null>(null);
-    const basesData = ref<AnimationData | null>(null);
+    const contour = shallowRef<ContourAsset | null>(null);
+    const epicycleData = shallowRef<EpicycleData | null>(null);
+    const basesData = shallowRef<AnimationData | null>(null);
     const contourSettings = ref<ContourSettings>(defaultContourSettings());
     const animationSettings = ref<AnimationSettings>(defaultAnimationSettings());
     const drafts = ref<WorkspaceDraft[]>([]);
@@ -62,6 +37,17 @@ export const useWorkspaceStore = defineStore("workspace", () => {
     // retry loop in the auto-compute watcher.
     let epicycleRevision = 0;
     let basesRevision = 0;
+
+    // Depth counter so `computing` stays true across sequential async steps
+    let _computeDepth = 0;
+    function beginCompute() {
+        _computeDepth++;
+        computing.value = true;
+    }
+    function endCompute() {
+        _computeDepth = Math.max(0, _computeDepth - 1);
+        computing.value = _computeDepth > 0;
+    }
 
     // Draft auto-save (debounced)
     let draftTimer: ReturnType<typeof setTimeout> | null = null;
@@ -80,18 +66,16 @@ export const useWorkspaceStore = defineStore("workspace", () => {
 
     async function _saveDraftNow() {
         if (!imageSlug.value) return;
-        // Use toRaw + JSON round-trip to strip Vue reactive proxies —
-        // IndexedDB's structured clone algorithm can't handle Proxy objects.
-        const raw = JSON.parse(JSON.stringify({
+        const raw: WorkspaceDraft = structuredClone({
             imageSlug: imageSlug.value,
-            contour: toRaw(contour.value),
+            contour: contour.value,
             contourSettings: toRaw(contourSettings.value),
             animationSettings: toRaw(animationSettings.value),
-            epicycleData: toRaw(epicycleData.value),
-            basesData: toRaw(basesData.value),
+            epicycleData: epicycleData.value,
+            basesData: basesData.value,
             savedSnapshots: [],
             lastOpenedAt: new Date().toISOString(),
-        })) as WorkspaceDraft;
+        });
         await saveDraft(raw).catch((e) => { console.warn("[draft] save failed:", e); });
     }
 
@@ -102,7 +86,9 @@ export const useWorkspaceStore = defineStore("workspace", () => {
         loading.value = true;
         error.value = null;
         try {
-            const meta = await api.uploadImage(file);
+            const hash = await api.computeSha256(file);
+            let meta = await api.checkImageHash(hash);
+            if (!meta) meta = await api.uploadImage(file);
             imageSlug.value = meta.image_slug;
             imageMeta.value = meta;
             contour.value = null;
@@ -131,7 +117,18 @@ export const useWorkspaceStore = defineStore("workspace", () => {
             imageSlug.value = slug;
             imageMeta.value = meta;
             if (draft) {
-                contour.value = draft.contour;
+                let draftContour = draft.contour;
+                // Re-fetch contour from API if draft is missing image_bounds
+                // (triggers lazy backfill on the backend).
+                if (draftContour && !draftContour.image_bounds) {
+                    try {
+                        draftContour = await api.getContour(draftContour.contour_hash);
+                    } catch {
+                        // keep stale draft contour if API fetch fails
+                    }
+                    if (revision.value !== rev) return;
+                }
+                contour.value = draftContour ? markRaw(draftContour) : null;
                 contourSettings.value = {
                     ...defaultContourSettings(),
                     ...draft.contourSettings,
@@ -140,8 +137,8 @@ export const useWorkspaceStore = defineStore("workspace", () => {
                     ...defaultAnimationSettings(),
                     ...draft.animationSettings,
                 };
-                epicycleData.value = draft.epicycleData;
-                basesData.value = draft.basesData;
+                epicycleData.value = draft.epicycleData ? markRaw(draft.epicycleData) : null;
+                basesData.value = draft.basesData ? markRaw(draft.basesData) : null;
             } else {
                 contour.value = null;
                 contourSettings.value = defaultContourSettings();
@@ -183,7 +180,7 @@ export const useWorkspaceStore = defineStore("workspace", () => {
             // Load contour from snapshot
             const contourAsset = await api.getContour(snapshot.contour_hash);
             if (revision.value !== rev) return;
-            contour.value = contourAsset;
+            contour.value = markRaw(contourAsset);
         } catch (e: any) {
             if (!api.isAbortError(e))
                 error.value = e.message ?? "Failed to load snapshot";
@@ -195,7 +192,7 @@ export const useWorkspaceStore = defineStore("workspace", () => {
 
     async function extractContour() {
         if (!imageSlug.value) return;
-        computing.value = true;
+        beginCompute();
         error.value = null;
         const rev = ++revision.value;
         try {
@@ -204,26 +201,24 @@ export const useWorkspaceStore = defineStore("workspace", () => {
                 contourSettings.value,
             );
             if (revision.value !== rev) return;
-            contour.value = result;
-            epicycleData.value = null;
-            basesData.value = null;
+            contour.value = markRaw(result);
             scheduleDraftSave();
         } catch (e: any) {
             if (!api.isAbortError(e))
                 error.value = e.message ?? "Contour extraction failed";
             throw e;
         } finally {
-            computing.value = false;
+            endCompute();
         }
     }
 
     async function saveContourPoints(points: { x: number[]; y: number[] }) {
         if (!imageSlug.value) return;
-        computing.value = true;
+        beginCompute();
         error.value = null;
         try {
             const result = await api.saveContour(imageSlug.value, points);
-            contour.value = result;
+            contour.value = markRaw(result);
             epicycleData.value = null;
             basesData.value = null;
             scheduleDraftSave();
@@ -232,13 +227,13 @@ export const useWorkspaceStore = defineStore("workspace", () => {
                 error.value = e.message ?? "Failed to save contour";
             throw e;
         } finally {
-            computing.value = false;
+            endCompute();
         }
     }
 
     async function runComputeEpicycles() {
         if (!contour.value) return;
-        computing.value = true;
+        beginCompute();
         error.value = null;
         const rev = ++epicycleRevision;
         try {
@@ -250,20 +245,20 @@ export const useWorkspaceStore = defineStore("workspace", () => {
                 },
             );
             if (epicycleRevision !== rev) return;
-            epicycleData.value = result;
+            epicycleData.value = markRaw(result);
             scheduleDraftSave();
         } catch (e: any) {
             if (!api.isAbortError(e))
                 error.value = e.message ?? "Epicycle computation failed";
             throw e;
         } finally {
-            computing.value = false;
+            endCompute();
         }
     }
 
     async function runComputeBases() {
         if (!contour.value) return;
-        computing.value = true;
+        beginCompute();
         error.value = null;
         const rev = ++basesRevision;
         try {
@@ -279,14 +274,14 @@ export const useWorkspaceStore = defineStore("workspace", () => {
                 },
             );
             if (basesRevision !== rev) return;
-            basesData.value = result;
+            basesData.value = markRaw(result);
             scheduleDraftSave();
         } catch (e: any) {
             if (!api.isAbortError(e))
                 error.value = e.message ?? "Bases computation failed";
             throw e;
         } finally {
-            computing.value = false;
+            endCompute();
         }
     }
 
@@ -318,6 +313,7 @@ export const useWorkspaceStore = defineStore("workspace", () => {
         animationSettings.value = defaultAnimationSettings();
         error.value = null;
         loading.value = false;
+        _computeDepth = 0;
         computing.value = false;
     }
 
@@ -346,6 +342,8 @@ export const useWorkspaceStore = defineStore("workspace", () => {
         createSnapshot,
         refreshDrafts,
         reset,
+        beginCompute,
+        endCompute,
         defaultContourSettings,
         defaultAnimationSettings,
     };

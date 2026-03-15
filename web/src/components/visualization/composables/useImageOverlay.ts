@@ -1,5 +1,6 @@
 import { ref, watch } from "vue";
 import { useWorkspaceStore } from "@/stores/workspace";
+import { overlayUrl } from "@/lib/api";
 import type { CanvasSurface, ViewTransform } from "../lib/canvas-drawing";
 
 const MAX_CACHE_SIZE = 10;
@@ -8,21 +9,37 @@ const MAX_CACHE_SIZE = 10;
 const cache = new Map<string, HTMLImageElement>();
 
 /**
- * Eagerly preloads the image overlay as soon as imageSlug is known.
- * Draws behind the epicycle animation using contour/path bounds,
- * preserving the image's natural aspect ratio (contain-fit).
+ * Derive the resize value from image_bounds.
+ * image_bounds = {-w/2, w/2, -h/2, h/2} → max(w, h) == resize parameter.
+ */
+function resizeFromBounds(store: ReturnType<typeof useWorkspaceStore>): number {
+    const ib = store.contour?.image_bounds;
+    if (!ib) return store.contourSettings?.resize ?? 768;
+    return Math.round(Math.max(ib.maxX - ib.minX, ib.maxY - ib.minY));
+}
+
+/**
+ * Loads the resized overlay image (matching contour-extraction dimensions)
+ * and draws it behind the animation using the authoritative `image_bounds`
+ * from the contour document — pixel-perfect alignment with contour data space.
  */
 export function useImageOverlay(onImageLoaded?: () => void) {
     const store = useWorkspaceStore();
     const loading = ref(false);
     let currentImage: HTMLImageElement | null = null;
 
+    function cacheKey(): string | null {
+        if (!store.imageSlug) return null;
+        return `${store.imageSlug}:${resizeFromBounds(store)}`;
+    }
+
     watch(
-        () => store.imageSlug,
-        (slug) => {
-            if (!slug) { currentImage = null; loading.value = false; return; }
-            if (cache.has(slug)) {
-                currentImage = cache.get(slug)!;
+        () => [store.imageSlug, store.contour] as const,
+        () => {
+            const key = cacheKey();
+            if (!key) { currentImage = null; loading.value = false; return; }
+            if (cache.has(key)) {
+                currentImage = cache.get(key)!;
                 loading.value = false;
                 onImageLoaded?.();
                 return;
@@ -32,76 +49,43 @@ export function useImageOverlay(onImageLoaded?: () => void) {
             const img = new Image();
             img.crossOrigin = "anonymous";
             img.onload = () => {
-                // Evict oldest entry if cache is full
                 if (cache.size >= MAX_CACHE_SIZE) {
                     const oldest = cache.keys().next().value!;
                     cache.delete(oldest);
                 }
-                cache.set(slug, img);
-                if (store.imageSlug === slug) {
+                cache.set(key, img);
+                if (cacheKey() === key) {
                     currentImage = img;
                     loading.value = false;
                     onImageLoaded?.();
                 }
             };
             img.onerror = () => {
-                if (store.imageSlug === slug) {
+                if (cacheKey() === key) {
                     currentImage = null;
                     loading.value = false;
                 }
             };
-            img.src = `/api/images/${slug}/blob`;
+            img.src = overlayUrl(store.imageSlug!, resizeFromBounds(store));
         },
         { immediate: true },
     );
 
-    function getImageBounds() {
-        const pts = store.contour?.points;
-        if (pts && pts.x.length > 0) return computeBBox(pts.x, pts.y);
-        const ep = store.epicycleData?.path;
-        if (ep && ep.x.length > 0) return computeBBox(ep.x, ep.y);
-        const bo = store.basesData?.original;
-        if (bo && bo.x.length > 0) return computeBBox(bo.x, bo.y);
-        return null;
-    }
-
-    function computeBBox(x: number[], y: number[]) {
-        let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-        for (let i = 0; i < x.length; i++) {
-            if (x[i] < minX) minX = x[i];
-            if (x[i] > maxX) maxX = x[i];
-            if (y[i] < minY) minY = y[i];
-            if (y[i] > maxY) maxY = y[i];
-        }
-        return { minX, maxX, minY, maxY };
-    }
-
     function drawImageOverlay(s: CanvasSurface, view: ViewTransform) {
         if (!currentImage) return;
-        const b = getImageBounds();
-        if (!b) return;
 
-        const [sx1, sy1] = view.toScreen(b.minX, b.maxY);
-        const [sx2, sy2] = view.toScreen(b.maxX, b.minY);
+        const bounds = store.contour?.image_bounds;
+        if (!bounds) return;
+
+        const [sx1, sy1] = view.toScreen(bounds.minX, bounds.maxY);
+        const [sx2, sy2] = view.toScreen(bounds.maxX, bounds.minY);
         const boxW = sx2 - sx1;
         const boxH = sy2 - sy1;
         if (boxW <= 0 || boxH <= 0) return;
 
-        // Contain-fit: preserve image aspect ratio
-        const imgAR = currentImage.naturalWidth / currentImage.naturalHeight;
-        const boxAR = boxW / boxH;
-        let dw: number, dh: number, dx: number, dy: number;
-        if (imgAR > boxAR) {
-            dw = boxW; dh = boxW / imgAR;
-            dx = sx1; dy = sy1 + (boxH - dh) / 2;
-        } else {
-            dh = boxH; dw = boxH * imgAR;
-            dx = sx1 + (boxW - dw) / 2; dy = sy1;
-        }
-
         s.ctx.save();
         s.ctx.globalAlpha = 0.28;
-        s.ctx.drawImage(currentImage, dx, dy, dw, dh);
+        s.ctx.drawImage(currentImage, sx1, sy1, boxW, boxH);
         s.ctx.restore();
     }
 

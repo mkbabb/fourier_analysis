@@ -35,6 +35,7 @@ class ContourAssetResponse(BaseModel):
     source: str
     point_count: int
     bbox: dict
+    image_bounds: dict | None = None
     preview_path: str = ""
     created_at: datetime
     last_accessed_at: datetime

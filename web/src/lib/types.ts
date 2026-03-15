@@ -65,12 +65,20 @@ export interface ImageMeta {
     last_accessed_at: string;
 }
 
+export interface ImageBounds {
+    minX: number;
+    maxX: number;
+    minY: number;
+    maxY: number;
+}
+
 export interface ContourAsset {
     contour_hash: string;
     image_slug: string | null;
     source: string;
     point_count: number;
-    bbox: { minX: number; maxX: number; minY: number; maxY: number };
+    bbox: ImageBounds;
+    image_bounds: ImageBounds | null;
     preview_path: string;
     created_at: string;
     last_accessed_at: string;
