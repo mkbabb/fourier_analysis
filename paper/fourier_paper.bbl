@@ -1,0 +1,192 @@
+\begin{thebibliography}{10}
+
+\bibitem{ahlfors_complex}
+Lars~V. Ahlfors.
+\newblock {\em Complex Analysis}.
+\newblock McGraw-Hill, 3rd edition, 1979.
+
+\bibitem{alpert_rokhlin}
+Bradley~K. Alpert and Vladimir Rokhlin.
+\newblock A fast algorithm for the evaluation of {Legendre} expansions.
+\newblock {\em SIAM Journal on Scientific and Statistical Computing},
+  12(1):158--179, 1991.
+
+\bibitem{axler_linear}
+Sheldon Axler.
+\newblock {\em Linear Algebra Done Right}.
+\newblock Springer, 3rd edition, 2015.
+
+\bibitem{bassett_circulant}
+Robert Bassett.
+\newblock A note on the discrete {Fourier} transform and circulant matrices.
+\newblock {\em arXiv preprint arXiv:1805.05533}, 2018.
+
+\bibitem{bluestein_chirp}
+Leo~I. Bluestein.
+\newblock A linear filtering approach to the computation of discrete {Fourier}
+  transform.
+\newblock {\em IEEE Transactions on Audio and Electroacoustics},
+  18(4):451--455, 1970.
+
+\bibitem{brown_churchill}
+James~Ward Brown and Ruel~V. Churchill.
+\newblock {\em Complex Variables and Applications}.
+\newblock McGraw-Hill, 9th edition, 2009.
+
+\bibitem{carleson_convergence}
+Lennart Carleson.
+\newblock On convergence and growth of partial sums of {Fourier} series.
+\newblock {\em Acta Mathematica}, 116:135--157, 1966.
+
+\bibitem{cooley_tukey}
+James~W. Cooley and John~W. Tukey.
+\newblock An algorithm for the machine calculation of complex {Fourier} series.
+\newblock {\em Mathematics of Computation}, 19(90):297--301, 1965.
+
+\bibitem{courant_hilbert}
+Richard Courant and David Hilbert.
+\newblock {\em Methods of Mathematical Physics}, volume~1.
+\newblock John Wiley \& Sons, Inc., 1953.
+
+\bibitem{daubechies1992}
+Ingrid Daubechies.
+\newblock {\em Ten Lectures on Wavelets}.
+\newblock CBMS-NSF Regional Conference Series in Applied Mathematics. SIAM,
+  1992.
+
+\bibitem{davis_circulant}
+Philip~J. Davis.
+\newblock {\em Circulant Matrices}.
+\newblock John Wiley \& Sons, 1979.
+
+\bibitem{dirichlet_convergence}
+Peter Gustav~Lejeune Dirichlet.
+\newblock Sur la convergence des s\'{e}ries trigonom\'{e}triques.
+\newblock {\em Journal f\"{u}r die reine und angewandte Mathematik},
+  4:157--169, 1829.
+
+\bibitem{eckart_young}
+Carl Eckart and Gale Young.
+\newblock The approximation of one matrix by another of lower rank.
+\newblock {\em Psychometrika}, 1(3):211--218, 1936.
+
+\bibitem{heat_fourier}
+Jean-Baptiste~Joseph Fourier.
+\newblock Propagation of heat in an infinite rectangular solid.
+\newblock In Alexander Freeman, editor, {\em Th\'{e}orie analytique de la
+  chaleur}, chapter~3, pages 163--166. Cambridge University Press, 1878.
+
+\bibitem{gray_toeplitz}
+Robert~M. Gray.
+\newblock Toeplitz and circulant matrices: A review.
+\newblock {\em Foundations and Trends in Communications and Information
+  Theory}, 2(3):155--239, 2006.
+
+\bibitem{hale_townsend}
+Nicholas Hale and Alex Townsend.
+\newblock A fast, simple, and stable {Chebyshev}--{Legendre} transform using an
+  asymptotic formula.
+\newblock {\em SIAM Journal on Scientific Computing}, 36(1):A148--A167, 2014.
+
+\bibitem{holland_schwarz}
+Samuel S.~Holland Jr.
+\newblock Hilbert space.
+\newblock In {\em Applied Analysis by the Hilbert Space Method}, chapter~3,
+  page 118. Marcel Dekker, Inc., 1990.
+
+\bibitem{holland_schwarz_l2}
+Samuel S.~Holland Jr.
+\newblock Hilbert space.
+\newblock In {\em Applied Analysis by the Hilbert Space Method}, chapter~3,
+  page 138. Marcel Dekker, Inc., 1990.
+
+\bibitem{kaplansky_basic}
+Irving Kaplansky.
+\newblock Basic properties of metric spaces.
+\newblock In {\em Set theory and Metric Spaces}, chapter~4, pages 67--83. AMS
+  Chelsea Publ., 1975.
+
+\bibitem{karhunen_loeve}
+Kari Karhunen.
+\newblock \"{U}ber lineare {M}ethoden in der {W}ahrscheinlichkeitsrechnung.
+\newblock {\em Annales Academiae Scientiarum Fennicae, Series A.I.
+  Mathematica}, 37:1--79, 1947.
+
+\bibitem{kreyszig_functional}
+Erwin Kreyszig.
+\newblock {\em Introductory Functional Analysis with Applications}.
+\newblock John Wiley \& Sons, Inc., 1978.
+
+\bibitem{van_loan_fft}
+Charles F.~Van Loan.
+\newblock {\em Computational Frameworks for the Fast Fourier Transform}.
+\newblock SIAM, 1992.
+
+\bibitem{mallat2009}
+St\'{e}phane Mallat.
+\newblock {\em A Wavelet Tour of Signal Processing: The Sparse Way}.
+\newblock Academic Press, 3rd edition, 2009.
+
+\bibitem{otsu_threshold}
+Nobuyuki Otsu.
+\newblock A threshold selection method from gray-level histograms.
+\newblock {\em IEEE Transactions on Systems, Man, and Cybernetics},
+  9(1):62--66, 1979.
+
+\bibitem{u2net}
+Xuebin Qin, Zichen Zhang, Chenyang Huang, Masood Dehghan, Osmar~R. Zaiane, and
+  Martin Jagersand.
+\newblock {U$^2$-Net}: Going deeper with nested u-structure for salient object
+  detection.
+\newblock {\em Pattern Recognition}, 106:107404, 2020.
+
+\bibitem{sirovich_kirby}
+Lawrence Sirovich and Michael Kirby.
+\newblock Low-dimensional procedure for the characterization of human faces.
+\newblock {\em Journal of the Optical Society of America A}, 4(3):519--524,
+  1987.
+
+\bibitem{stein_fourier}
+Elias~M. Stein and Rami Shakarchi.
+\newblock {\em Fourier Analysis: An Introduction}.
+\newblock Princeton Lectures in Analysis. Princeton University Press, 2003.
+
+\bibitem{strang_learning}
+Gilbert Strang.
+\newblock {\em Linear Algebra and Learning from Data}.
+\newblock Wellesley-Cambridge Press, 2019.
+
+\bibitem{strauss_fourier}
+Walter~A. Strauss.
+\newblock Distributions and transforms.
+\newblock In {\em Partial Differential Equations: An Introduction}, chapter~12,
+  page 344. John Wiley \& Sons, Inc., 2008.
+
+\bibitem{szego_orthogonal}
+G\'{a}bor Szeg\H{o}.
+\newblock {\em Orthogonal Polynomials}.
+\newblock Colloquium Publications. American Mathematical Society, 4th edition,
+  1975.
+
+\bibitem{temperton_self_sorting}
+Clive Temperton.
+\newblock Self-sorting mixed-radix fast fourier transforms.
+\newblock {\em Journal of Computational Physics}, 52:1--23, 1983.
+
+\bibitem{townsend_webb_olver}
+Alex Townsend, Marcus Webb, and Sheehan Olver.
+\newblock Fast computation of {Gauss} quadrature nodes and weights on the whole
+  real line.
+\newblock {\em IMA Journal of Numerical Analysis}, 38(2):737--758, 2018.
+
+\bibitem{trefethen_atap}
+Lloyd~N. Trefethen.
+\newblock {\em Approximation Theory and Approximation Practice}.
+\newblock SIAM, extended edition, 2013.
+
+\bibitem{turk_pentland}
+Matthew Turk and Alex Pentland.
+\newblock Eigenfaces for recognition.
+\newblock {\em Journal of Cognitive Neuroscience}, 3(1):71--86, 1991.
+
+\end{thebibliography}
