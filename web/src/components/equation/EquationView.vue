@@ -111,8 +111,10 @@ async function doCompute(force = false) {
         displayLatex.value = result.value.latex;
         displayLatexSigma.value = result.value.latex_sigma;
         displayEnergy.value = result.value.energy_captured;
-        effectiveN.value = result.value.effective_n;
+        // Capture display key BEFORE effectiveN triggers the vizHarmonics→budget
+        // chain, so a subsequent doSimplify can detect the budget changed.
         lastDisplayKey = displayKey();
+        effectiveN.value = result.value.effective_n;
         saveCachedResult(result.value, displayLatex.value, displayEnergy.value);
     } catch (e) {
         if (!isAbortError(e)) {
@@ -213,7 +215,7 @@ watchDebounced(
 
             <!-- Right panel -->
             <div class="eq-panel-right" :class="{ 'panel-inactive': mobileView !== 'canvas' && !isDesktop }">
-                <!-- Loading -->
+                <!-- Loading (no prior result) -->
                 <div v-if="computing && !result" class="flex items-center justify-center flex-1">
                     <div class="flex flex-col items-center gap-3">
                         <div class="size-6 animate-spin rounded-full border-2 border-border border-t-primary" />
@@ -221,7 +223,7 @@ watchDebounced(
                     </div>
                 </div>
 
-                <!-- Error -->
+                <!-- Error (no prior result) -->
                 <div v-else-if="error && !result" class="flex items-center justify-center flex-1">
                     <div class="cartoon-card p-4 max-w-md text-center">
                         <p class="text-sm font-medium text-foreground mb-1">Computation failed</p>
@@ -231,6 +233,16 @@ watchDebounced(
 
                 <!-- Results -->
                 <template v-else-if="result">
+                    <!-- Re-compute status banners -->
+                    <div v-if="computing" class="cartoon-card px-3 py-2 flex items-center gap-2 text-sm shrink-0">
+                        <div class="size-3.5 animate-spin rounded-full border-[1.5px] border-border border-t-primary" />
+                        <span class="text-muted-foreground fira-code">Recomputing…</span>
+                    </div>
+                    <div v-else-if="error" class="cartoon-card px-3 py-2 flex items-center gap-2 text-sm border-red-500/30 bg-red-500/5 shrink-0">
+                        <span class="font-medium text-red-400">Error:</span>
+                        <span class="text-muted-foreground fira-code truncate">{{ error }}</span>
+                    </div>
+
                     <!-- Equation card -->
                     <div
                         ref="eqCardRef"

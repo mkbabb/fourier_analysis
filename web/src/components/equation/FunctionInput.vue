@@ -36,6 +36,7 @@ function applyPreset(preset: PresetFunction) {
     expression.value = preset.expression;
     domainStart.value = preset.domain[0];
     domainEnd.value = preset.domain[1];
+    emit("compute");
 }
 
 /** Parse domain strings like "pi", "π", "2π", "-pi/2", "3.14". */
@@ -95,8 +96,7 @@ const activePreset = computed(() =>
                         <label class="text-sm font-medium text-muted-foreground mb-1 block">Expression</label>
                         <input
                             type="text"
-                            :value="expression"
-                            @input="expression = ($event.target as HTMLInputElement).value"
+                            v-model="expression"
                             @keydown.enter="emit('compute')"
                             class="w-full px-2.5 py-2 rounded-lg text-sm
                                    fira-code bg-muted/40 border-[1.5px] border-border/50
