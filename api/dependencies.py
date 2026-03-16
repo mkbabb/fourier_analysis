@@ -2,13 +2,18 @@
 
 from __future__ import annotations
 
+import hashlib
+import hmac
 import io
 import logging
 import re
+from datetime import UTC, datetime
 
-from fastapi import HTTPException
+from fastapi import HTTPException, Request
 from PIL import Image, ImageOps
+from pymongo import ReturnDocument
 
+from api.config import settings
 from api.services.database import get_db, touch_document
 
 logger = logging.getLogger(__name__)
@@ -104,3 +109,68 @@ async def _backfill_image_bounds(db, contour_doc: dict) -> dict:
         logger.warning("Failed to backfill image_bounds for %s", contour_doc.get("contour_hash"), exc_info=True)
 
     return contour_doc
+
+
+# ---------------------------------------------------------------------------
+# Auth / session helpers
+# ---------------------------------------------------------------------------
+
+
+def get_client_ip(request: Request) -> str:
+    """Extract client IP from X-Forwarded-For or request.client."""
+    forwarded = request.headers.get("X-Forwarded-For")
+    if forwarded:
+        return forwarded.split(",")[-1].strip()
+    real_ip = request.headers.get("X-Real-IP")
+    if real_ip:
+        return real_ip.strip()
+    if request.client:
+        return request.client.host
+    logger.warning("Could not determine client IP")
+    return "unknown"
+
+
+def hash_ip(ip: str) -> str:
+    """SHA-256 hash of IP address for privacy-safe storage."""
+    return hashlib.sha256(ip.encode()).hexdigest()
+
+
+async def resolve_session(request: Request) -> str | None:
+    """Extract X-Session-Token, resolve to user_slug.
+    Returns None if no header. Raises 401 if header present but invalid/expired."""
+    token = request.headers.get("X-Session-Token")
+    if not token:
+        return None
+    db = get_db()
+    session = await db.sessions.find_one_and_update(
+        {"_id": token, "expires_at": {"$gt": datetime.now(UTC)}},
+        {"$set": {"last_seen_at": datetime.now(UTC)}},
+        return_document=ReturnDocument.AFTER,
+    )
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid or expired session")
+    # Also touch the user
+    await db.users.update_one(
+        {"_id": session["user_slug"]},
+        {"$set": {"last_seen_at": datetime.now(UTC)}},
+    )
+    return session["user_slug"]
+
+
+async def require_session(request: Request) -> str:
+    """Dependency that requires a valid session."""
+    user_slug = await resolve_session(request)
+    if not user_slug:
+        raise HTTPException(status_code=401, detail="Session required")
+    return user_slug
+
+
+async def admin_required(request: Request) -> bool:
+    """Timing-safe Bearer token validation."""
+    if not settings.admin_token:
+        raise HTTPException(status_code=503, detail="Admin not configured")
+    auth = request.headers.get("Authorization", "")
+    expected = f"Bearer {settings.admin_token}"
+    if not hmac.compare_digest(auth.encode(), expected.encode()):
+        raise HTTPException(status_code=403, detail="Forbidden")
+    return True

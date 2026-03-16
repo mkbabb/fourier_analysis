@@ -13,6 +13,10 @@ class Settings(BaseSettings):
     compute_concurrency: int = 4
     asset_max_age_days: int = 30
     storage_budget_gb: float = 5.0
+    admin_token: str = ""
+    gallery_page_size: int = 20
+    session_ttl_days: int = 7
+    user_max_age_days: int = 90
 
     model_config = {"env_prefix": "", "case_sensitive": False}
 

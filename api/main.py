@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import os
 import traceback
 from contextlib import asynccontextmanager
 
@@ -14,13 +15,28 @@ from fastapi.responses import JSONResponse
 logger = logging.getLogger(__name__)
 
 from api.config import settings
-from api.routers import contours, equations, images, snapshots
+from api.routers import contours, equations, images, sessions, snapshots
+from api.routers.admin import admin_router
+from api.routers.gallery import gallery_router
 from api.services.database import close_db, connect_db
 from api.services.janitor import run_janitor
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Validate admin token in production
+    env = os.environ.get("ENV", "development").lower()
+    if env == "production" and not settings.admin_token:
+        raise RuntimeError(
+            "ADMIN_TOKEN must be set in production. "
+            "Set the ADMIN_TOKEN environment variable before starting the server."
+        )
+    elif not settings.admin_token:
+        logger.warning(
+            "ADMIN_TOKEN is not set. Admin endpoints will return 503. "
+            "Set ADMIN_TOKEN for full functionality."
+        )
+
     await connect_db()
     janitor_task = asyncio.create_task(run_janitor())
     yield
@@ -40,13 +56,16 @@ app.add_middleware(
     allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"],
+    allow_headers=["*", "X-Session-Token"],
 )
 
 app.include_router(images.router)
 app.include_router(contours.router)
 app.include_router(snapshots.router)
 app.include_router(equations.router)
+app.include_router(sessions.router)
+app.include_router(gallery_router)
+app.include_router(admin_router)
 
 
 @app.exception_handler(Exception)
