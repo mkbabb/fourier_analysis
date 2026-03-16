@@ -14,7 +14,7 @@ from fastapi.responses import JSONResponse
 logger = logging.getLogger(__name__)
 
 from api.config import settings
-from api.routers import contours, images, snapshots
+from api.routers import contours, equations, images, snapshots
 from api.services.database import close_db, connect_db
 from api.services.janitor import run_janitor
 
@@ -46,6 +46,7 @@ app.add_middleware(
 app.include_router(images.router)
 app.include_router(contours.router)
 app.include_router(snapshots.router)
+app.include_router(equations.router)
 
 
 @app.exception_handler(Exception)
