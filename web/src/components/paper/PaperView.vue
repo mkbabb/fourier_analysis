@@ -258,7 +258,7 @@ onUnmounted(() => {
                 />
             </Transition>
 
-            <div class="paper-layout mx-auto max-w-5xl px-2 pt-2 pb-0 sm:py-14 sm:px-6">
+            <div class="paper-layout mx-auto max-w-5xl px-2 pt-2 pb-0 sm:pt-2 sm:pb-0 sm:px-6">
                 <div class="paper-grid">
                     <!-- Desktop sidebar TOC -->
                     <PaperSidebar
@@ -278,7 +278,7 @@ onUnmounted(() => {
 
                     <!-- Main article -->
                     <article class="paper-article leading-relaxed">
-                        <header class="mb-20 text-center">
+                        <header class="mb-10 lg:mb-20 text-center">
                             <h1
                                 class="cm-serif text-4xl font-bold tracking-tight sm:text-5xl md:text-[3.25rem] leading-[1.15]"
                             >
