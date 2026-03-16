@@ -8,7 +8,7 @@
 \contentsline {paragraph}{Application to Sturm-Liouville.}{12}{section*.3}%
 \contentsline {paragraph}{Application to Fourier's problem.}{12}{section*.4}%
 \contentsline {subsection}{\numberline {1.2.3}Green's Functions}{12}{subsection.1.2.3}%
-\contentsline {paragraph}{Construction via the Wronskian.}{12}{section*.5}%
+\contentsline {paragraph}{Construction via the Wronskian.}{13}{section*.5}%
 \contentsline {paragraph}{Spectral decomposition.}{13}{section*.6}%
 \contentsline {paragraph}{Connection to signal processing.}{13}{section*.7}%
 \contentsline {paragraph}{Worked example: Fourier's rod.}{13}{section*.8}%
@@ -59,127 +59,142 @@
 \contentsline {paragraph}{Diagonalization perspective.}{41}{section*.34}%
 \contentsline {section}{\numberline {2.9}A Small Modification}{41}{section.2.9}%
 \contentsline {section}{\numberline {2.10}Convergence of Fourier Series}{42}{section.2.10}%
-\contentsline {section}{\numberline {2.11}The Spectral Theorem and Diagonalization}{45}{section.2.11}%
-\contentsline {paragraph}{Diagonalization as unifying concept.}{45}{section*.39}%
-\contentsline {chapter}{\numberline {3}Eigentheory Foundations}{46}{chapter.3}%
-\contentsline {section}{\numberline {3.1}What Is an Eigenvalue?}{46}{section.3.1}%
-\contentsline {section}{\numberline {3.2}Diagonalization}{47}{section.3.2}%
-\contentsline {section}{\numberline {3.3}Trace, Determinant, and Volume}{47}{section.3.3}%
-\contentsline {paragraph}{Trace.}{47}{section*.40}%
-\contentsline {paragraph}{Determinant as volume scaling.}{48}{section*.41}%
-\contentsline {paragraph}{Wronskian connection.}{48}{section*.42}%
-\contentsline {paragraph}{The Jacobian determinant.}{48}{section*.43}%
-\contentsline {paragraph}{Summary.}{48}{section*.44}%
-\contentsline {section}{\numberline {3.4}From Finite to Infinite Dimensions}{48}{section.3.4}%
-\contentsline {section}{\numberline {3.5}Eigenfunctions and the Diagonalization Principle}{49}{section.3.5}%
-\contentsline {paragraph}{Why complex exponentials are canonical.}{50}{section*.45}%
-\contentsline {paragraph}{Eigenvalues in nature.}{50}{section*.46}%
-\contentsline {paragraph}{The transform pipeline as change of diagonalization.}{50}{section*.47}%
-\contentsline {paragraph}{The multivariate chain rule and the Jacobian matrix.}{51}{section*.48}%
-\contentsline {chapter}{\numberline {4}Lens II: Complex Analysis}{52}{chapter.4}%
-\contentsline {subsection}{\numberline {4.0.1}Holomorphism}{53}{subsection.4.0.1}%
-\contentsline {section}{\numberline {4.1}Laurent Series}{54}{section.4.1}%
-\contentsline {section}{\numberline {4.2}From Laurent Series to Fourier Series}{55}{section.4.2}%
-\contentsline {section}{\numberline {4.3}Complex Analysis of Orthogonal Polynomials and Green's Functions}{56}{section.4.3}%
-\contentsline {subsection}{\numberline {4.3.1}Chebyshev Polynomials via the Joukowski Transform}{56}{subsection.4.3.1}%
-\contentsline {paragraph}{Chebyshev polynomials of the second kind.}{57}{section*.49}%
-\contentsline {subsection}{\numberline {4.3.2}Legendre Polynomials via the Schl\"{a}fli Integral}{57}{subsection.4.3.2}%
-\contentsline {paragraph}{Recovering Rodrigues from Cauchy.}{57}{section*.50}%
-\contentsline {paragraph}{The generating function.}{58}{section*.51}%
-\contentsline {subsection}{\numberline {4.3.3}The Green's Function Resolvent}{58}{subsection.4.3.3}%
-\contentsline {chapter}{\numberline {5}Interpreting The Results}{59}{chapter.5}%
-\contentsline {chapter}{\numberline {6}The Discrete Fourier Transform}{62}{chapter.6}%
-\contentsline {section}{\numberline {6.1}DFT as Matrix Multiplication}{62}{section.6.1}%
-\contentsline {section}{\numberline {6.2}Circulant Matrices and Diagonalization}{63}{section.6.2}%
-\contentsline {paragraph}{Why FFT makes convolution $O(N \log N)$.}{64}{section*.52}%
-\contentsline {paragraph}{Block circulant matrices.}{65}{section*.53}%
-\contentsline {paragraph}{Toeplitz-circulant equivalence.}{65}{section*.54}%
-\contentsline {section}{\numberline {6.3}The Fast Fourier Transform}{65}{section.6.3}%
-\contentsline {subsection}{\numberline {6.3.1}Reshape and Transform}{65}{subsection.6.3.1}%
-\contentsline {paragraph}{Programming intuition.}{65}{section*.55}%
-\contentsline {subsection}{\numberline {6.3.2}The Stride Permutation}{66}{subsection.6.3.2}%
-\contentsline {paragraph}{Programming intuition.}{66}{section*.56}%
-\contentsline {subsection}{\numberline {6.3.3}Kronecker Product Formulation}{67}{subsection.6.3.3}%
-\contentsline {paragraph}{Programming intuition.}{67}{section*.57}%
-\contentsline {subsection}{\numberline {6.3.4}Multi-Factor Decomposition and the Hypercube}{67}{subsection.6.3.4}%
-\contentsline {subsection}{\numberline {6.3.5}Worked Example: $N = 30 = 2 \times 3 \times 5$}{68}{subsection.6.3.5}%
-\contentsline {paragraph}{Pass 1 (factor 2).}{68}{section*.58}%
-\contentsline {paragraph}{Pass 2 (factor 3).}{68}{section*.59}%
-\contentsline {paragraph}{Pass 3 (factor 5).}{68}{section*.60}%
-\contentsline {subsection}{\numberline {6.3.6}Temperton's Self-Sorting Algorithm}{68}{subsection.6.3.6}%
-\contentsline {paragraph}{Twiddle factor precomputation.}{69}{section*.61}%
-\contentsline {paragraph}{Optimized butterflies.}{69}{section*.62}%
-\contentsline {paragraph}{Cache and memory access.}{69}{section*.63}%
-\contentsline {subsection}{\numberline {6.3.7}Hypercube Dimensional Gliding}{70}{subsection.6.3.7}%
-\contentsline {subsection}{\numberline {6.3.8}Bluestein's Algorithm}{70}{subsection.6.3.8}%
-\contentsline {section}{\numberline {6.4}The Discrete Cosine and Sine Transforms}{71}{section.6.4}%
-\contentsline {subsection}{\numberline {6.4.1}The Discrete Cosine Transform (DCT)}{72}{subsection.6.4.1}%
-\contentsline {paragraph}{Derivation from the DFT via symmetry.}{72}{section*.64}%
-\contentsline {paragraph}{Why DCT, not DFT, for compression?}{72}{section*.65}%
-\contentsline {paragraph}{Diagonalization perspective.}{72}{section*.66}%
-\contentsline {subsection}{\numberline {6.4.2}The Discrete Sine Transform (DST)}{73}{subsection.6.4.2}%
-\contentsline {subsection}{\numberline {6.4.3}DCT/DST as Change of Basis from DFT}{73}{subsection.6.4.3}%
-\contentsline {section}{\numberline {6.5}Fast Chebyshev and Legendre Transforms}{73}{section.6.5}%
-\contentsline {subsection}{\numberline {6.5.1}Fast Chebyshev Transform (FCT)}{73}{subsection.6.5.1}%
-\contentsline {subsection}{\numberline {6.5.2}Fast Legendre Transform (FLT)}{74}{subsection.6.5.2}%
-\contentsline {paragraph}{The Chebyshev--Legendre connection matrix.}{74}{section*.67}%
-\contentsline {paragraph}{Fast algorithms.}{74}{section*.68}%
-\contentsline {paragraph}{The pipeline in practice.}{74}{section*.69}%
-\contentsline {subsection}{\numberline {6.5.3}Diagonalization Permutations: Changing Between Eigenbases}{74}{subsection.6.5.3}%
-\contentsline {chapter}{\numberline {7}Eigentheory Applied: SVD, PCA, and Compression}{76}{chapter.7}%
-\contentsline {section}{\numberline {7.1}The Singular Value Decomposition}{76}{section.7.1}%
-\contentsline {paragraph}{Geometric interpretation.}{77}{section*.70}%
-\contentsline {paragraph}{Connection to eigendecomposition.}{77}{section*.71}%
-\contentsline {paragraph}{Complex analysis lens.}{77}{section*.72}%
-\contentsline {paragraph}{The Eckart--Young theorem.}{78}{section*.73}%
-\contentsline {paragraph}{Storage.}{78}{section*.74}%
-\contentsline {section}{\numberline {7.2}Principal Component Analysis}{79}{section.7.2}%
-\contentsline {paragraph}{Variance and covariance.}{79}{section*.75}%
-\contentsline {paragraph}{The covariance matrix.}{79}{section*.76}%
-\contentsline {paragraph}{Deriving principal components via Lagrange multipliers.}{79}{section*.77}%
-\contentsline {paragraph}{The Hessian as curvature of the variance landscape.}{80}{section*.78}%
-\contentsline {paragraph}{PCA as SVD.}{80}{section*.79}%
-\contentsline {paragraph}{Eigenfaces: PCA for images.}{80}{section*.80}%
-\contentsline {paragraph}{The Karhunen--Lo\`{e}ve theorem.}{81}{section*.81}%
-\contentsline {paragraph}{The Fourier--KL connection.}{81}{section*.82}%
-\contentsline {section}{\numberline {7.3}Image Compression}{82}{section.7.3}%
-\contentsline {paragraph}{SVD-based compression.}{82}{section*.83}%
-\contentsline {paragraph}{DCT-based compression (JPEG).}{82}{section*.84}%
-\contentsline {paragraph}{DFT-based compression.}{82}{section*.85}%
-\contentsline {paragraph}{Comparison.}{82}{section*.86}%
-\contentsline {chapter}{\numberline {8}Applications}{83}{chapter.8}%
-\contentsline {section}{\numberline {8.1}The Convolution Theorem}{83}{section.8.1}%
-\contentsline {section}{\numberline {8.2}Image Reconstruction via Epicycles}{84}{section.8.2}%
-\contentsline {subsection}{\numberline {8.2.1}Image Processing Mathematics}{84}{subsection.8.2.1}%
-\contentsline {paragraph}{Image gradient and edge detection.}{84}{section*.87}%
-\contentsline {paragraph}{Canny edge detection.}{85}{section*.88}%
-\contentsline {paragraph}{Otsu's method.}{85}{section*.89}%
-\contentsline {paragraph}{Contour to Fourier coefficients.}{85}{section*.90}%
-\contentsline {section}{\numberline {8.3}Spectral Analysis}{85}{section.8.3}%
-\contentsline {section}{\numberline {8.4}Wavelets: Time-Frequency Localization}{88}{section.8.4}%
-\contentsline {paragraph}{The short-time Fourier transform.}{88}{section*.91}%
-\contentsline {paragraph}{The wavelet idea.}{88}{section*.92}%
-\contentsline {paragraph}{Key wavelets.}{89}{section*.93}%
-\contentsline {paragraph}{Multi-resolution analysis.}{89}{section*.94}%
-\contentsline {chapter}{\numberline {A}Extended Proofs}{93}{appendix.A}%
-\contentsline {section}{\numberline {A.1}Sturm-Liouville Completeness}{93}{section.A.1}%
-\contentsline {chapter}{\numberline {B}Image Reconstruction Pipeline}{94}{appendix.B}%
-\contentsline {section}{\numberline {B.1}Otsu Thresholding}{94}{section.B.1}%
-\contentsline {section}{\numberline {B.2}Morphological Operations and Contour Extraction}{94}{section.B.2}%
-\contentsline {section}{\numberline {B.3}Subject Isolation}{94}{section.B.3}%
-\contentsline {section}{\numberline {B.4}Structure and Feature Contours}{95}{section.B.4}%
-\contentsline {paragraph}{Structure contours (iso-intensity).}{95}{section*.96}%
-\contentsline {paragraph}{Feature contours (edge density).}{95}{section*.97}%
-\contentsline {paragraph}{Sorting and spatial diversity.}{96}{section*.98}%
-\contentsline {paragraph}{Budget allocation.}{96}{section*.99}%
-\contentsline {section}{\numberline {B.5}Contour Filtering and Deduplication}{96}{section.B.5}%
-\contentsline {section}{\numberline {B.6}Savitzky-Golay Smoothing}{96}{section.B.6}%
-\contentsline {section}{\numberline {B.7}Tour Ordering}{97}{section.B.7}%
-\contentsline {section}{\numberline {B.8}Arc-Length Resampling}{97}{section.B.8}%
-\contentsline {chapter}{\numberline {C}The Web Companion: Computational Pipeline}{99}{appendix.C}%
-\contentsline {section}{\numberline {C.1}Contour Extraction and FFT Pipeline}{99}{section.C.1}%
-\contentsline {section}{\numberline {C.2}Epicycle Chain Computation}{101}{section.C.2}%
-\contentsline {section}{\numberline {C.3}Chebyshev and Legendre Series via Polynomial Fitting}{102}{section.C.3}%
-\contentsline {paragraph}{Chebyshev fitting.}{102}{section*.100}%
-\contentsline {paragraph}{Chebyshev-to-Legendre conversion.}{103}{section*.101}%
-\contentsline {paragraph}{The Runge phenomenon and re-fitting.}{103}{section*.102}%
+\contentsline {paragraph}{Fej\'{e}r summation.}{45}{section*.38}%
+\contentsline {section}{\numberline {2.11}The Spectral Theorem and Diagonalization}{46}{section.2.11}%
+\contentsline {paragraph}{Diagonalization as unifying concept.}{46}{section*.40}%
+\contentsline {chapter}{\numberline {3}Eigentheory Foundations}{47}{chapter.3}%
+\contentsline {section}{\numberline {3.1}What Is an Eigenvalue?}{47}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Diagonalization}{48}{section.3.2}%
+\contentsline {section}{\numberline {3.3}Trace, Determinant, and Volume}{48}{section.3.3}%
+\contentsline {paragraph}{Trace.}{48}{section*.41}%
+\contentsline {paragraph}{Determinant as volume scaling.}{49}{section*.42}%
+\contentsline {paragraph}{Wronskian connection.}{49}{section*.43}%
+\contentsline {paragraph}{The Jacobian determinant.}{49}{section*.44}%
+\contentsline {paragraph}{Summary.}{49}{section*.45}%
+\contentsline {section}{\numberline {3.4}From Finite to Infinite Dimensions}{49}{section.3.4}%
+\contentsline {section}{\numberline {3.5}Eigenfunctions and the Diagonalization Principle}{50}{section.3.5}%
+\contentsline {paragraph}{Why complex exponentials are canonical.}{51}{section*.46}%
+\contentsline {paragraph}{Eigenvalues in nature.}{51}{section*.47}%
+\contentsline {paragraph}{The transform pipeline as change of diagonalization.}{51}{section*.48}%
+\contentsline {paragraph}{The multivariate chain rule and the Jacobian matrix.}{52}{section*.49}%
+\contentsline {chapter}{\numberline {4}Lens II: Complex Analysis}{53}{chapter.4}%
+\contentsline {subsection}{\numberline {4.0.1}Holomorphism}{54}{subsection.4.0.1}%
+\contentsline {section}{\numberline {4.1}Cauchy's Integral Theorem and Formula}{55}{section.4.1}%
+\contentsline {section}{\numberline {4.2}The Residue Theorem}{57}{section.4.2}%
+\contentsline {paragraph}{Classification of singularities.}{57}{section*.50}%
+\contentsline {paragraph}{Winding numbers.}{57}{section*.51}%
+\contentsline {section}{\numberline {4.3}Laurent Series}{58}{section.4.3}%
+\contentsline {section}{\numberline {4.4}From Laurent Series to Fourier Series}{59}{section.4.4}%
+\contentsline {paragraph}{Periodicity in complex terms.}{60}{section*.52}%
+\contentsline {paragraph}{The Poisson kernel.}{60}{section*.53}%
+\contentsline {section}{\numberline {4.5}Convergence from the Complex-Analytic Perspective}{61}{section.4.5}%
+\contentsline {paragraph}{Analytic continuation and decay rates.}{61}{section*.54}%
+\contentsline {paragraph}{Connection to the Bernstein ellipse.}{61}{section*.55}%
+\contentsline {paragraph}{The Gibbs phenomenon, revisited.}{61}{section*.56}%
+\contentsline {section}{\numberline {4.6}Complex Analysis of Orthogonal Polynomials and Green's Functions}{62}{section.4.6}%
+\contentsline {subsection}{\numberline {4.6.1}Chebyshev Polynomials via the Joukowski Transform}{62}{subsection.4.6.1}%
+\contentsline {paragraph}{Chebyshev polynomials of the second kind.}{62}{section*.57}%
+\contentsline {subsection}{\numberline {4.6.2}Legendre Polynomials via the Schl\"{a}fli Integral}{63}{subsection.4.6.2}%
+\contentsline {paragraph}{Recovering Rodrigues from Cauchy.}{63}{section*.58}%
+\contentsline {paragraph}{The generating function.}{63}{section*.59}%
+\contentsline {subsection}{\numberline {4.6.3}The Green's Function Resolvent}{63}{subsection.4.6.3}%
+\contentsline {section}{\numberline {4.7}Conformal Mapping and the Joukowski Transform}{64}{section.4.7}%
+\contentsline {paragraph}{Conformal maps.}{64}{section*.60}%
+\contentsline {paragraph}{Decomposition into M\"{o}bius transforms.}{64}{section*.61}%
+\contentsline {paragraph}{Chapter summary.}{64}{section*.62}%
+\contentsline {chapter}{\numberline {5}Interpreting The Results}{65}{chapter.5}%
+\contentsline {chapter}{\numberline {6}The Discrete Fourier Transform}{68}{chapter.6}%
+\contentsline {section}{\numberline {6.1}DFT as Matrix Multiplication}{68}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Circulant Matrices and Diagonalization}{69}{section.6.2}%
+\contentsline {paragraph}{Why FFT makes convolution $O(N \log N)$.}{70}{section*.63}%
+\contentsline {paragraph}{Block circulant matrices.}{71}{section*.64}%
+\contentsline {paragraph}{Toeplitz-circulant equivalence.}{71}{section*.65}%
+\contentsline {section}{\numberline {6.3}The Fast Fourier Transform}{71}{section.6.3}%
+\contentsline {subsection}{\numberline {6.3.1}Reshape and Transform}{71}{subsection.6.3.1}%
+\contentsline {paragraph}{Programming intuition.}{71}{section*.66}%
+\contentsline {subsection}{\numberline {6.3.2}The Stride Permutation}{72}{subsection.6.3.2}%
+\contentsline {paragraph}{Programming intuition.}{72}{section*.67}%
+\contentsline {subsection}{\numberline {6.3.3}Kronecker Product Formulation}{73}{subsection.6.3.3}%
+\contentsline {paragraph}{Programming intuition.}{73}{section*.68}%
+\contentsline {subsection}{\numberline {6.3.4}Multi-Factor Decomposition and the Hypercube}{73}{subsection.6.3.4}%
+\contentsline {subsection}{\numberline {6.3.5}Worked Example: $N = 30 = 2 \times 3 \times 5$}{74}{subsection.6.3.5}%
+\contentsline {paragraph}{Pass 1 (factor 2).}{74}{section*.69}%
+\contentsline {paragraph}{Pass 2 (factor 3).}{74}{section*.70}%
+\contentsline {paragraph}{Pass 3 (factor 5).}{74}{section*.71}%
+\contentsline {subsection}{\numberline {6.3.6}Temperton's Self-Sorting Algorithm}{74}{subsection.6.3.6}%
+\contentsline {paragraph}{Twiddle factor precomputation.}{75}{section*.72}%
+\contentsline {paragraph}{Optimized butterflies.}{75}{section*.73}%
+\contentsline {paragraph}{Cache and memory access.}{75}{section*.74}%
+\contentsline {subsection}{\numberline {6.3.7}Hypercube Dimensional Gliding}{76}{subsection.6.3.7}%
+\contentsline {subsection}{\numberline {6.3.8}Bluestein's Algorithm}{76}{subsection.6.3.8}%
+\contentsline {section}{\numberline {6.4}The Discrete Cosine and Sine Transforms}{77}{section.6.4}%
+\contentsline {subsection}{\numberline {6.4.1}The Discrete Cosine Transform (DCT)}{78}{subsection.6.4.1}%
+\contentsline {paragraph}{Derivation from the DFT via symmetry.}{78}{section*.75}%
+\contentsline {paragraph}{Why DCT, not DFT, for compression?}{78}{section*.76}%
+\contentsline {paragraph}{Diagonalization perspective.}{78}{section*.77}%
+\contentsline {subsection}{\numberline {6.4.2}The Discrete Sine Transform (DST)}{79}{subsection.6.4.2}%
+\contentsline {subsection}{\numberline {6.4.3}DCT/DST as Change of Basis from DFT}{79}{subsection.6.4.3}%
+\contentsline {section}{\numberline {6.5}Fast Chebyshev and Legendre Transforms}{79}{section.6.5}%
+\contentsline {subsection}{\numberline {6.5.1}Fast Chebyshev Transform (FCT)}{79}{subsection.6.5.1}%
+\contentsline {subsection}{\numberline {6.5.2}Fast Legendre Transform (FLT)}{80}{subsection.6.5.2}%
+\contentsline {paragraph}{The Chebyshev--Legendre connection matrix.}{80}{section*.78}%
+\contentsline {paragraph}{Fast algorithms.}{80}{section*.79}%
+\contentsline {paragraph}{The pipeline in practice.}{80}{section*.80}%
+\contentsline {subsection}{\numberline {6.5.3}Diagonalization Permutations: Changing Between Eigenbases}{80}{subsection.6.5.3}%
+\contentsline {chapter}{\numberline {7}Eigentheory Applied: SVD, PCA, and Compression}{82}{chapter.7}%
+\contentsline {section}{\numberline {7.1}The Singular Value Decomposition}{82}{section.7.1}%
+\contentsline {paragraph}{Geometric interpretation.}{83}{section*.81}%
+\contentsline {paragraph}{Connection to eigendecomposition.}{83}{section*.82}%
+\contentsline {paragraph}{Complex analysis lens.}{83}{section*.83}%
+\contentsline {paragraph}{The Eckart--Young theorem.}{84}{section*.84}%
+\contentsline {paragraph}{Storage.}{84}{section*.85}%
+\contentsline {section}{\numberline {7.2}Principal Component Analysis}{85}{section.7.2}%
+\contentsline {paragraph}{Variance and covariance.}{85}{section*.86}%
+\contentsline {paragraph}{The covariance matrix.}{85}{section*.87}%
+\contentsline {paragraph}{Deriving principal components via Lagrange multipliers.}{85}{section*.88}%
+\contentsline {paragraph}{The Hessian as curvature of the variance landscape.}{86}{section*.89}%
+\contentsline {paragraph}{PCA as SVD.}{86}{section*.90}%
+\contentsline {paragraph}{Eigenfaces: PCA for images.}{86}{section*.91}%
+\contentsline {paragraph}{The Karhunen--Lo\`{e}ve theorem.}{87}{section*.92}%
+\contentsline {paragraph}{The Fourier--KL connection.}{87}{section*.93}%
+\contentsline {section}{\numberline {7.3}Image Compression}{88}{section.7.3}%
+\contentsline {paragraph}{SVD-based compression.}{88}{section*.94}%
+\contentsline {paragraph}{DCT-based compression (JPEG).}{88}{section*.95}%
+\contentsline {paragraph}{DFT-based compression.}{88}{section*.96}%
+\contentsline {paragraph}{Comparison.}{88}{section*.97}%
+\contentsline {chapter}{\numberline {8}Applications}{89}{chapter.8}%
+\contentsline {section}{\numberline {8.1}The Convolution Theorem}{89}{section.8.1}%
+\contentsline {section}{\numberline {8.2}Image Reconstruction via Epicycles}{90}{section.8.2}%
+\contentsline {subsection}{\numberline {8.2.1}Image Processing Mathematics}{90}{subsection.8.2.1}%
+\contentsline {paragraph}{Image gradient and edge detection.}{90}{section*.98}%
+\contentsline {paragraph}{Canny edge detection.}{91}{section*.99}%
+\contentsline {paragraph}{Otsu's method.}{91}{section*.100}%
+\contentsline {paragraph}{Contour to Fourier coefficients.}{91}{section*.101}%
+\contentsline {section}{\numberline {8.3}Spectral Analysis}{91}{section.8.3}%
+\contentsline {section}{\numberline {8.4}Wavelets: Time-Frequency Localization}{94}{section.8.4}%
+\contentsline {paragraph}{The short-time Fourier transform.}{94}{section*.102}%
+\contentsline {paragraph}{The wavelet idea.}{94}{section*.103}%
+\contentsline {paragraph}{Key wavelets.}{95}{section*.104}%
+\contentsline {paragraph}{Multi-resolution analysis.}{95}{section*.105}%
+\contentsline {chapter}{\numberline {A}Extended Proofs}{99}{appendix.A}%
+\contentsline {section}{\numberline {A.1}Sturm-Liouville Completeness}{99}{section.A.1}%
+\contentsline {chapter}{\numberline {B}Image Reconstruction Pipeline}{100}{appendix.B}%
+\contentsline {section}{\numberline {B.1}Otsu Thresholding}{100}{section.B.1}%
+\contentsline {section}{\numberline {B.2}Morphological Operations and Contour Extraction}{100}{section.B.2}%
+\contentsline {section}{\numberline {B.3}Subject Isolation}{100}{section.B.3}%
+\contentsline {section}{\numberline {B.4}Structure and Feature Contours}{101}{section.B.4}%
+\contentsline {paragraph}{Structure contours (iso-intensity).}{101}{section*.107}%
+\contentsline {paragraph}{Feature contours (edge density).}{101}{section*.108}%
+\contentsline {paragraph}{Sorting and spatial diversity.}{102}{section*.109}%
+\contentsline {paragraph}{Budget allocation.}{102}{section*.110}%
+\contentsline {section}{\numberline {B.5}Contour Filtering and Deduplication}{102}{section.B.5}%
+\contentsline {section}{\numberline {B.6}Savitzky-Golay Smoothing}{102}{section.B.6}%
+\contentsline {section}{\numberline {B.7}Tour Ordering}{103}{section.B.7}%
+\contentsline {section}{\numberline {B.8}Arc-Length Resampling}{103}{section.B.8}%
+\contentsline {chapter}{\numberline {C}The Web Companion: Computational Pipeline}{105}{appendix.C}%
+\contentsline {section}{\numberline {C.1}Contour Extraction and FFT Pipeline}{105}{section.C.1}%
+\contentsline {section}{\numberline {C.2}Epicycle Chain Computation}{107}{section.C.2}%
+\contentsline {section}{\numberline {C.3}Chebyshev and Legendre Series via Polynomial Fitting}{108}{section.C.3}%
+\contentsline {paragraph}{Chebyshev fitting.}{108}{section*.111}%
+\contentsline {paragraph}{Chebyshev-to-Legendre conversion.}{109}{section*.112}%
+\contentsline {paragraph}{The Runge phenomenon and re-fitting.}{109}{section*.113}%

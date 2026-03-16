@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025/Homebrew) (preloaded format=pdflatex 2025.3.15)  14 MAR 2026 19:14
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025/Homebrew) (preloaded format=pdflatex 2025.3.15)  16 MAR 2026 06:07
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -996,7 +996,7 @@ your preamble.
  on input line 77.
 
 \c@lstlisting=\count350
-<../assets/f01_title_epicycle.png, id=364, 292.2117pt x 416.9979pt>
+<../assets/f01_title_epicycle.png, id=380, 292.2117pt x 416.9979pt>
 File: ../assets/f01_title_epicycle.png Graphic file (type png)
 <use ../assets/f01_title_epicycle.png>
 Package pdftex.def Info: ../assets/f01_title_epicycle.png  used on input line 8
@@ -1026,7 +1026,7 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.79 ...}Lens II: Complex Analysis}{52}{chapter.4}
+l.80 ...}Lens II: Complex Analysis}{53}{chapter.4}
                                                   % [1
 
 ]
@@ -1046,7 +1046,7 @@ Chapter 1.
 [5
 
 ]
-<../assets/f08_heat_plate.pdf, id=510, 384.86871pt x 350.13316pt>
+<../assets/f08_heat_plate.pdf, id=530, 384.86871pt x 350.13316pt>
 File: ../assets/f08_heat_plate.pdf Graphic file (type pdf)
 <use ../assets/f08_heat_plate.pdf>
 Package pdftex.def Info: ../assets/f08_heat_plate.pdf  used on input line 159.
@@ -1056,6 +1056,14 @@ Package pdftex.def Info: ../assets/f08_heat_plate.pdf  used on input line 159.
 [6 <../assets/f08_heat_plate.pdf>]
 
 [7]
+Overfull \hbox (43.9992pt too wide) in paragraph at lines 217--218
+[]\OT1/cmr/m/n/12 The con-stant $\OML/cmm/m/it/12 ^^U$ \OT1/cmr/m/n/12 is an \O
+T1/cmr/m/it/12 eigen-value\OT1/cmr/m/n/12 , and the so-lu-tions $\OML/cmm/m/it/
+12 X$ \OT1/cmr/m/n/12 and $\OML/cmm/m/it/12 Y$ \OT1/cmr/m/n/12 are \OT1/cmr/m/i
+t/12 eigen-func-tions\OT1/cmr/m/n/12 |terminology
+ []
+
+
 
 [8]
 Overfull \hbox (37.33496pt too wide) detected at line 304
@@ -1100,7 +1108,7 @@ r the steady-state heat equa-tion $\OMS/cmsy/m/n/12 ^^@\OML/cmm/m/it/12 u[]\OT1
 [13]
 
 [14]
-<../assets/f02_partial_sums.pdf, id=702, 442.88861pt x 304.01183pt>
+<../assets/f02_partial_sums.pdf, id=724, 442.88861pt x 304.01183pt>
 File: ../assets/f02_partial_sums.pdf Graphic file (type pdf)
 <use ../assets/f02_partial_sums.pdf>
 Package pdftex.def Info: ../assets/f02_partial_sums.pdf  used on input line 497
@@ -1114,7 +1122,7 @@ Package pdftex.def Info: ../assets/f02_partial_sums.pdf  used on input line 497
 
 [17]
 Chapter 2.
-<../assets/f03_projection.pdf, id=753, 332.03674pt x 244.96599pt>
+<../assets/f03_projection.pdf, id=775, 332.03674pt x 244.96599pt>
 File: ../assets/f03_projection.pdf Graphic file (type pdf)
 <use ../assets/f03_projection.pdf>
 Package pdftex.def Info: ../assets/f03_projection.pdf  used on input line 562.
@@ -1124,7 +1132,7 @@ Package pdftex.def Info: ../assets/f03_projection.pdf  used on input line 562.
 [18
 
  <../assets/f03_projection.pdf>]
-<../assets/f04_function_as_vector.pdf, id=784, 561.5379pt x 236.3229pt>
+<../assets/f04_function_as_vector.pdf, id=806, 561.5379pt x 236.3229pt>
 File: ../assets/f04_function_as_vector.pdf Graphic file (type pdf)
 <use ../assets/f04_function_as_vector.pdf>
 Package pdftex.def Info: ../assets/f04_function_as_vector.pdf  used on input li
@@ -1239,7 +1247,7 @@ T1/cmr/m/n/12 )\OML/cmm/m/it/12 e[]$
 
 
 [31]
-<../assets/f25_hermite_eigenfunctions.pdf, id=1008, 638.8079pt x 420.25005pt>
+<../assets/f25_hermite_eigenfunctions.pdf, id=1030, 638.8079pt x 420.25005pt>
 File: ../assets/f25_hermite_eigenfunctions.pdf Graphic file (type pdf)
 <use ../assets/f25_hermite_eigenfunctions.pdf>
 Package pdftex.def Info: ../assets/f25_hermite_eigenfunctions.pdf  used on inpu
@@ -1288,7 +1296,7 @@ Overfull \hbox (3.27522pt too wide) in paragraph at lines 1204--1205
 [33]
 
 [34]
-<../assets/f24_runge_phenomenon.pdf, id=1070, 706.0779pt x 314.01315pt>
+<../assets/f24_runge_phenomenon.pdf, id=1092, 706.0779pt x 314.01315pt>
 File: ../assets/f24_runge_phenomenon.pdf Graphic file (type pdf)
 <use ../assets/f24_runge_phenomenon.pdf>
 Package pdftex.def Info: ../assets/f24_runge_phenomenon.pdf  used on input line
@@ -1344,209 +1352,262 @@ ound-ary con-di-tions ($\OML/cmm/m/it/12 f\OT1/cmr/m/n/12 (0) =
 [41]
 
 [42]
-<../assets/f11_parseval.pdf, id=1231, 706.0779pt x 272.4579pt>
+<../assets/f11_parseval.pdf, id=1253, 706.0779pt x 272.4579pt>
 File: ../assets/f11_parseval.pdf Graphic file (type pdf)
 <use ../assets/f11_parseval.pdf>
 Package pdftex.def Info: ../assets/f11_parseval.pdf  used on input line 1624.
 (pdftex.def)             Requested size: 305.60393pt x 117.9237pt.
-<../assets/f09_gibbs.pdf, id=1232, 498.89787pt x 303.28958pt>
-File: ../assets/f09_gibbs.pdf Graphic file (type pdf)
-<use ../assets/f09_gibbs.pdf>
-Package pdftex.def Info: ../assets/f09_gibbs.pdf  used on input line 1639.
-(pdftex.def)             Requested size: 349.26448pt x 212.33365pt.
-<../assets/f10_fejer_vs_partial.pdf, id=1233, 706.0779pt x 272.4579pt>
-File: ../assets/f10_fejer_vs_partial.pdf Graphic file (type pdf)
-<use ../assets/f10_fejer_vs_partial.pdf>
-Package pdftex.def Info: ../assets/f10_fejer_vs_partial.pdf  used on input line
- 1646.
-(pdftex.def)             Requested size: 349.26448pt x 134.77351pt.
 
 
 [43]
 
-[44 <../assets/f11_parseval.pdf> <../assets/f09_gibbs.pdf> <../assets/f10_fejer
-_vs_partial.pdf>]
+[44 <../assets/f11_parseval.pdf>]
+<../assets/f09_gibbs.pdf, id=1317, 498.89787pt x 303.28958pt>
+File: ../assets/f09_gibbs.pdf Graphic file (type pdf)
+<use ../assets/f09_gibbs.pdf>
+Package pdftex.def Info: ../assets/f09_gibbs.pdf  used on input line 1668.
+(pdftex.def)             Requested size: 349.26448pt x 212.33365pt.
+<../assets/f10_fejer_vs_partial.pdf, id=1318, 706.0779pt x 272.4579pt>
+File: ../assets/f10_fejer_vs_partial.pdf Graphic file (type pdf)
+<use ../assets/f10_fejer_vs_partial.pdf>
+Package pdftex.def Info: ../assets/f10_fejer_vs_partial.pdf  used on input line
+ 1675.
+(pdftex.def)             Requested size: 349.26448pt x 134.77351pt.
 
-[45]
+
+[45 <../assets/f09_gibbs.pdf> <../assets/f10_fejer_vs_partial.pdf>]
+
+[46]
 Chapter 3.
 
 
-[46
+[47
 
 ]
-
-[47]
 
 [48]
 
 [49]
-Overfull \hbox (27.94267pt too wide) in paragraph at lines 1858--1859
-\OT1/cmr/m/n/12 The fast algorithms---FFT, FCT, FLT---make these con-ver-sions 
-$\OML/cmm/m/it/12 O\OT1/cmr/m/n/12 (\OML/cmm/m/it/12 N [] N\OT1/cmr/m/n/12 )$ o
-r $\OML/cmm/m/it/12 O\OT1/cmr/m/n/12 (\OML/cmm/m/it/12 N [][] N\OT1/cmr/m/n/12 
-)$.
+
+[50]
+Overfull \hbox (27.94267pt too wide) in paragraph at lines 1887--1888
+\OT1/cmr/m/n/12 The fast al-go-rithms|FFT, FCT, FLT|make these con-ver-sions $\
+OML/cmm/m/it/12 O\OT1/cmr/m/n/12 (\OML/cmm/m/it/12 N [] N\OT1/cmr/m/n/12 )$ or 
+$\OML/cmm/m/it/12 O\OT1/cmr/m/n/12 (\OML/cmm/m/it/12 N [][] N\OT1/cmr/m/n/12 )$
+.
  []
 
 
 
-[50]
-
 [51]
+
+[52]
 Chapter 4.
 
-Overfull \hbox (9.2801pt too wide) detected at line 1895
+Overfull \hbox (9.2801pt too wide) detected at line 1924
 []
  []
 
 
 
-[52
+[53
 
 ]
 
 Package hyperref Warning: Difference (2) between bookmark levels is greater 
-(hyperref)                than one, level fixed on input line 1921.
+(hyperref)                than one, level fixed on input line 1950.
 
-
-
-[53]
-<../assets/f12_laurent_annulus.pdf, id=1445, 416.31061pt x 388.09479pt>
-File: ../assets/f12_laurent_annulus.pdf Graphic file (type pdf)
-<use ../assets/f12_laurent_annulus.pdf>
-Package pdftex.def Info: ../assets/f12_laurent_annulus.pdf  used on input line 
-1964.
-(pdftex.def)             Requested size: 218.28947pt x 203.49817pt.
 
 
 [54]
-<../assets/f13_laurent_to_fourier.pdf, id=1460, 673.84444pt x 314.01315pt>
+Overfull \hbox (16.91434pt too wide) detected at line 1975
+[][][]\OML/cmm/m/it/12 f[]\OT1/cmr/m/n/12 (\OML/cmm/m/it/12 z[]\OT1/cmr/m/n/12 
+) = [] [] + \OML/cmm/m/it/12 i [] \OT1/cmr/m/n/12 = [] + \OML/cmm/m/it/12 v[] \
+OT1/cmr/m/n/12 = \OML/cmm/m/it/12 v[] \OMS/cmsy/m/n/12 ^^@ \OML/cmm/m/it/12 iu[
+]
+ []
+
+
+
+[55]
+
+[56]
+
+[57]
+<../assets/f12_laurent_annulus.pdf, id=1523, 416.31061pt x 388.09479pt>
+File: ../assets/f12_laurent_annulus.pdf Graphic file (type pdf)
+<use ../assets/f12_laurent_annulus.pdf>
+Package pdftex.def Info: ../assets/f12_laurent_annulus.pdf  used on input line 
+2110.
+(pdftex.def)             Requested size: 218.28947pt x 203.49817pt.
+
+
+[58]
+<../assets/f13_laurent_to_fourier.pdf, id=1536, 673.84444pt x 314.01315pt>
 File: ../assets/f13_laurent_to_fourier.pdf Graphic file (type pdf)
 <use ../assets/f13_laurent_to_fourier.pdf>
 Package pdftex.def Info: ../assets/f13_laurent_to_fourier.pdf  used on input li
-ne 1994.
+ne 2144.
 (pdftex.def)             Requested size: 349.26448pt x 162.76071pt.
 
 
-[55 <../assets/f12_laurent_annulus.pdf>]
+[59 <../assets/f12_laurent_annulus.pdf>]
+Overfull \hbox (11.65514pt too wide) in paragraph at lines 2153--2154
+ []\OT1/cmr/bx/n/12 The Pois-son ker-nel.[] \OT1/cmr/m/n/12 For $0 \OMS/cmsy/m/
+n/12 ^^T \OML/cmm/m/it/12 r < \OT1/cmr/m/n/12 1$, the Abel-summed Fourier se-ri
+es $[][] \OML/cmm/m/it/12 r[]c[]e[]$
+ []
 
-[56 <../assets/f13_laurent_to_fourier.pdf>]
 
-[57]
 
-[58]
+[60 <../assets/f13_laurent_to_fourier.pdf>]
+<../assets/f14_analyticity_strip.pdf, id=1637, 628.91689pt x 301.14375pt>
+File: ../assets/f14_analyticity_strip.pdf Graphic file (type pdf)
+<use ../assets/f14_analyticity_strip.pdf>
+Package pdftex.def Info: ../assets/f14_analyticity_strip.pdf  used on input lin
+e 2174.
+(pdftex.def)             Requested size: 371.09476pt x 177.69165pt.
+
+
+[61 <../assets/f14_analyticity_strip.pdf>]
+
+[62]
+
+[63]
+
+[64]
 Chapter 5.
-<../assets/f05_inner_product_1.pdf, id=1587, 706.0779pt x 272.4579pt>
+<../assets/f05_inner_product_1.pdf, id=1748, 706.0779pt x 272.4579pt>
 File: ../assets/f05_inner_product_1.pdf Graphic file (type pdf)
 <use ../assets/f05_inner_product_1.pdf>
 Package pdftex.def Info: ../assets/f05_inner_product_1.pdf  used on input line 
-2107.
+2299.
 (pdftex.def)             Requested size: 349.26448pt x 134.77351pt.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 
 
-[59
+[65
 
 ]
-Overfull \hbox (26.97359pt too wide) in paragraph at lines 2119--2120
+Overfull \hbox (26.97359pt too wide) in paragraph at lines 2311--2312
 []\OT1/cmr/m/n/12 The dis-crete sum above is a Rie-mann sum ap-prox-i-ma-tion o
 f the in-te-gral $[][] \OML/cmm/m/it/12 f\OT1/cmr/m/n/12 (\OML/cmm/m/it/12 x\OT
 1/cmr/m/n/12 )\OML/cmm/m/it/12 g\OT1/cmr/m/n/12 (\OML/cmm/m/it/12 x\OT1/cmr/m/n
 /12 ) [] \OML/cmm/m/it/12 x$\OT1/cmr/m/n/12 .
  []
 
-<../assets/f06_inner_product_2.pdf, id=1598, 706.0779pt x 272.4579pt>
+<../assets/f06_inner_product_2.pdf, id=1759, 706.0779pt x 272.4579pt>
 File: ../assets/f06_inner_product_2.pdf Graphic file (type pdf)
 <use ../assets/f06_inner_product_2.pdf>
 Package pdftex.def Info: ../assets/f06_inner_product_2.pdf  used on input line 
-2123.
+2315.
 (pdftex.def)             Requested size: 349.26448pt x 134.77351pt.
 
 
-[60 <../assets/f05_inner_product_1.pdf> <../assets/f06_inner_product_2.pdf>]
-<../assets/f07_fourier_projection.pdf, id=1641, 850.6179pt x 236.3229pt>
+[66 <../assets/f05_inner_product_1.pdf> <../assets/f06_inner_product_2.pdf>]
+<../assets/f07_fourier_projection.pdf, id=1802, 850.6179pt x 236.3229pt>
 File: ../assets/f07_fourier_projection.pdf Graphic file (type pdf)
 <use ../assets/f07_fourier_projection.pdf>
 Package pdftex.def Info: ../assets/f07_fourier_projection.pdf  used on input li
-ne 2138.
+ne 2330.
 (pdftex.def)             Requested size: 349.26448pt x 97.03365pt.
 
+Overfull \hbox (7.45883pt too wide) in paragraph at lines 2340--2341
+[]\OT1/cmr/m/n/12 In ev-ery case, how-ever, we com-puted con-tin-u-ous integral
+s|$[] \OML/cmm/m/it/12 f\OT1/cmr/m/n/12 (\OML/cmm/m/it/12 x\OT1/cmr/m/n/12 )[] 
+ [] \OML/cmm/m/it/12 x$\OT1/cmr/m/n/12 |against
+ []
 
-[61 <../assets/f07_fourier_projection.pdf>]
+
+
+[67 <../assets/f07_fourier_projection.pdf>]
 Chapter 6.
 
+Overfull \hbox (2.30956pt too wide) in paragraph at lines 2345--2346
+\OT1/cmr/m/n/12 The con-tin-u-ous Fourier the-ory de-vel-oped across the pre-ce
+d-ing chap-ters rests on infinite-
+ []
 
-[62
+
+
+[68
 
 ]
-<../assets/f14_dft_matrix.pdf, id=1694, 850.4515pt x 283.21489pt>
+<../assets/f14_dft_matrix.pdf, id=1855, 850.4515pt x 283.21489pt>
 File: ../assets/f14_dft_matrix.pdf Graphic file (type pdf)
 <use ../assets/f14_dft_matrix.pdf>
-Package pdftex.def Info: ../assets/f14_dft_matrix.pdf  used on input line 2202.
+Package pdftex.def Info: ../assets/f14_dft_matrix.pdf  used on input line 2399.
 
 (pdftex.def)             Requested size: 371.09476pt x 123.58209pt.
 
 
-[63 <../assets/f14_dft_matrix.pdf>]
+[69 <../assets/f14_dft_matrix.pdf>]
 
-[64]
-<../assets/f15_butterfly.pdf, id=1761, 575.21075pt x 370.9394pt>
+[70]
+<../assets/f15_butterfly.pdf, id=1922, 575.21075pt x 370.9394pt>
 File: ../assets/f15_butterfly.pdf Graphic file (type pdf)
 <use ../assets/f15_butterfly.pdf>
-Package pdftex.def Info: ../assets/f15_butterfly.pdf  used on input line 2299.
+Package pdftex.def Info: ../assets/f15_butterfly.pdf  used on input line 2496.
 (pdftex.def)             Requested size: 371.09476pt x 239.3135pt.
 
 
-[65]
-Overfull \hbox (14.03215pt too wide) in paragraph at lines 2314--2315
+[71]
+Overfull \hbox (14.03215pt too wide) in paragraph at lines 2511--2512
  []\OT1/cmr/bx/n/12 Programming in-tu-ition.[] \OT1/cmr/m/n/12 The stride per-m
 u-ta-tion is \OT1/cmtt/m/n/12 x.reshape(N2, N1).T.ravel()\OT1/cmr/m/n/12 :
  []
 
 
-
-[66 <../assets/f15_butterfly.pdf>]
-
-[67]
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 2359.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\times' on input line 2359.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\times' on input line 2359.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 2359.
-
-
-
-[68]
-
-[69]
-
-[70]
-<../assets/f16_bluestein.pdf, id=1861, 706.0779pt x 272.4579pt>
-File: ../assets/f16_bluestein.pdf Graphic file (type pdf)
-<use ../assets/f16_bluestein.pdf>
-Package pdftex.def Info: ../assets/f16_bluestein.pdf  used on input line 2472.
-(pdftex.def)             Requested size: 371.09476pt x 143.19635pt.
-
-
-[71 <../assets/f16_bluestein.pdf>]
-Overfull \hbox (10.78313pt too wide) in paragraph at lines 2506--2507
-[]\OT1/cmr/m/it/12 Historical note. \OT1/cmr/m/n/12 JPEG 2000 re-placed the DCT
- with the CDF 9/7 wavelet transform---
+Overfull \hbox (37.63177pt too wide) in paragraph at lines 2514--2515
+[]\OT1/cmr/m/n/12 With $\OML/cmm/m/it/12 N[] \OT1/cmr/m/n/12 = 2$, $\OML/cmm/m/
+it/12 N[] \OT1/cmr/m/n/12 = 3$, the per-mu-ta-tion $\OML/cmm/m/it/12 L[]$ \OT1/
+cmr/m/n/12 maps $(0\OML/cmm/m/it/12 ; \OT1/cmr/m/n/12 1\OML/cmm/m/it/12 ; \OT1/
+cmr/m/n/12 2\OML/cmm/m/it/12 ; \OT1/cmr/m/n/12 3\OML/cmm/m/it/12 ; \OT1/cmr/m/n
+/12 4\OML/cmm/m/it/12 ; \OT1/cmr/m/n/12 5) \OMS/cmsy/m/n/12 7! \OT1/cmr/m/n/12 
+(0\OML/cmm/m/it/12 ; \OT1/cmr/m/n/12 3\OML/cmm/m/it/12 ; \OT1/cmr/m/n/12 1\OML/
+cmm/m/it/12 ; \OT1/cmr/m/n/12 4\OML/cmm/m/it/12 ; \OT1/cmr/m/n/12 2\OML/cmm/m/i
+t/12 ; \OT1/cmr/m/n/12 5)$|interleaving
  []
 
 
-Overfull \hbox (5.28333pt too wide) in paragraph at lines 2508--2509
+
+[72 <../assets/f15_butterfly.pdf>]
+
+[73]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2556.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\times' on input line 2556.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\times' on input line 2556.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 2556.
+
+
+
+[74]
+
+[75]
+
+[76]
+<../assets/f16_bluestein.pdf, id=2022, 706.0779pt x 272.4579pt>
+File: ../assets/f16_bluestein.pdf Graphic file (type pdf)
+<use ../assets/f16_bluestein.pdf>
+Package pdftex.def Info: ../assets/f16_bluestein.pdf  used on input line 2669.
+(pdftex.def)             Requested size: 371.09476pt x 143.19635pt.
+
+
+[77 <../assets/f16_bluestein.pdf>]
+Overfull \hbox (5.28333pt too wide) in paragraph at lines 2705--2706
  []\OT1/cmr/bx/n/12 Diagonalization per-spec-tive.[] \OT1/cmr/m/n/12 The DCT ma
 -trix $\OML/cmm/m/it/12 C[]$ \OT1/cmr/m/n/12 di-ag-o-nal-izes the dis-crete Lap
 la-
@@ -1554,41 +1615,29 @@ la-
 
 
 
-[72]
-Overfull \hbox (16.2747pt too wide) in paragraph at lines 2561--2562
-[]\OT1/cmr/m/n/12 Chebyshev spec-tral methods---solving PDEs, eval-u-at-ing pol
-y-no-mial approximations---
- []
+[78]
 
-
-
-[73]
-Overfull \hbox (13.37195pt too wide) in paragraph at lines 2565--2566
-\OT1/cmr/m/n/12 The Leg-en-dre transform---converting be-tween Leg-en-dre co-ef
--fi-cients and func-tion values---
- []
-
-
-Overfull \hbox (2.41411pt too wide) in paragraph at lines 2567--2568
+[79]
+Overfull \hbox (2.41411pt too wide) in paragraph at lines 2764--2765
  []\OT1/cmr/bx/n/12 The Chebyshev--Legendre con-nec-tion ma-trix.[] \OT1/cmr/m/
 n/12 Since $\OML/cmm/m/it/12 T[] \OT1/cmr/m/n/12 = [][] \OML/cmm/m/it/12 M[]P[]
 $ \OT1/cmr/m/n/12 (an upper-
  []
 
 
-Overfull \hbox (11.59375pt too wide) in paragraph at lines 2582--2582
+Overfull \hbox (11.59375pt too wide) in paragraph at lines 2779--2779
 []\OT1/cmr/bx/n/14.4 Diagonalization Per-mu-ta-tions: Chang-ing Be-tween Eigen-
 
  []
 
 
 
-[74]
+[80]
 
-[75]
+[81]
 Chapter 7.
 
-Overfull \hbox (67.97522pt too wide) in paragraph at lines 2632--2633
+Overfull \hbox (67.97522pt too wide) in paragraph at lines 2829--2830
 \OT1/cmr/m/n/12 Schmidt on any com-ple-men-tary vec-tors). Let $\OML/cmm/m/it/1
 2 U \OT1/cmr/m/n/12 = [\OML/cmm/m/it/12 u[] \OMS/cmsy/m/n/12 j [] j \OML/cmm/m/
 it/12 u[]\OT1/cmr/m/n/12 ]$ and $^^F = [](\OML/cmm/m/it/12 ^^[[]; [] ; ^^[[]; \
@@ -1597,32 +1646,32 @@ OT1/cmr/m/n/12 0\OML/cmm/m/it/12 ; [] ; \OT1/cmr/m/n/12 0) \OMS/cmsy/m/n/12 2
 
 
 
-[76
+[82
 
 ]
-<../assets/f22_svd_ellipsoid.pdf, id=1976, 665.54256pt x 308.5929pt>
+<../assets/f22_svd_ellipsoid.pdf, id=2137, 665.54256pt x 308.5929pt>
 File: ../assets/f22_svd_ellipsoid.pdf Graphic file (type pdf)
 <use ../assets/f22_svd_ellipsoid.pdf>
-Package pdftex.def Info: ../assets/f22_svd_ellipsoid.pdf  used on input line 26
-55.
+Package pdftex.def Info: ../assets/f22_svd_ellipsoid.pdf  used on input line 28
+52.
 (pdftex.def)             Requested size: 371.09476pt x 172.06685pt.
 
 
-[77]
+[83]
 
-[78 <../assets/f22_svd_ellipsoid.pdf>]
-<../assets/f23_pca_ellipse.pdf, id=2032, 665.19666pt x 308.5929pt>
+[84 <../assets/f22_svd_ellipsoid.pdf>]
+<../assets/f23_pca_ellipse.pdf, id=2193, 665.19666pt x 308.5929pt>
 File: ../assets/f23_pca_ellipse.pdf Graphic file (type pdf)
 <use ../assets/f23_pca_ellipse.pdf>
-Package pdftex.def Info: ../assets/f23_pca_ellipse.pdf  used on input line 2713
+Package pdftex.def Info: ../assets/f23_pca_ellipse.pdf  used on input line 2910
 .
 (pdftex.def)             Requested size: 371.09476pt x 172.15631pt.
 
 
-[79]
+[85]
 
-[80 <../assets/f23_pca_ellipse.pdf>]
-Overfull \hbox (14.54765pt too wide) in paragraph at lines 2755--2756
+[86 <../assets/f23_pca_ellipse.pdf>]
+Overfull \hbox (14.54765pt too wide) in paragraph at lines 2952--2953
 \OT1/cmr/m/n/12 tions $\OMS/cmsy/m/n/12 f\OML/cmm/m/it/12 ^^^[]\OMS/cmsy/m/n/12
  g$ \OT1/cmr/m/n/12 of the co-vari-ance ker-nel min-i-mize the trun-ca-tion er-
 ror $\U/msb/m/n/12 E\OMS/cmsy/m/n/12 k\OML/cmm/m/it/12 X \OMS/cmsy/m/n/12 ^^@ [
@@ -1632,132 +1681,132 @@ ror $\U/msb/m/n/12 E\OMS/cmsy/m/n/12 k\OML/cmm/m/it/12 X \OMS/cmsy/m/n/12 ^^@ [
 
 
 
-[81]
-Overfull \hbox (10.4737pt too wide) in paragraph at lines 2774--2775
+[87]
+Overfull \hbox (10.4737pt too wide) in paragraph at lines 2971--2972
  []\OT1/cmr/bx/n/12 DFT-based com-pres-sion.[] \OT1/cmr/m/n/12 Ap-ply the 2-D D
 FT glob-ally, re-tain the largest-magnitude
  []
 
 
 
-[82]
+[88]
 Chapter 8.
-<../assets/f17_convolution_theorem.pdf, id=2118, 706.0779pt x 491.07465pt>
+<../assets/f17_convolution_theorem.pdf, id=2279, 706.0779pt x 491.07465pt>
 File: ../assets/f17_convolution_theorem.pdf Graphic file (type pdf)
 <use ../assets/f17_convolution_theorem.pdf>
 Package pdftex.def Info: ../assets/f17_convolution_theorem.pdf  used on input l
-ine 2832.
+ine 3029.
 (pdftex.def)             Requested size: 349.26448pt x 242.9141pt.
 
 
-[83
+[89
 
 ]
 
-[84 <../assets/f17_convolution_theorem.pdf>]
-<../assets/f18_epicycle_annotated.pdf, id=2179, 441.55525pt x 411.31235pt>
+[90 <../assets/f17_convolution_theorem.pdf>]
+<../assets/f18_epicycle_annotated.pdf, id=2340, 441.55525pt x 411.31235pt>
 File: ../assets/f18_epicycle_annotated.pdf Graphic file (type pdf)
 <use ../assets/f18_epicycle_annotated.pdf>
 Package pdftex.def Info: ../assets/f18_epicycle_annotated.pdf  used on input li
-ne 2868.
+ne 3065.
 (pdftex.def)             Requested size: 349.26448pt x 325.35368pt.
-<../assets/f19_epicycle_convergence.pdf, id=2180, 490.26472pt x 561.89923pt>
+<../assets/f19_epicycle_convergence.pdf, id=2341, 490.26472pt x 561.89923pt>
 File: ../assets/f19_epicycle_convergence.pdf Graphic file (type pdf)
 <use ../assets/f19_epicycle_convergence.pdf>
 Package pdftex.def Info: ../assets/f19_epicycle_convergence.pdf  used on input 
-line 2875.
+line 3072.
 (pdftex.def)             Requested size: 349.26448pt x 400.30592pt.
 
 
-[85]
+[91]
 
-[86 <../assets/f18_epicycle_annotated.pdf>]
+[92 <../assets/f18_epicycle_annotated.pdf>]
 
-[87 <../assets/f19_epicycle_convergence.pdf>]
+[93 <../assets/f19_epicycle_convergence.pdf>]
 
-[88] (./fourier_paper.bbl
-
-[89]
-
-[90
-
-]
-
-[91])
-
-[92]
-Appendix A.
-
-
-[93
-
-]
-Appendix B.
-
-Overfull \hbox (7.75879pt too wide) in paragraph at lines 2960--2960
-[]\OT1/cmr/bx/n/17.28 Morphological Op-er-a-tions and Con-tour Ex-trac-
- []
-
-
-
-[94
-
-]
+[94] (./fourier_paper.bbl
 
 [95]
 
-[96]
-<../assets/f20_contour_pipeline.pdf, id=2327, 626.55191pt x 703.54843pt>
-File: ../assets/f20_contour_pipeline.pdf Graphic file (type pdf)
-<use ../assets/f20_contour_pipeline.pdf>
-Package pdftex.def Info: ../assets/f20_contour_pipeline.pdf  used on input line
- 3025.
-(pdftex.def)             Requested size: 349.26448pt x 392.19164pt.
-<../assets/f21_epicycle_portraits.pdf, id=2328, 1030.17465pt x 425.20596pt>
-File: ../assets/f21_epicycle_portraits.pdf Graphic file (type pdf)
-<use ../assets/f21_epicycle_portraits.pdf>
-Package pdftex.def Info: ../assets/f21_epicycle_portraits.pdf  used on input li
-ne 3032.
-(pdftex.def)             Requested size: 436.57895pt x 180.20082pt.
+[96
 
+]
 
-[97 <../assets/f20_contour_pipeline.pdf>]
+[97])
 
-[98 <../assets/f21_epicycle_portraits.pdf>]
-Appendix C.
-Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on i
-nput line 3058.
-LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <10.95> not available
-(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 3059.
-
+[98]
+Appendix A.
 
 
 [99
 
 ]
+Appendix B.
 
-[100]
+Overfull \hbox (7.75879pt too wide) in paragraph at lines 3157--3157
+[]\OT1/cmr/bx/n/17.28 Morphological Op-er-a-tions and Con-tour Ex-trac-
+ []
+
+
+
+[100
+
+]
 
 [101]
 
 [102]
+<../assets/f20_contour_pipeline.pdf, id=2488, 626.55191pt x 703.54843pt>
+File: ../assets/f20_contour_pipeline.pdf Graphic file (type pdf)
+<use ../assets/f20_contour_pipeline.pdf>
+Package pdftex.def Info: ../assets/f20_contour_pipeline.pdf  used on input line
+ 3222.
+(pdftex.def)             Requested size: 349.26448pt x 392.19164pt.
+<../assets/f21_epicycle_portraits.pdf, id=2489, 1030.17465pt x 425.20596pt>
+File: ../assets/f21_epicycle_portraits.pdf Graphic file (type pdf)
+<use ../assets/f21_epicycle_portraits.pdf>
+Package pdftex.def Info: ../assets/f21_epicycle_portraits.pdf  used on input li
+ne 3229.
+(pdftex.def)             Requested size: 436.57895pt x 180.20082pt.
 
-[103] (./fourier_paper.aux)
+
+[103 <../assets/f20_contour_pipeline.pdf>]
+
+[104 <../assets/f21_epicycle_portraits.pdf>]
+Appendix C.
+Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on i
+nput line 3255.
+LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <10.95> not available
+(Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 3256.
+
+
+
+[105
+
+]
+
+[106]
+
+[107]
+
+[108]
+
+[109] (./fourier_paper.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
  ***********
 Package rerunfilecheck Info: File `fourier_paper.out' has not changed.
-(rerunfilecheck)             Checksum: 5078D095A79837251105C410B0D4A810;20576.
+(rerunfilecheck)             Checksum: 8891C0F60F1E6295B57BB934DAAC085A;21683.
  ) 
 Here is how much of TeX's memory you used:
- 34840 strings out of 473190
- 793808 string characters out of 5704335
- 1605495 words of memory out of 5000000
- 56649 multiletter control sequences out of 15000+600000
+ 34913 strings out of 473190
+ 795033 string characters out of 5704335
+ 1605494 words of memory out of 5000000
+ 56671 multiletter control sequences out of 15000+600000
  574518 words of font info for 93 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 99i,15n,105p,1034b,2141s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 99i,18n,105p,1034b,2141s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </opt/homebrew/Cellar/texlive/20250308_1/share/texmf-dist/fonts/type1/public/
 amsfonts/cm/cmbsy10.pfb></opt/homebrew/Cellar/texlive/20250308_1/share/texmf-di
 st/fonts/type1/public/amsfonts/cm/cmbx10.pfb></opt/homebrew/Cellar/texlive/2025
@@ -1803,10 +1852,10 @@ exmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></opt/homebrew/Cellar/
 texlive/20250308_1/share/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.
 pfb></opt/homebrew/Cellar/texlive/20250308_1/share/texmf-dist/fonts/type1/publi
 c/cm-super/sfrm1200.pfb>
-Output written on fourier_paper.pdf (104 pages, 5569751 bytes).
+Output written on fourier_paper.pdf (110 pages, 5616343 bytes).
 PDF statistics:
- 2843 PDF objects out of 2984 (max. 8388607)
- 2599 compressed objects within 26 object streams
- 920 named destinations out of 1000 (max. 500000)
- 850 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 3015 PDF objects out of 3580 (max. 8388607)
+ 2723 compressed objects within 28 object streams
+ 971 named destinations out of 1000 (max. 500000)
+ 887 words of extra memory for PDF output out of 10000 (max. 10000000)
 
