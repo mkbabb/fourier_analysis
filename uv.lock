@@ -268,6 +268,7 @@ dependencies = [
     { name = "pillow" },
     { name = "scikit-image" },
     { name = "scipy" },
+    { name = "sympy" },
 ]
 
 [package.optional-dependencies]
@@ -311,6 +312,7 @@ requires-dist = [
     { name = "scikit-image", specifier = ">=0.22" },
     { name = "scipy", specifier = ">=1.12" },
     { name = "sse-starlette", marker = "extra == 'web'", specifier = ">=2.0" },
+    { name = "sympy", specifier = ">=1.13" },
     { name = "uvicorn", extras = ["standard"], marker = "extra == 'web'", specifier = ">=0.32" },
 ]
 provides-extras = ["dev", "web"]
