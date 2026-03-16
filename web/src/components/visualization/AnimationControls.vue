@@ -5,33 +5,23 @@ import { useAnimationStore } from "@/stores/animation";
 import { useWorkspaceStore } from "@/stores/workspace";
 import {
     Download,
-    Eye,
-    EyeOff,
-    ImageIcon,
     EllipsisVertical,
-    Share2,
-    Check,
 } from "lucide-vue-next";
 import { Tooltip } from "@/components/ui/tooltip";
 import GlassDock from "@/components/ui/GlassDock.vue";
 import GlassTimeline from "./GlassTimeline.vue";
-import DockPopover from "./DockPopover.vue";
 import EasingPicker from "./EasingPicker.vue";
 import SpeedSelect from "./SpeedSelect.vue";
 
 const props = withDefaults(
     defineProps<{
         activeBases?: string[];
-        showGhost?: boolean;
-        showImageOverlay?: boolean;
     }>(),
-    { activeBases: () => ["fourier-epicycles"], showGhost: true, showImageOverlay: false },
+    { activeBases: () => ["fourier-epicycles"] },
 );
 
 const emit = defineEmits<{
     (e: "exportFrame"): void;
-    (e: "toggleGhost"): void;
-    (e: "toggleImageOverlay"): void;
 }>();
 
 const anim = useAnimationStore();
@@ -57,16 +47,6 @@ const currentLevel = computed(() => {
 const caretLabel = computed(() =>
     isEpicycleOnly.value ? `t = ${anim.t.toFixed(2)}` : `N = ${currentLevel.value}`,
 );
-
-/* Share / save */
-const copied = ref(false);
-async function copyShareUrl() {
-    if (!store.imageSlug) return;
-    const url = `${window.location.origin}/w/${store.imageSlug}`;
-    await navigator.clipboard.writeText(url);
-    copied.value = true;
-    setTimeout(() => (copied.value = false), 2000);
-}
 
 /* Three-dot menu */
 const menuOpen = ref(false);
@@ -110,33 +90,6 @@ onClickOutside(menuAnchor, () => { menuOpen.value = false; });
                 <div class="hidden sm:block">
                     <SpeedSelect :model-value="anim.speed" @update:model-value="anim.speed = $event" />
                 </div>
-            </Tooltip>
-
-            <!-- Overlay stack (ghost + image) -->
-            <DockPopover direction="up">
-                <template #trigger>
-                    <Eye class="h-5 w-5" />
-                </template>
-                <Tooltip text="Contour trace">
-                    <button class="dock-icon-btn" :class="{ 'is-active': props.showGhost }" @click="emit('toggleGhost')">
-                        <component :is="props.showGhost ? Eye : EyeOff" class="h-5 w-5" />
-                    </button>
-                </Tooltip>
-                <Tooltip text="Image overlay">
-                    <button class="dock-icon-btn" :class="{ 'is-active': props.showImageOverlay }" @click="emit('toggleImageOverlay')">
-                        <ImageIcon class="h-5 w-5" />
-                    </button>
-                </Tooltip>
-            </DockPopover>
-
-            <!-- Share / copy link -->
-            <Tooltip :text="copied ? 'Link copied!' : 'Copy share link'">
-                <button class="dock-icon-btn" @click="copyShareUrl">
-                    <Transition name="icon-swap" mode="out-in">
-                        <Check v-if="copied" class="h-5 w-5 text-green-500" />
-                        <Share2 v-else class="h-5 w-5" />
-                    </Transition>
-                </button>
             </Tooltip>
 
             <!-- Three-dot menu -->

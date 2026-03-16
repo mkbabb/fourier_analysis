@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import { ref, computed, watch } from "vue";
-import { watchDebounced } from "@vueuse/core";
+import { watchDebounced, useMediaQuery } from "@vueuse/core";
 import { useRouter } from "vue-router";
 import { useWorkspaceStore } from "@/stores/workspace";
 import { useAnimationStore } from "@/stores/animation";
 import { useImageUpload } from "./composables/useImageUpload";
 import { useViewState } from "./composables/useViewState";
 import { useWorkspaceLoader } from "./composables/useWorkspaceLoader";
-import { Upload, Maximize2, Pencil, Sigma } from "lucide-vue-next";
+import { Upload } from "lucide-vue-next";
 import { Tooltip } from "@/components/ui/tooltip";
+import { useGalleryStore } from "@/stores/gallery";
+import { useToast } from "@/composables/useToast";
 import ImageUpload from "./ImageUpload.vue";
 import ContourSettings from "./ContourSettings.vue";
 import BasisCanvas from "./BasisCanvas.vue";
@@ -18,16 +20,18 @@ import ContourEditorCanvas from "./ContourEditorCanvas.vue";
 import EditorControlsDock from "./EditorControlsDock.vue";
 import EditorToolsPanel from "./EditorToolsPanel.vue";
 import ContourPreview from "./ContourPreview.vue";
-import CanvasOverlayButton from "./CanvasOverlayButton.vue";
+import CanvasControlsDock from "./CanvasControlsDock.vue";
 import CoefficientsPanel from "./CoefficientsPanel.vue";
 import ExportModal from "./ExportModal.vue";
 import FullscreenViewer from "./FullscreenViewer.vue";
 import EquationPanel from "./EquationPanel.vue";
-import BouncyToggle from "@/components/ui/BouncyToggle.vue";
+import UnderlineTabs from "@/components/ui/UnderlineTabs.vue";
 
 const router = useRouter();
 const store = useWorkspaceStore();
 const anim = useAnimationStore();
+const gallery = useGalleryStore();
+const { toast } = useToast();
 
 // ── View state (editing, ghost, overlay — persisted to localStorage) ──
 const { isEditing, showGhost, showImageOverlay, showEquation } = useViewState();
@@ -62,6 +66,7 @@ watchDebounced(
 // ── Canvas + modals ──
 const canvasComponent = ref<InstanceType<typeof BasisCanvas>>();
 const mobileView = ref<"controls" | "canvas">("canvas");
+const isDesktop = useMediaQuery("(min-width: 1024px)");
 const showExport = ref(false);
 const showFullscreen = ref(false);
 
@@ -89,6 +94,22 @@ function handleExportFrame() { showExport.value = true; }
 function doExport(options: Record<string, boolean>) {
     canvasComponent.value?.exportFrame(options);
     showExport.value = false;
+}
+
+// ── Publish to gallery ──
+const publishing = ref(false);
+async function handlePublish() {
+    if (!store.imageSlug || !store.contour) return;
+    publishing.value = true;
+    try {
+        const snapshot = await store.createSnapshot();
+        if (!snapshot) { toast("Could not create snapshot", "error"); return; }
+        await gallery.publish(snapshot.snapshot_hash, store.imageSlug);
+    } catch (e: any) {
+        toast(e.message ?? "Publish failed", "error");
+    } finally {
+        publishing.value = false;
+    }
 }
 
 // ── Derived state ──
@@ -136,8 +157,8 @@ const hasImage = computed(() => !!store.imageMeta);
         <!-- Main workspace -->
         <div v-else class="flex flex-col flex-1 min-h-0">
             <!-- Mobile tab bar -->
-            <div class="flex justify-center px-2 py-0.5 bg-background lg:hidden">
-                <BouncyToggle class="w-full"
+            <div class="flex px-3 py-1 bg-background lg:hidden">
+                <UnderlineTabs
                     :options="[{ label: 'Controls', value: 'controls' }, { label: 'Canvas', value: 'canvas' }]"
                     :model-value="mobileView"
                     @update:model-value="mobileView = $event as 'controls' | 'canvas'" />
@@ -145,7 +166,7 @@ const hasImage = computed(() => !!store.imageMeta);
 
             <div class="viz-grid">
                 <!-- Left panel: Controls -->
-                <div class="viz-panel-left-wrap" :class="{ 'max-lg:hidden': mobileView !== 'controls' }">
+                <div class="viz-panel-left-wrap" :class="{ 'panel-inactive': mobileView !== 'controls' && !isDesktop }">
                     <Transition name="panel-swap" mode="out-in">
                         <div v-if="isEditing" key="editor-panel" class="viz-panel-left">
                             <!-- Preview above tools -->
@@ -177,7 +198,7 @@ const hasImage = computed(() => !!store.imageMeta);
                 </div>
 
                 <!-- Right panel: Canvas with overlaid controls -->
-                <div class="viz-panel-right canvas-stage" :class="{ 'max-lg:hidden': mobileView !== 'canvas' }">
+                <div class="viz-panel-right canvas-stage" :class="{ 'panel-inactive': mobileView !== 'canvas' && !isDesktop }">
                     <div class="canvas-container" :class="{ 'is-hidden': isEditing && store.contour }">
                         <BasisCanvas ref="canvasComponent" :active-bases="activeBases"
                             :show-ghost="showGhost" :show-image-overlay="showImageOverlay" />
@@ -188,28 +209,24 @@ const hasImage = computed(() => !!store.imageMeta);
                             @state-change="onEditorStateChange" />
                     </div>
 
-                    <!-- Edit & fullscreen buttons -->
-                    <Transition name="expand-pop" appear>
-                        <Tooltip v-if="isEditing || (hasImage && store.contour)" text="Edit contour" side="left">
-                            <CanvasOverlayButton position="edit" :active="isEditing" @click="isEditing = !isEditing">
-                                <Pencil class="h-5 w-5" />
-                            </CanvasOverlayButton>
-                        </Tooltip>
-                    </Transition>
-                    <Transition name="expand-pop" appear>
-                        <Tooltip v-if="hasData || (isEditing && store.contour)" text="Fullscreen" side="left">
-                            <CanvasOverlayButton position="expand" @click="showFullscreen = true">
-                                <Maximize2 class="h-5 w-5" />
-                            </CanvasOverlayButton>
-                        </Tooltip>
-                    </Transition>
-                    <Transition name="expand-pop" appear>
-                        <Tooltip v-if="store.epicycleData && !isEditing" text="Equation" side="left">
-                            <CanvasOverlayButton position="equation" :active="showEquation" @click="showEquation = !showEquation">
-                                <Sigma class="h-5 w-5" />
-                            </CanvasOverlayButton>
-                        </Tooltip>
-                    </Transition>
+                    <!-- Top-right controls dock -->
+                    <div v-if="hasData || (isEditing && store.contour)" class="absolute top-2 right-2 z-20">
+                        <CanvasControlsDock
+                            :is-editing="isEditing"
+                            :show-image-overlay="showImageOverlay"
+                            :show-ghost="showGhost"
+                            :show-equation="showEquation"
+                            :has-data="!!hasData"
+                            :has-contour="!!store.contour"
+                            :publishing="publishing"
+                            @toggle-edit="isEditing = !isEditing"
+                            @toggle-fullscreen="showFullscreen = true"
+                            @toggle-equation="showEquation = !showEquation"
+                            @toggle-image-overlay="showImageOverlay = !showImageOverlay"
+                            @toggle-ghost="showGhost = !showGhost"
+                            @publish="handlePublish"
+                        />
+                    </div>
 
                     <!-- Equation overlay panel -->
                     <Transition name="fade">
@@ -218,9 +235,7 @@ const hasImage = computed(() => !!store.imageMeta);
 
                     <!-- Bottom dock -->
                     <div v-if="hasData && !isEditing" class="controls-overlay">
-                        <AnimationControls :active-bases="activeBases" :show-ghost="showGhost"
-                            :show-image-overlay="showImageOverlay" @export-frame="handleExportFrame"
-                            @toggle-ghost="showGhost = !showGhost" @toggle-image-overlay="showImageOverlay = !showImageOverlay" />
+                        <AnimationControls :active-bases="activeBases" @export-frame="handleExportFrame" />
                     </div>
                     <div v-if="isEditing && store.contour" class="controls-overlay">
                         <EditorControlsDock :can-undo="editorState.canUndo" :can-redo="editorState.canRedo"
@@ -279,7 +294,8 @@ const hasImage = computed(() => !!store.imageMeta);
     margin: 0 auto;
     width: 100%;
     min-height: 0;
-    overflow: clip;
+    overflow-x: visible;
+    overflow-y: clip;
     flex: 1;
 }
 @media (max-width: 1023px) { .viz-panel-left-wrap { overflow: visible; flex: none; } }
@@ -371,6 +387,13 @@ const hasImage = computed(() => !!store.imageMeta);
 
 .fade-enter-active, .fade-leave-active { transition: opacity 0.2s ease; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
+
+/* ── Mobile panel toggle ── */
+@media (max-width: 1023px) {
+    .panel-inactive {
+        display: none;
+    }
+}
 
 /* ── Mobile ── */
 @media (max-width: 900px) {
