@@ -12,7 +12,7 @@
     },
     "dependencies": {
         "@mkbabb/keyframes.js": "latest",
-        "@mkbabb/latex-paper": "file:mkbabb-latex-paper-0.1.0.tgz",
+        "@mkbabb/latex-paper": "^0.2.0",
         "@mkbabb/pencil-boil": "latest",
         "@mkbabb/value.js": "^0.4.6",
         "@vueuse/core": "^14.0",

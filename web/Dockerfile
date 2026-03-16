@@ -2,7 +2,7 @@ FROM node:22-slim AS base
 WORKDIR /app
 
 FROM base AS deps
-COPY web/package.json web/package-lock.json web/mkbabb-latex-paper-*.tgz ./
+COPY web/package.json web/package-lock.json ./
 RUN npm ci
 
 FROM deps AS development
