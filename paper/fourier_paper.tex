@@ -184,7 +184,7 @@ That is, $u$ is not a function of time; it is unchanging in this dimension. Equa
     \[
         \Delta u = \tr(H_u) = \sum_i \dfrac{\partial^2 u}{\partial x_i^2}.
     \]
-    The trace captures the average curvature of $u$ across coordinate directions---a connection developed further in Chapters~\ref{ch:eigentheory_foundations} and \ref{ch:eigentheory}.
+    The trace captures the average curvature of $u$ across coordinate directions—a connection developed further in Chapters~\ref{ch:eigentheory_foundations} and \ref{ch:eigentheory}.
 \end{aside}
 
 \section{A Solution}
@@ -214,7 +214,7 @@ Which is represented by the following two ordinary differential equations:
     Y'' + \lambda Y & = 0 \label{eq:sturm2}
 \end{align}
 
-The constant $\lambda$ is an \textit{eigenvalue}, and the solutions $X$ and $Y$ are \textit{eigenfunctions}---terminology we'll develop fully in Chapters~\ref{ch:linear_algebra} and \ref{ch:eigentheory_foundations}.
+The constant $\lambda$ is an \textit{eigenvalue}, and the solutions $X$ and $Y$ are \textit{eigenfunctions}—terminology we'll develop fully in Chapters~\ref{ch:linear_algebra} and \ref{ch:eigentheory_foundations}.
 
 Moreover, both of the above are Sturm-Liouville problems. Let us take a brief detour from Fourier's path, and analyze the above equations through the lens of Sturm-Liouville theory.
 
@@ -328,17 +328,17 @@ A natural question then: do the eigenfunctions of a Sturm-Liouville problem form
 \end{theorem}
 
 \begin{proof}[Proof sketch]
-    The Green's function $G(x, \xi)$ constructed in \S\ref{sec:greens_functions} defines a compact, self-adjoint integral operator $\mathcal{G}[f](x) = \int_a^b G(x, \xi)f(\xi)w(\xi)\deriv{\xi}$ on $\mathbf{L}^2_w[a, b]$. By the spectral theorem for compact self-adjoint operators, $\mathcal{G}$ has a complete orthonormal system of eigenfunctions $\{\phi_n\}$ with eigenvalues $\mu_n \to 0$. Since $\mathcal{G} = L^{-1}$ (the inverse of the S-L operator), the eigenfunctions of $\mathcal{G}$ are eigenfunctions of $L$ with eigenvalues $\lambda_n = 1/\mu_n$, and completeness of the former implies completeness of the latter. The full argument---including the boundary analysis and regularity conditions---is given in \cite{courant_hilbert}.
+    The Green's function $G(x, \xi)$ constructed in \S\ref{sec:greens_functions} defines a compact, self-adjoint integral operator $\mathcal{G}[f](x) = \int_a^b G(x, \xi)f(\xi)w(\xi)\deriv{\xi}$ on $\mathbf{L}^2_w[a, b]$. By the spectral theorem for compact self-adjoint operators, $\mathcal{G}$ has a complete orthonormal system of eigenfunctions $\{\phi_n\}$ with eigenvalues $\mu_n \to 0$. Since $\mathcal{G} = L^{-1}$ (the inverse of the S-L operator), the eigenfunctions of $\mathcal{G}$ are eigenfunctions of $L$ with eigenvalues $\lambda_n = 1/\mu_n$, and completeness of the former implies completeness of the latter. The full argument—including the boundary analysis and regularity conditions—is given in \cite{courant_hilbert}.
 \end{proof}
 
-\paragraph{What completeness buys us.} This completeness result is precisely what justifies the entire Fourier series enterprise: the trigonometric functions that emerge from our particular Sturm-Liouville problem form a complete orthogonal system. This is our first encounter with \textit{diagonalization}: the eigenfunctions form a coordinate system in which the operator acts by pure scaling. Completeness gives convergence in the $\mathbf{L}^2$ norm. Whether the series converges \textit{pointwise}---at each $x$ individually---is a subtler question, addressed in \S\ref{sec:convergence}.
+\paragraph{What completeness buys us.} This completeness result is precisely what justifies the entire Fourier series enterprise: the trigonometric functions that emerge from our particular Sturm-Liouville problem form a complete orthogonal system. This is our first encounter with \textit{diagonalization}: the eigenfunctions form a coordinate system in which the operator acts by pure scaling. Completeness gives convergence in the $\mathbf{L}^2$ norm. Whether the series converges \textit{pointwise}—at each $x$ individually—is a subtler question, addressed in \S\ref{sec:convergence}.
 
 \begin{definition}[Kronecker Delta]
     The Kronecker delta $\delta_{nm}$ is defined as:
     \begin{equation}
         \delta_{nm} = \begin{cases} 1 & n = m \\ 0 & n \neq m \end{cases}
     \end{equation}
-    It appears throughout this paper as a compact notation for orthogonality relations: $\langle \phi_n, \phi_m \rangle = c_n\,\delta_{nm}$ says that distinct basis functions are orthogonal, and same-index pairs integrate to $c_n$.
+    It appears throughout this paper as a compact notation for orthogonality relations: $\langle \phi_n, \phi_m \rangle = c_n\,\delta_{nm}$ says that distinct basis functions are orthogonal, and same-index pairs integrate to $c_n$. See especially the orthogonality relations in \S\ref{sec:orthogonal_polynomials} and the DFT matrix entries in \S\ref{sec:dft_matrix}.
     \label{def:kronecker}
 \end{definition}
 
@@ -429,13 +429,13 @@ where $\{\phi_n\}$ are the eigenfunctions with eigenvalues $\{\lambda_n\}$. The 
 \end{equation}
 The solution is a \textit{convolution}. In signal processing parlance, $G$ is the \textbf{impulse response}, and its Fourier transform $H(\omega) = \hat{G}(\omega) = 1/P(i\omega)$ (where $P$ is the characteristic polynomial of $L$) is the \textbf{transfer function}. The spectral expansion also reveals a connection to signal processing that we'll develop fully in Chapter~\ref{ch:applications}.
 
-\paragraph{Worked example: Fourier's rod.} Consider the steady-state heat equation $-u''(y) = f(y)$ on $[-\pi/2, \pi/2]$ with Dirichlet conditions $u(\pm\pi/2) = 0$---a simplified version of Fourier's own problem. The two solutions satisfying the left and right BCs are $y_1(y) = \cos(y) + \sin(y)$ (adjusted to vanish at $-\pi/2$) and $y_2(y) = \cos(y) - \sin(y)$ (vanishing at $\pi/2$). The spectral decomposition \eqref{eq:greens_spectral} yields:
+\paragraph{Worked example: Fourier's rod.} Consider the steady-state heat equation $-u''(y) = f(y)$ on $[-\pi/2, \pi/2]$ with Dirichlet conditions $u(\pm\pi/2) = 0$—a simplified version of Fourier's own problem. The two solutions satisfying the left and right BCs are $y_1(y) = \cos(y) + \sin(y)$ (adjusted to vanish at $-\pi/2$) and $y_2(y) = \cos(y) - \sin(y)$ (vanishing at $\pi/2$). The spectral decomposition \eqref{eq:greens_spectral} yields:
 \begin{equation}
     G(y, \eta) = \sum_{n=0}^{\infty} \dfrac{\cos((2n+1)y)\cos((2n+1)\eta)}{(2n+1)^2}
 \end{equation}
 up to normalization, recovering the very eigenfunctions from Fourier's original solution.
 
-With these tools in hand---Sturm-Liouville orthogonality, the Wronskian's independence test, and Green's function inversion---we return to Fourier's boundary value problem. Equation \eqref{eq:sturm1} doesn't satisfy the Sturm-Liouville boundary conditions, since Fourier's conditions were specified only for $y$. However, equation \eqref{eq:sturm2} does: its solutions must produce a linearly independent set of orthogonal eigenfunctions. This will be the key insight into our solution.
+With these tools in hand—Sturm-Liouville orthogonality, the Wronskian's independence test, and Green's function inversion—we return to Fourier's boundary value problem. Equation \eqref{eq:sturm1} doesn't satisfy the Sturm-Liouville boundary conditions, since Fourier's conditions were specified only for $y$. However, equation \eqref{eq:sturm2} does: its solutions must produce a linearly independent set of orthogonal eigenfunctions. This will be the key insight into our solution.
 
 \subsection{Solution of the Boundary Value Problem}
 Notice the constant $\lambda$ has three possible states: positive, negative and zero.
@@ -551,7 +551,7 @@ Finally, our solution for $u(x, y)$, satisfying all of the boundary conditions i
 Fourier continues onward and generalizes these results in his treatise \cite{heat_fourier}, but his methodology is arithmetically involved and terse. We shall then again for the final time diverge from Fourier's path, and rather view the notion of Fourier Analysis from two separate viewpoints: linear algebra and complex analysis.\\
 Upon cursory examination of the above material, one may notice straight away similarities with several topics from each respective discipline:
 
-In equation \eqref{eq:fourier_cosine_series}, $f(y)$ is expressed as a linear combination of cosine terms with coefficients $c_n$---the same structure as a vector expanded in an orthogonal basis. This isn't coincidence: the Fourier cosine series \textit{is} a basis expansion. The orthogonality that emerged from Sturm-Liouville theory is the inner product operation from linear algebra, applied in a function space.
+In equation \eqref{eq:fourier_cosine_series}, $f(y)$ is expressed as a linear combination of cosine terms with coefficients $c_n$—the same structure as a vector expanded in an orthogonal basis. This isn't coincidence: the Fourier cosine series \textit{is} a basis expansion. The orthogonality that emerged from Sturm-Liouville theory is the inner product operation from linear algebra, applied in a function space.
 
 We'll view this from two complementary angles: linear algebra (function spaces, orthogonal bases, projection) and complex analysis (Laurent series, conformal maps, residues).
 
@@ -889,7 +889,7 @@ This yields:
     f(x) = \sum_{n=0}^{\infty}c_n\cos(nx)
 \end{equation}
 
-Like the result found at the end of Chapter~\ref{ch:origin}, this is the Fourier cosine series representation of $f$---the same structure, here derived purely from orthogonality in $\mathbf{L}^2$. To find the constants, simply dot both sides of the equation by $\cos(mx)$:
+Like the result found at the end of Chapter~\ref{ch:origin}, this is the Fourier cosine series representation of $f$—the same structure, here derived purely from orthogonality in $\mathbf{L}^2$. To find the constants, simply dot both sides of the equation by $\cos(mx)$:
 
 \begin{align}
     \langle f(x), \cos(mx) \rangle & = \sum_{n=0}^{\infty}a_n \langle \cos(nx), \cos(mx) \rangle
@@ -1023,7 +1023,7 @@ That $T_n$ is indeed a polynomial follows from the cosine addition formula. The 
     The right-hand side is the Fourier cosine inner product on $[0, \pi]$, which evaluates to the stated cases by the product-to-sum identity.
 \end{proof}
 
-\paragraph{The Jacobian of substitution.} The weight $w(x) = 1/\sqrt{1-x^2}$ is not an arbitrary choice. In the substitution $x = g(\theta) = \cos\theta$, the differential transforms as $\deriv x = g'(\theta)\,\deriv\theta = -\sin\theta\,\deriv\theta$, and $|g'(\theta)| = \sin\theta = \sqrt{1-x^2}$ is the $1 \times 1$ Jacobian determinant of the map $g$. The denominator $\sqrt{1-x^2}$ in the Chebyshev weight cancels this stretching exactly, so that orthogonality with respect to $w(x)\,\deriv x$ is orthogonality with respect to $\deriv\theta$---the uniform measure (cf.\ \S\ref{sec:wronskian} and \S\ref{sec:trace_det_volume}).
+\paragraph{The Jacobian of substitution.} The weight $w(x) = 1/\sqrt{1-x^2}$ is not an arbitrary choice. In the substitution $x = g(\theta) = \cos\theta$, the differential transforms as $\deriv x = g'(\theta)\,\deriv\theta = -\sin\theta\,\deriv\theta$, and $|g'(\theta)| = \sin\theta = \sqrt{1-x^2}$ is the $1 \times 1$ Jacobian determinant of the map $g$. The denominator $\sqrt{1-x^2}$ in the Chebyshev weight cancels this stretching exactly, so that orthogonality with respect to $w(x)\,\deriv x$ is orthogonality with respect to $\deriv\theta$—the uniform measure (cf.\ \S\ref{sec:wronskian} and \S\ref{sec:trace_det_volume}).
 
 \paragraph{Weight functions as Jacobian artifacts.} This pattern generalizes: in each family of classical orthogonal polynomials, the weight function compensates the Jacobian of the natural substitution. The Chebyshev weight $1/\sqrt{1-x^2}$ undoes $x = \cos\theta$; the Gegenbauer weights $(1-x^2)^{\alpha - 1/2}$ generalize to higher-dimensional spheres; the Legendre weight $w(x) = 1$ corresponds to the identity substitution, where no compensation is needed. In every case, the weight redefines the geometry of the function space so that the resulting basis is orthonormal with respect to the natural measure.
 
@@ -1063,7 +1063,7 @@ Where Chebyshev polynomials arise from the substitution $x = \cos\theta$, the Le
 
     \textbf{Step 3}: $v_2 = x^2 - \frac{\langle x^2, v_1 \rangle}{\langle v_1, v_1 \rangle}v_1 - \frac{\langle x^2, v_0 \rangle}{\langle v_0, v_0 \rangle}v_0$. The integrals give $\langle x^2, v_1 \rangle = \int_{-1}^{1} x^3\deriv{x} = 0$ and $\langle x^2, v_0 \rangle = \int_{-1}^{1} x^2\deriv{x} = \frac{2}{3}$, so $v_2 = x^2 - \frac{1}{3}$.
 
-    Normalizing so that $P_n(1) = 1$: $P_0 = 1$, $P_1 = x$, $P_2 = \frac{3}{2}(x^2 - \frac{1}{3}) = \frac{1}{2}(3x^2 - 1)$---the Legendre polynomials.
+    Normalizing so that $P_n(1) = 1$: $P_0 = 1$, $P_1 = x$, $P_2 = \frac{3}{2}(x^2 - \frac{1}{3}) = \frac{1}{2}(3x^2 - 1)$—the Legendre polynomials.
 \end{example}
 
 \paragraph{Explicit Gram-Schmidt.} Starting from $\tilde{P}_0(x) = 1$ and normalizing so that $P_n(1) = 1$:
@@ -1077,7 +1077,7 @@ Each $P_n$ is obtained by subtracting the projections of $x^n$ onto $P_0, \ldots
 
 Gram-Schmidt produces the polynomials one at a time; Rodrigues' formula gives all of them at once. The formula works because $(x^2 - 1)^n$ vanishes to order $n$ at $\pm 1$, so differentiating $n$ times produces a polynomial of degree $n$ that automatically satisfies the boundary conditions of the Legendre S-L problem. This is not coincidence: the factor $(x^2 - 1)^n = [(x-1)(x+1)]^n$ encodes the singular points of the Legendre operator $p(x) = 1 - x^2$.
 
-\begin{definition}[Legendre Polynomials --- Rodrigues' Formula]
+\begin{definition}[Legendre Polynomials — Rodrigues' Formula]
     \begin{equation}
         P_n(x) = \dfrac{1}{2^n n!}\dfrac{\deriv^n}{\deriv x^n}(x^2 - 1)^n
         \label{eq:rodrigues_legendre}
@@ -1125,7 +1125,7 @@ The Hermite polynomials extend the orthogonal polynomial framework to the entire
 \end{align}
 with three-term recurrence $H_{n+1}(x) = 2xH_n(x) - 2nH_{n-1}(x)$.
 
-\begin{definition}[Hermite Polynomials --- Rodrigues' Formula]
+\begin{definition}[Hermite Polynomials — Rodrigues' Formula]
     \begin{equation}
         H_n(x) = (-1)^n e^{x^2}\dfrac{\deriv^n}{\deriv x^n}e^{-x^2}
         \label{eq:rodrigues_hermite}
@@ -1157,7 +1157,7 @@ a Sturm-Liouville problem with $p(x) = e^{-x^2}$, $w(x) = e^{-x^2}$, and eigenva
     The quantum harmonic oscillator Hamiltonian $\hat{H} = -\frac{\deriv^2}{\deriv x^2} + x^2$ has eigenvalues $2n + 1$, which differs from the pure S-L eigenvalue $\lambda_n = 2n$ above. The discrepancy arises because $\hat{H}$ includes an additional $x^2$ potential term not present in the S-L weight.
 \end{aside}
 
-\paragraph{Physicist vs.\ probabilist conventions.} The two conventions correspond to different normalizations of the Gaussian weight: $e^{-x^2}$ (physicist) vs.\ $e^{-x^2/2}$ (probabilist, matching the standard normal $\frac{1}{\sqrt{2\pi}}e^{-x^2/2}$). The physicist's convention makes the quantum harmonic oscillator natural; the probabilist's makes Hermite expansions of probability densities natural. The scaling $\mathrm{He}_n(x) = 2^{-n/2}H_n(x/\sqrt{2})$ is a change of variables between the two weight functions---an alias, not a different family.
+\paragraph{Physicist vs.\ probabilist conventions.} The two conventions correspond to different normalizations of the Gaussian weight: $e^{-x^2}$ (physicist) vs.\ $e^{-x^2/2}$ (probabilist, matching the standard normal $\frac{1}{\sqrt{2\pi}}e^{-x^2/2}$). The physicist's convention makes the quantum harmonic oscillator natural; the probabilist's makes Hermite expansions of probability densities natural. The scaling $\mathrm{He}_n(x) = 2^{-n/2}H_n(x/\sqrt{2})$ is a change of variables between the two weight functions—an alias, not a different family.
 
 \paragraph{Eigenfunctions of the Fourier transform.} The Hermite functions $\psi_n(x) = H_n(x)e^{-x^2/2}$ are eigenfunctions of the Fourier transform itself:
 \begin{equation}
@@ -1169,7 +1169,7 @@ a Sturm-Liouville problem with $p(x) = e^{-x^2}$, $w(x) = e^{-x^2}$, and eigenva
     Define the creation and annihilation operators $a^\dagger = x - \frac{\deriv}{\deriv x}$ and $a = x + \frac{\deriv}{\deriv x}$. One verifies that $\psi_n = (a^\dagger)^n \psi_0$ where $\psi_0 = e^{-x^2/2}$ is the Gaussian (its own Fourier transform). Since the Fourier transform satisfies $\mathcal{F}[xf] = i\frac{\deriv}{\deriv k}\hat{f}$ and $\mathcal{F}[f'] = ik\hat{f}$, it intertwines the operators as $\mathcal{F} \circ a^\dagger = -i\,a^\dagger \circ \mathcal{F}$. Thus $\mathcal{F}[\psi_n] = \mathcal{F}[(a^\dagger)^n \psi_0] = (-i)^n (a^\dagger)^n \mathcal{F}[\psi_0] = (-i)^n \psi_n$.
 \end{proof}
 
-The Fourier transform acts on the Hermite basis by pure phase rotation---a four-fold symmetry, since $(-i)^4 = 1$. The same function returns after four applications of $\mathcal{F}$, so the Hermite functions are the ``atoms'' that $\mathcal{F}$ cannot decompose further: they are to the Fourier transform what eigenvectors are to a matrix. This connects Hermite polynomials (a Sturm-Liouville eigenbasis on $\mathbb{R}$ with Gaussian weight) to the Fourier basis (eigenfunctions of the Laplacian with periodic boundary conditions)---two operators, two eigenbases, unified by the fact that the Gaussian is its own Fourier transform.
+The Fourier transform acts on the Hermite basis by pure phase rotation—a four-fold symmetry, since $(-i)^4 = 1$. The same function returns after four applications of $\mathcal{F}$, so the Hermite functions are the ``atoms'' that $\mathcal{F}$ cannot decompose further: they are to the Fourier transform what eigenvectors are to a matrix. This connects Hermite polynomials (a Sturm-Liouville eigenbasis on $\mathbb{R}$ with Gaussian weight) to the Fourier basis (eigenfunctions of the Laplacian with periodic boundary conditions)—two operators, two eigenbases, unified by the fact that the Gaussian is its own Fourier transform.
 
 \begin{figure}[htbp]
     \centering
@@ -1256,7 +1256,7 @@ The Lagrange basis exhibits the action of $V^{-1}$ without ever forming $V$ itse
     Fix $x \neq x_i$ and define $w(t) = \prod_{i=0}^{n}(t - x_i)$. Let $g(t) = f(t) - p(t) - \frac{f(x) - p(x)}{w(x)}w(t)$. Then $g$ vanishes at $x_0, \ldots, x_n$ and at $x$: that's $n + 2$ zeros. By Rolle's theorem applied $n + 1$ times, $g^{(n+1)}$ has at least one zero $\xi$. Since $p^{(n+1)} \equiv 0$ and $w^{(n+1)} = (n+1)!$, evaluating $g^{(n+1)}(\xi) = 0$ gives the result.
 \end{proof}
 
-\paragraph{Optimal nodes.} The error bound \eqref{eq:interp_error} is controlled by $\|w\|_\infty = \|\prod(x - x_i)\|_\infty$. By the minimax property of Chebyshev polynomials (Theorem~\ref{thm:chebyshev_leading}), this product is minimized when the nodes are the zeros of $T_{n+1}$, i.e., the Chebyshev nodes $x_k = \cos\left(\frac{(2k+1)\pi}{2(n+1)}\right)$. For Chebyshev nodes, the Lebesgue constant grows as $O(\log n)$, compared to $O(2^n/n)$ for equispaced nodes---a dramatic difference that explains the Runge phenomenon for equispaced interpolation, in which equispaced polynomial interpolation of smooth functions (e.g., $f(x) = 1/(1+25x^2)$) diverges at the endpoints as the degree increases, because equispaced nodes concentrate interpolation error at the boundaries rather than distributing it.
+\paragraph{Optimal nodes.} The error bound \eqref{eq:interp_error} is controlled by $\|w\|_\infty = \|\prod(x - x_i)\|_\infty$. By the minimax property of Chebyshev polynomials (Theorem~\ref{thm:chebyshev_leading}), this product is minimized when the nodes are the zeros of $T_{n+1}$, i.e., the Chebyshev nodes $x_k = \cos\left(\frac{(2k+1)\pi}{2(n+1)}\right)$. For Chebyshev nodes, the Lebesgue constant grows as $O(\log n)$, compared to $O(2^n/n)$ for equispaced nodes—a dramatic difference that explains the Runge phenomenon for equispaced interpolation, in which equispaced polynomial interpolation of smooth functions (e.g., $f(x) = 1/(1+25x^2)$) diverges at the endpoints as the degree increases, because equispaced nodes concentrate interpolation error at the boundaries rather than distributing it.
 
 \begin{figure}[htbp]
     \centering
@@ -1272,7 +1272,7 @@ The Lagrange basis exhibits the action of $V^{-1}$ without ever forming $V$ itse
 
 Orthogonal polynomials solve an interpolation problem; they also solve a \textit{quadrature} problem. The question is: how should one choose $n$ nodes and weights to integrate as large a class of functions as possible?
 
-Newton-Cotes quadrature fixes equispaced nodes and determines weights---$n$ parameters total, exact for polynomials of degree $\leq n - 1$. Gauss's idea: free the nodes as well. With $n$ nodes and $n$ weights, there are $2n$ parameters, so one might hope to integrate polynomials of degree $\leq 2n - 1$ exactly. This is achieved precisely when the nodes are the zeros of an orthogonal polynomial.
+Newton-Cotes quadrature fixes equispaced nodes and determines weights—$n$ parameters total, exact for polynomials of degree $\leq n - 1$. Gauss's idea: free the nodes as well. With $n$ nodes and $n$ weights, there are $2n$ parameters, so one might hope to integrate polynomials of degree $\leq 2n - 1$ exactly. This is achieved precisely when the nodes are the zeros of an orthogonal polynomial.
 
 \begin{theorem}[Gaussian Quadrature]
     Let $\{P_n\}$ be orthogonal polynomials with respect to the weight $w(x)$ on $[a, b]$, and let $x_1, \ldots, x_n$ be the zeros of $P_n$. Then there exist unique weights $w_1, \ldots, w_n$ such that:
@@ -1309,7 +1309,7 @@ The intuition: at the zeros of $P_n$, the polynomial $P_n$ contributes nothing. 
 \end{center}
 Gauss-Legendre with $n = 2$ achieves the same exactness (degree 3) as Simpson's rule, which requires 3 nodes.
 
-\paragraph{Gauss-Chebyshev.} With $w(x) = 1/\sqrt{1-x^2}$ on $[-1, 1]$, the nodes are $x_k = \cos\left(\frac{(2k-1)\pi}{2n}\right)$, and all weights are equal: $w_k = \pi/n$. The equal-weight property reflects the uniform measure $\deriv\theta$ under the substitution $x = \cos\theta$---once again, Chebyshev quadrature is Fourier quadrature in disguise.
+\paragraph{Gauss-Chebyshev.} With $w(x) = 1/\sqrt{1-x^2}$ on $[-1, 1]$, the nodes are $x_k = \cos\left(\frac{(2k-1)\pi}{2n}\right)$, and all weights are equal: $w_k = \pi/n$. The equal-weight property reflects the uniform measure $\deriv\theta$ under the substitution $x = \cos\theta$—once again, Chebyshev quadrature is Fourier quadrature in disguise.
 
 \paragraph{Gauss-Hermite.} With $w(x) = e^{-x^2}$ on $(-\infty, \infty)$, the nodes are the zeros of the Hermite polynomial $H_n$. This is the standard quadrature for integrals against the Gaussian distribution.
 
@@ -1351,7 +1351,7 @@ The complex exponentials $e^{ix}$ and $e^{-ix}$ are orthogonal on every interval
 \begin{equation}
     Ce^{i\sqrt{\lambda}y} + De^{-i\sqrt{\lambda}y}
 \end{equation}
-The general solution always contained both exponentials (cf.\ the case analysis at equations \eqref{eq:sturm1}--\eqref{eq:sturm2}); the boundary conditions of Chapter~\ref{ch:origin} forced $D = 0$ because the even data selected cosine. Different boundary conditions---odd data, or a domain without reflection symmetry---would retain the sine term. Since both $e^{i\sqrt{\lambda}y}$ and $e^{-i\sqrt{\lambda}y}$ are eigenfunctions of the same Sturm-Liouville operator with distinct eigenvalues, their orthogonality is immediate from Theorem~\ref{thm:sturm_proof}.\\
+The general solution always contained both exponentials (cf.\ the case analysis at equations \eqref{eq:sturm1}--\eqref{eq:sturm2}); the boundary conditions of Chapter~\ref{ch:origin} forced $D = 0$ because the even data selected cosine. Different boundary conditions—odd data, or a domain without reflection symmetry—would retain the sine term. Since both $e^{i\sqrt{\lambda}y}$ and $e^{-i\sqrt{\lambda}y}$ are eigenfunctions of the same Sturm-Liouville operator with distinct eigenvalues, their orthogonality is immediate from Theorem~\ref{thm:sturm_proof}.\\
 Though the orthogonality of the two equations above is trivial, transforming the final result into its complex form requires a bit more work. We may continue using the same approach that was used in the derivation of \eqref{defn:real_fourier} with only slight modification. Thereupon our operation in a complex vector space, we must first define a new complex inner product:
 
 \begin{definition}[Hermitian Inner Product for $\mathbb{C}^n$]
@@ -1464,7 +1464,7 @@ Thus:
     \begin{equation}
         f(x) \approx \dfrac{4}{\pi}\sin(x) + \dfrac{4}{3\pi}\sin(3x) + \dfrac{4}{5\pi}\sin(5x)
     \end{equation}
-    The coefficients decay as $1/n$, reflecting the jump discontinuity. At $x = 0$, all terms vanish---the series converges to the average of the left and right limits ($\frac{-1+1}{2} = 0$), consistent with Dirichlet's theorem (Theorem~\ref{thm:dirichlet}). The persistent overshoot near the discontinuity is the Gibbs phenomenon (\S\ref{sec:convergence}).
+    The coefficients decay as $1/n$, reflecting the jump discontinuity. At $x = 0$, all terms vanish—the series converges to the average of the left and right limits ($\frac{-1+1}{2} = 0$), consistent with Dirichlet's theorem (Theorem~\ref{thm:dirichlet}). The persistent overshoot near the discontinuity is the Gibbs phenomenon (\S\ref{sec:convergence}).
     \label{ex:square_wave}
 \end{example}
 
@@ -1601,7 +1601,7 @@ The first rigorous convergence result is due to Dirichlet \cite{dirichlet_conver
 \end{theorem}
 
 \subsection*{$\mathbf{L}^2$ Convergence}
-From our Hilbert space perspective, the more natural notion of convergence is convergence in the $\mathbf{L}^2$ norm---guaranteed by the completeness of the trigonometric system (Theorem \ref{thm:sturm_completeness}): for any $f \in \mathbf{L}^2[-\pi, \pi]$,
+From our Hilbert space perspective, the more natural notion of convergence is convergence in the $\mathbf{L}^2$ norm—guaranteed by the completeness of the trigonometric system (Theorem \ref{thm:sturm_completeness}): for any $f \in \mathbf{L}^2[-\pi, \pi]$,
 \begin{equation}
     \lim_{N\to\infty} \left|\left| f - \sum_{n=-N}^{N} c_n e^{inx} \right|\right|^2 = 0
 \end{equation}
@@ -1617,7 +1617,7 @@ A particularly important consequence of $\mathbf{L}^2$ convergence is Parseval's
     \label{thm:parseval}
 \end{theorem}
 
-This is the infinite-dimensional analogue of the Pythagorean theorem: the \textit{energy} of $f$ (its squared norm) equals the sum of the squared magnitudes of its Fourier coefficients. One can also view this as a statement of energy conservation---no energy is lost or gained in the passage between time and frequency domains.
+This is the infinite-dimensional analogue of the Pythagorean theorem: the \textit{energy} of $f$ (its squared norm) equals the sum of the squared magnitudes of its Fourier coefficients. One can also view this as a statement of energy conservation—no energy is lost or gained in the passage between time and frequency domains.
 
 \begin{figure}[htbp]
     \centering
@@ -1632,7 +1632,36 @@ At jump discontinuities, the partial sums of a Fourier series exhibit a well-kno
     \lim_{N\to\infty} \max_{x \text{ near } x_0} |S_N(x) - f(x)| \approx 0.0895 \cdot J
 \end{equation}
 
-This was first observed by Wilbraham in 1848 and later rediscovered by Gibbs in 1899. It's an inherent feature of pointwise convergence at discontinuities---one can't simply throw more terms at the problem and expect it to go away.
+This was first observed by Wilbraham in 1848 and later rediscovered by Gibbs in 1899. It's an inherent feature of pointwise convergence at discontinuities—one can't simply throw more terms at the problem and expect it to go away.
+
+Let's derive the $9\%$ figure. The $N$-th partial sum of a Fourier series can be written as a convolution with the Dirichlet kernel:
+\begin{equation}
+    S_N(x) = \dfrac{1}{2\pi}\int_{-\pi}^{\pi} f(t)\,D_N(x - t)\,\deriv{t}, \qquad D_N(u) = \dfrac{\sin\bigl((N + \tfrac{1}{2})u\bigr)}{\sin(u/2)}
+\end{equation}
+The Dirichlet kernel is thus the projection kernel of the partial-sum operator: $S_N = f * D_N$, with the convolution taken over $[-\pi, \pi]$.
+
+Apply this to the unit step function $f(t) = \operatorname{sgn}(t)$, which has a jump of size $J = 2$ at the origin. Evaluating $S_N$ at $x = \pi/(N + \tfrac{1}{2})$—the first local maximum—and substituting $t = u/(N + \tfrac{1}{2})$:
+\begin{align}
+    S_N\!\left(\dfrac{\pi}{N + \tfrac{1}{2}}\right)
+    &= \dfrac{1}{\pi}\int_0^{\pi} \dfrac{\sin\bigl((N + \tfrac{1}{2})t\bigr)}{\sin(t/2)}\,\deriv{t} \\
+    &\approx \dfrac{1}{\pi}\int_0^{\pi} \dfrac{\sin\bigl((N + \tfrac{1}{2})t\bigr)}{t/2}\,\deriv{t} \\
+    &\xrightarrow{u\,=\,(N + 1/2)\,t}\quad \dfrac{2}{\pi}\int_0^{(N+1/2)\pi} \dfrac{\sin u}{u}\,\deriv{u}
+\end{align}
+where the approximation replaces $\sin(t/2) \approx t/2$ for small $t$, an error that vanishes as $N \to \infty$. Define the sine integral:
+\begin{equation}
+    \operatorname{Si}(x) = \int_0^x \dfrac{\sin t}{t}\,\deriv{t}
+\end{equation}
+In the limit $N \to \infty$, the overshoot at the first maximum converges to:
+\begin{equation}
+    \lim_{N \to \infty} S_N\!\left(\dfrac{\pi}{N + \tfrac{1}{2}}\right) = \dfrac{2}{\pi}\operatorname{Si}(\pi)
+\end{equation}
+Since the step function's value at $0^+$ is $1$, the overshoot above the true value is:
+\begin{equation}
+    \dfrac{2}{\pi}\operatorname{Si}(\pi) - 1 \approx \dfrac{2}{\pi}(1.8519) - 1 \approx 0.1790
+\end{equation}
+As a fraction of the jump $J = 2$, this is $\tfrac{1}{2}\bigl(\tfrac{2}{\pi}\operatorname{Si}(\pi) - 1\bigr) \approx 0.0895$—the Gibbs constant.
+
+\paragraph{Fej\'{e}r summation.} The Ces\`{a}ro means $\sigma_N = \frac{1}{N+1}\sum_{k=0}^{N} S_k$ replace the Dirichlet kernel with the Fej\'{e}r kernel $F_N(u) = \frac{1}{N+1}\bigl(\frac{\sin((N+1)u/2)}{\sin(u/2)}\bigr)^2$, which is everywhere nonnegative. A nonnegative approximate identity cannot overshoot, and hence the Ces\`{a}ro means converge without the Gibbs artifact (cf.\ Figure~\ref{fig:fejer}). The tradeoff: Fej\'{e}r summation sacrifices the sharp spectral localization of the partial sums for monotone, overshoot-free convergence.
 
 \begin{figure}[htbp]
     \centering
@@ -1656,7 +1685,7 @@ The deepest result in this direction is due to Carleson \cite{carleson_convergen
     \label{thm:carleson}
 \end{theorem}
 
-This landmark theorem settled a conjecture that had been open for over a century. The proof is famously difficult---it remains one of the great achievements of twentieth-century harmonic analysis. For further reading regarding convergence of Fourier series, see \cite{stein_fourier}.
+This landmark theorem settled a conjecture that had been open for over a century. The proof is famously difficult—it remains one of the great achievements of twentieth-century harmonic analysis. For further reading regarding convergence of Fourier series, see \cite{stein_fourier}.
 
 \section{The Spectral Theorem and Diagonalization}
 \label{sec:spectral_theorem}
@@ -1696,7 +1725,7 @@ The Fourier series $f = \sum c_n e_n$ is the spectral decomposition of $f$ in th
 \chapter{Eigentheory Foundations}
 \label{ch:eigentheory_foundations}
 
-The spectral theorem above states \textit{that} a symmetric matrix can be diagonalized, and the Fourier series shows \textit{how} this extends to function spaces. Before we turn to the second lens---complex analysis in Chapter~\ref{ch:complex_analysis}---it's worth pausing to examine what eigenvalues and diagonalization actually mean, since these concepts underpin everything that follows.
+The spectral theorem above states \textit{that} a symmetric matrix can be diagonalized, and the Fourier series shows \textit{how} this extends to function spaces. Before we turn to the second lens—complex analysis in Chapter~\ref{ch:complex_analysis}—it's worth pausing to examine what eigenvalues and diagonalization actually mean, since these concepts underpin everything that follows.
 
 \section{What Is an Eigenvalue?}
 \label{sec:what_is_eigenvalue}
@@ -1708,7 +1737,7 @@ The spectral theorem above states \textit{that} a symmetric matrix can be diagon
     \end{equation}
 \end{definition}
 
-Geometrically, $A$ acts on $v$ by scaling it---not rotating, reflecting, or shearing. The eigenvectors are the directions of pure dilation: $\lambda > 0$ stretches, $\lambda < 0$ reverses orientation, and $\lambda \in \mathbb{C} \setminus \mathbb{R}$ rotates. A rotation matrix $R_\theta = \begin{pmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{pmatrix}$ has eigenvalues $e^{\pm i\theta}$---no real eigenvectors, because rotation admits no invariant direction. Every real matrix, however tangled its off-diagonal entries, becomes diagonal---pure scaling---once expressed in the right coordinates. To find the eigenvalues, observe that $Av = \lambda v$ is equivalent to $(A - \lambda I)v = 0$, which has a nonzero solution if and only if:
+Geometrically, $A$ acts on $v$ by scaling it—not rotating, reflecting, or shearing. The eigenvectors are the directions of pure dilation: $\lambda > 0$ stretches, $\lambda < 0$ reverses orientation, and $\lambda \in \mathbb{C} \setminus \mathbb{R}$ rotates. A rotation matrix $R_\theta = \begin{pmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{pmatrix}$ has eigenvalues $e^{\pm i\theta}$—no real eigenvectors, because rotation admits no invariant direction. Every real matrix, however tangled its off-diagonal entries, becomes diagonal—pure scaling—once expressed in the right coordinates. To find the eigenvalues, observe that $Av = \lambda v$ is equivalent to $(A - \lambda I)v = 0$, which has a nonzero solution if and only if:
 \begin{equation}
     \det(A - \lambda I) = 0
     \label{eq:char_poly}
@@ -1720,7 +1749,7 @@ This is the \textit{characteristic polynomial}, a polynomial of degree $n$ in $\
     \begin{equation}
         \det\begin{pmatrix} 3 - \lambda & 1 \\ 0 & 2 - \lambda \end{pmatrix} = (3 - \lambda)(2 - \lambda) = 0
     \end{equation}
-    so $\lambda_1 = 3$, $\lambda_2 = 2$. For $\lambda_1 = 3$: $(A - 3I)v = 0$ gives $v_1 = \begin{pmatrix} 1 \\ 0 \end{pmatrix}$. For $\lambda_2 = 2$: $(A - 2I)v = 0$ gives $v_2 = \begin{pmatrix} -1 \\ 1 \end{pmatrix}$. The matrix $A$ stretches the $v_1$ direction by 3 and the $v_2$ direction by 2---no rotation in either direction. Their sum equals $\tr(A) = 5$, their product equals $\det(A) = 6$---relationships developed in \S\ref{sec:trace_det_volume}.
+    so $\lambda_1 = 3$, $\lambda_2 = 2$. For $\lambda_1 = 3$: $(A - 3I)v = 0$ gives $v_1 = \begin{pmatrix} 1 \\ 0 \end{pmatrix}$. For $\lambda_2 = 2$: $(A - 2I)v = 0$ gives $v_2 = \begin{pmatrix} -1 \\ 1 \end{pmatrix}$. The matrix $A$ stretches the $v_1$ direction by 3 and the $v_2$ direction by 2—no rotation in either direction. Their sum equals $\tr(A) = 5$, their product equals $\det(A) = 6$—relationships developed in \S\ref{sec:trace_det_volume}.
 \end{example}
 
 \section{Diagonalization}
@@ -1736,7 +1765,7 @@ Why does this matter? Because powers of $A$ become trivial:
 \begin{equation}
     A^k = PD^kP^{-1} = P\,\mathrm{diag}(\lambda_1^k, \ldots, \lambda_n^k)\,P^{-1}
 \end{equation}
-In the eigenbasis, the matrix acts by pure scaling---raising it to any power just raises the eigenvalues to that power.
+In the eigenbasis, the matrix acts by pure scaling—raising it to any power just raises the eigenvalues to that power.
 
 \begin{example}[Diagonalization of the $2 \times 2$ Example]
     Continuing the example above, $P = \begin{pmatrix} 1 & -1 \\ 0 & 1 \end{pmatrix}$, $D = \begin{pmatrix} 3 & 0 \\ 0 & 2 \end{pmatrix}$, and one can verify:
@@ -1755,7 +1784,7 @@ Eigenvalues encode two fundamental scalar summaries of a linear map: the \textit
 \begin{equation}
     \tr(A) = \sum_{i=1}^{n} a_{ii} = \sum_{i=1}^{n} \lambda_i
 \end{equation}
-The second equality follows from $A = PDP^{-1}$ and the cyclic property $\tr(PDP^{-1}) = \tr(D)$. The cyclic property itself is elementary: $\tr(AB) = \sum_i (AB)_{ii} = \sum_{i,j} A_{ij}B_{ji} = \tr(BA)$. In our running example, $\tr(A) = 3 + 2 = 5$. Geometrically, the trace is the total stretch across all eigendirections---a first-order summary of the map's action.
+The second equality follows from $A = PDP^{-1}$ and the cyclic property $\tr(PDP^{-1}) = \tr(D)$. The cyclic property itself is elementary: $\tr(AB) = \sum_i (AB)_{ii} = \sum_{i,j} A_{ij}B_{ji} = \tr(BA)$. In our running example, $\tr(A) = 3 + 2 = 5$. Geometrically, the trace is the total stretch across all eigendirections—a first-order summary of the map's action.
 
 \paragraph{Determinant as volume scaling.} The determinant equals the product of the eigenvalues:
 \begin{equation}
@@ -1771,7 +1800,7 @@ To see this, evaluate the characteristic polynomial $\det(A - \lambda I) = \prod
 \end{equation}
 makes this precise. Consider the substitution $x = \cos\theta$: the $1 \times 1$ Jacobian determinant is $|{-\sin\theta}| = \sin\theta = \sqrt{1 - x^2}$, so $\deriv x = \sin\theta\,\deriv\theta$. Inverting, $\deriv\theta = \deriv x / \sqrt{1 - x^2}$, which is exactly the Chebyshev weight function $w(x) = 1/\sqrt{1 - x^2}$. The weight compensates the Jacobian: orthogonality with respect to $w(x)\,\deriv x$ is orthogonality with respect to $\deriv\theta$ in disguise (cf.\ the Chebyshev orthogonality proof in \S\ref{sec:orthogonal_polynomials}).
 
-\paragraph{Summary.} Trace captures the first-order summary of a map (total stretch); the determinant captures the top-order summary (total volume change); the Jacobian determinant localizes the volume-change measurement to a single point. When the matrix is rectangular, the singular values replace the eigenvalues in these roles---the subject of SVD in Chapter~\ref{ch:eigentheory}.
+\paragraph{Summary.} Trace captures the first-order summary of a map (total stretch); the determinant captures the top-order summary (total volume change); the Jacobian determinant localizes the volume-change measurement to a single point. When the matrix is rectangular, the singular values replace the eigenvalues in these roles—the subject of SVD in Chapter~\ref{ch:eigentheory}.
 
 \section{From Finite to Infinite Dimensions}
 \label{sec:finite_to_infinite}
@@ -1782,7 +1811,7 @@ The equation $Av = \lambda v$ has a direct infinite-dimensional analogue. Replac
 \end{equation}
 This is precisely the Sturm-Liouville equation from Chapter~\ref{ch:origin}. Fourier's heat equation was an eigenvalue problem all along: find $\phi$ such that $\phi'' = -\lambda\phi$ with boundary conditions $\phi(\pm\pi/2) = 0$. The eigenvalues turned out to be $\lambda_n = (2n+1)^2$, and the eigenfunctions $\phi_n(y) = \cos((2n+1)y)$.
 
-The analogy extends further: the completeness theorem (Theorem~\ref{thm:sturm_completeness}) says that the eigenfunctions $\{\phi_n\}$ form a basis---every $f \in \mathbf{L}^2$ can be expanded as $f = \sum c_n \phi_n$. This is diagonalization: the operator $\mathcal{L}$ acts on each $\phi_n$ by pure scaling ($\lambda_n$), so in the eigenbasis, $\mathcal{L}$ becomes a ``diagonal operator.'' The Fourier coefficients $c_n = \langle f, \phi_n \rangle$ are the coordinates of $f$ in this eigenbasis---the infinite-dimensional analogue of $P^{-1}x$.
+The analogy extends further: the completeness theorem (Theorem~\ref{thm:sturm_completeness}) says that the eigenfunctions $\{\phi_n\}$ form a basis—every $f \in \mathbf{L}^2$ can be expanded as $f = \sum c_n \phi_n$. This is diagonalization: the operator $\mathcal{L}$ acts on each $\phi_n$ by pure scaling ($\lambda_n$), so in the eigenbasis, $\mathcal{L}$ becomes a ``diagonal operator.'' The Fourier coefficients $c_n = \langle f, \phi_n \rangle$ are the coordinates of $f$ in this eigenbasis—the infinite-dimensional analogue of $P^{-1}x$.
 
 \section{Eigenfunctions and the Diagonalization Principle}
 \label{sec:eigenfunctions}
@@ -1830,7 +1859,7 @@ The infinite-dimensional spectral theorem undergirds the whole picture: a self-a
 
 In the discrete setting, $F_N$ plays the same role: as we'll show in Chapter~\ref{ch:dft}, it simultaneously diagonalizes all circulant matrices, which are the discrete analogues of translation-invariant operators.
 
-\paragraph{Eigenvalues in nature.} The eigenvalue equation $\mathcal{L}[\phi] = \lambda\phi$ recurs across the sciences; in each instance, the physics selects an operator and the eigenvalues are thereafter determined---not chosen, but discovered.
+\paragraph{Eigenvalues in nature.} The eigenvalue equation $\mathcal{L}[\phi] = \lambda\phi$ recurs across the sciences; in each instance, the physics selects an operator and the eigenvalues are thereafter determined—not chosen, but discovered.
 \begin{itemize}
     \item \textbf{Vibrating strings}: $\phi'' + \lambda\phi = 0$ with fixed endpoints yields eigenvalues $\lambda_n = (n\pi/L)^2$, the squared harmonic frequencies. This is Fourier's original problem.
     \item \textbf{Quantum mechanics}: the time-independent Schr\"{o}dinger equation $\hat{H}\psi = E\psi$ is an eigenvalue problem for the Hamiltonian operator. The eigenvalues $E$ are the allowed energy levels; the eigenfunctions $\psi$ are the stationary states.
@@ -1839,7 +1868,7 @@ In the discrete setting, $F_N$ plays the same role: as we'll show in Chapter~\re
     \item \textbf{PageRank}: the dominant eigenvector of the stochastic transition matrix of the web graph determines the stationary distribution, i.e., page importance.
 \end{itemize}
 
-\paragraph{The transform pipeline as change of diagonalization.} Converting between eigenbases is a change of basis---a unitary rotation in function space. The pipeline developed throughout this paper:
+\paragraph{The transform pipeline as change of diagonalization.} Converting between eigenbases is a change of basis—a unitary rotation in function space. The pipeline developed throughout this paper:
 \begin{equation}
     \text{Fourier basis} \xleftrightarrow{x = \cos\theta} \text{Chebyshev basis} \xleftrightarrow{\text{connection matrix}} \text{Legendre basis}
 \end{equation}
@@ -1855,7 +1884,7 @@ Each basis diagonalizes a different operator:
         \hline
     \end{tabular}
 \end{center}
-The fast algorithms---FFT, FCT, FLT---make these conversions $O(N \log N)$ or $O(N \log^2 N)$. In finite dimensions, the same principle leads to eigendecomposition, then to SVD, then to PCA, and finally to compression: the subjects of Chapter~\ref{ch:eigentheory}.
+The fast algorithms—FFT, FCT, FLT—make these conversions $O(N \log N)$ or $O(N \log^2 N)$. In finite dimensions, the same principle leads to eigendecomposition, then to SVD, then to PCA, and finally to compression: the subjects of Chapter~\ref{ch:eigentheory}.
 
 \paragraph{The multivariate chain rule and the Jacobian matrix.} The one-dimensional Jacobian $g'(\theta)$ encountered in the Chebyshev substitution generalizes to higher dimensions via the Jacobian matrix. For a smooth map $g: \mathbb{R}^m \to \mathbb{R}^n$, the Jacobian $J_g \in \mathbb{R}^{n \times m}$ has entries $(J_g)_{ij} = \partial g_i / \partial \theta_j$:
 \begin{equation}
@@ -1916,7 +1945,7 @@ The above example is trivial, but demonstrates two key concepts:
     \item the process by which $a_n$ was obtained.
 \end{itemize}
 
-If $x_0$ is then a singularity of $g$, one may be quick to assume that $g$ isn't analytic about $x_0$. Indeed, it's not real-analytic about this point; notwithstanding, $g$ may still be complex-analytic---holomorphic---about $x_0$. If $g$ is indeed holomorphic on some annulus (more on this later) about $x_0$, we must reformulate the above derivation of the coefficients $a_n$.
+If $x_0$ is then a singularity of $g$, one may be quick to assume that $g$ isn't analytic about $x_0$. Indeed, it's not real-analytic about this point; notwithstanding, $g$ may still be complex-analytic—holomorphic—about $x_0$. If $g$ is indeed holomorphic on some annulus (more on this later) about $x_0$, we must reformulate the above derivation of the coefficients $a_n$.
 
 \subsection{Holomorphism}
 In the preceding section, a function, $f$, was real-analytic on some disk, $S$, if $f$ had a valid Taylor expansion on $S$. This implied $f$ was infinitely \textit{real}-differentiable on $S$ (see \eqref{eq:taylord}). One may conclude thus: if $f$ were instead holomorphic on $S$, this would imply that $f$ is infinitely \textit{complex}-differentiable on $S$. This is precisely what we're after, because if $f$ is holomorphic on $S$, there's hope for a valid power series representation of $f$ about some point within $S$.
@@ -1932,11 +1961,128 @@ Recall that holomorphism is a much more stringent requirement than its real coun
     \label{thm:cauchy_riemann}
 \end{theorem}
 
-\begin{proof}[Proof sketch]
-    The complex derivative $f'(z_0) = \lim_{h\to 0} \frac{f(z_0+h) - f(z_0)}{h}$ must yield the same value regardless of the direction from which $h \to 0$. Taking $h$ to be real ($h = \Delta x$) yields $f'(z_0) = u_x + iv_x$. Taking $h$ to be purely imaginary ($h = i\Delta y$) yields $f'(z_0) = v_y - iu_y$. Equating the real and imaginary parts gives the Cauchy-Riemann equations. See \cite{brown_churchill} for the complete proof.
+\begin{proof}
+    The complex derivative $f'(z_0) = \lim_{h\to 0} \frac{f(z_0+h) - f(z_0)}{h}$ must yield the same value regardless of the direction from which $h \to 0$. Write $f = u + iv$ and $z_0 = x_0 + iy_0$.
+
+    \textit{Along the real axis} ($h = \Delta x \in \mathbb{R}$):
+    \begin{equation}
+        f'(z_0) = \lim_{\Delta x \to 0} \dfrac{u(x_0 + \Delta x, y_0) - u(x_0, y_0)}{\Delta x} + i\,\dfrac{v(x_0 + \Delta x, y_0) - v(x_0, y_0)}{\Delta x} = u_x + iv_x
+    \end{equation}
+
+    \textit{Along the imaginary axis} ($h = i\Delta y$, $\Delta y \in \mathbb{R}$):
+    \begin{equation}
+        f'(z_0) = \lim_{\Delta y \to 0} \dfrac{u(x_0, y_0 + \Delta y) - u(x_0, y_0)}{i\Delta y} + i\,\dfrac{v(x_0, y_0 + \Delta y) - v(x_0, y_0)}{i\Delta y} = \dfrac{u_y}{i} + v_y = v_y - iu_y
+    \end{equation}
+
+    Equating real and imaginary parts of $u_x + iv_x = v_y - iu_y$ gives $u_x = v_y$ and $v_x = -u_y$—the Cauchy-Riemann equations. Conversely, if $u$ and $v$ have continuous partial derivatives satisfying C-R, one can verify directly that the difference quotient $\frac{f(z_0 + h) - f(z_0)}{h}$ converges to $u_x(x_0, y_0) + iv_x(x_0, y_0)$ as $h \to 0$ along any direction, establishing holomorphicity. (The full converse, requiring only the existence—not continuity—of the partials, is the Looman-Menchoff theorem; see \cite{ahlfors_complex}.)
 \end{proof}
 
-As an example: consider $f(z) = e^z = e^x(\cos y + i\sin y)$. Here $u = e^x\cos y$ and $v = e^x\sin y$. One can verify that $u_x = e^x\cos y = v_y$ and $u_y = -e^x\sin y = -v_x$, confirming that $e^z$ is entire (holomorphic on all of $\mathbb{C}$). This'll be relevant shortly---the complex exponentials $e^{inz}$ that form the basis of Fourier series are themselves entire functions.
+As an example: consider $f(z) = e^z = e^x(\cos y + i\sin y)$. Here $u = e^x\cos y$ and $v = e^x\sin y$. One can verify that $u_x = e^x\cos y = v_y$ and $u_y = -e^x\sin y = -v_x$, confirming that $e^z$ is entire (holomorphic on all of $\mathbb{C}$). This'll be relevant shortly—the complex exponentials $e^{inz}$ that form the basis of Fourier series are themselves entire functions.
+
+\section{Cauchy's Integral Theorem and Formula}
+\label{sec:cauchy_integral}
+
+The Cauchy-Riemann equations have a global consequence that is, by any measure, among the most remarkable results in all of analysis. Throughout the preceding chapters, Cauchy's integral formula has been referenced—in the Laurent coefficient formula \eqref{eq:laurent_coeff}, in the Schl\"{a}fli integral \eqref{eq:schlafli}—but never stated. We remedy this now.
+
+\begin{theorem}[Cauchy's Integral Theorem]
+    If $f$ is holomorphic on a simply connected domain $D \subseteq \mathbb{C}$, then for every simple closed contour $\gamma$ in $D$:
+    \begin{equation}
+        \oint_\gamma f(z)\,\deriv{z} = 0
+    \end{equation}
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+    Write $f = u + iv$ and $\deriv{z} = \deriv{x} + i\,\deriv{y}$. Then:
+    \begin{equation}
+        \oint_\gamma f\,\deriv{z} = \oint_\gamma (u\,\deriv{x} - v\,\deriv{y}) + i\oint_\gamma (v\,\deriv{x} + u\,\deriv{y})
+    \end{equation}
+    Applying Green's theorem to each real integral and invoking the Cauchy-Riemann equations: the first integral becomes $\iint(-v_x - u_y)\,\deriv{x}\,\deriv{y} = 0$ (since $u_y = -v_x$), and the second becomes $\iint(u_x - v_y)\,\deriv{x}\,\deriv{y} = 0$ (since $u_x = v_y$). This argument assumes continuous partials; the full theorem (Goursat's version) requires only holomorphicity. See \cite{ahlfors_complex}.
+\end{proof}
+
+The integral theorem says that holomorphic functions have vanishing circulation around any closed contour. Its contrapositive is equally powerful: a nonzero contour integral certifies that $f$ has a singularity inside.
+
+\begin{theorem}[Cauchy's Integral Formula]
+    If $f$ is holomorphic on and inside a simple closed contour $\gamma$, and $z_0$ lies inside $\gamma$, then:
+    \begin{equation}
+        f(z_0) = \dfrac{1}{2\pi i}\oint_\gamma \dfrac{f(z)}{z - z_0}\,\deriv{z}
+        \label{eq:cauchy_formula}
+    \end{equation}
+\end{theorem}
+
+\begin{proof}
+    The integrand $g(z) = f(z)/(z - z_0)$ is holomorphic everywhere inside $\gamma$ except at $z = z_0$. By Cauchy's theorem, the integral over $\gamma$ equals the integral over a small circle $C_\varepsilon: z = z_0 + \varepsilon e^{i\theta}$ of radius $\varepsilon > 0$ centered at $z_0$ (deform $\gamma$ to $C_\varepsilon$ without crossing the singularity; the integrals over the connecting cuts cancel). On $C_\varepsilon$:
+    \begin{align}
+        \oint_\gamma \dfrac{f(z)}{z - z_0}\,\deriv{z} &= \oint_{C_\varepsilon} \dfrac{f(z)}{z - z_0}\,\deriv{z} = \int_0^{2\pi} \dfrac{f(z_0 + \varepsilon e^{i\theta})}{\varepsilon e^{i\theta}}\,i\varepsilon e^{i\theta}\,\deriv{\theta} \\
+        &= i\int_0^{2\pi} f(z_0 + \varepsilon e^{i\theta})\,\deriv{\theta}
+    \end{align}
+    As $\varepsilon \to 0$, continuity of $f$ gives $f(z_0 + \varepsilon e^{i\theta}) \to f(z_0)$ uniformly, so the integral converges to $i \cdot 2\pi f(z_0)$. Dividing by $2\pi i$ yields the result.
+\end{proof}
+
+A holomorphic function's value at any interior point is determined entirely by its values on the boundary—a property with no real-variable analogue. Differentiating \eqref{eq:cauchy_formula} under the integral sign (justified by uniform convergence) yields:
+
+\begin{corollary}[Cauchy's Formula for Derivatives]
+    Under the same hypotheses:
+    \begin{equation}
+        f^{(n)}(z_0) = \dfrac{n!}{2\pi i}\oint_\gamma \dfrac{f(z)}{(z - z_0)^{n+1}}\,\deriv{z}
+        \label{eq:cauchy_deriv}
+    \end{equation}
+\end{corollary}
+
+This recovers the Taylor coefficients: $a_n = f^{(n)}(z_0)/n! = \frac{1}{2\pi i}\oint \frac{f(z)}{(z-z_0)^{n+1}}\deriv{z}$, closing the loop with the analyticity discussion that opened this chapter.
+
+\begin{example}[A quick contour integral]
+    Evaluate $\oint_{|z|=2} \frac{e^z}{z - 1}\,\deriv{z}$. The integrand has a single singularity at $z = 1$, which lies inside $|z| = 2$. By Cauchy's integral formula with $f(z) = e^z$ and $z_0 = 1$:
+    \begin{equation}
+        \oint_{|z|=2} \dfrac{e^z}{z - 1}\,\deriv{z} = 2\pi i\,f(1) = 2\pi i\,e
+    \end{equation}
+\end{example}
+
+\section{The Residue Theorem}
+\label{sec:residue}
+
+When $f$ has isolated singularities inside the contour, the integral need not vanish. The residue theorem quantifies the contribution of each singularity.
+
+\paragraph{Classification of singularities.} An isolated singularity $z_0$ of $f$ falls into one of three types, determined by the Laurent expansion $f(z) = \sum_{n=-\infty}^{\infty} c_n(z - z_0)^n$:
+\begin{itemize}
+    \item \textbf{Removable}: the principal part vanishes ($c_n = 0$ for all $n < 0$). The singularity is an artifact of the formula, not the function.
+    \item \textbf{Pole of order $m$}: $c_{-m} \neq 0$ and $c_n = 0$ for $n < -m$. The function blows up like $(z - z_0)^{-m}$.
+    \item \textbf{Essential}: infinitely many negative-power terms are nonzero. The behavior near $z_0$ is wild—by the Casorati-Weierstrass theorem, $f$ comes arbitrarily close to every complex value in any neighborhood of $z_0$.
+\end{itemize}
+
+\begin{definition}[Residue]
+    The \textit{residue} of $f$ at an isolated singularity $z_0$ is the coefficient $c_{-1}$ in the Laurent expansion of $f$ about $z_0$:
+    \begin{equation}
+        \operatorname{Res}_{z = z_0} f(z) = c_{-1} = \dfrac{1}{2\pi i}\oint_\gamma f(z)\,\deriv{z}
+    \end{equation}
+    where $\gamma$ is any small positively oriented circle around $z_0$ containing no other singularity.
+\end{definition}
+
+\begin{theorem}[Residue Theorem]
+    If $f$ is holomorphic on and inside a simple closed contour $\gamma$, except at finitely many isolated singularities $z_1, \ldots, z_k$ inside $\gamma$, then:
+    \begin{equation}
+        \oint_\gamma f(z)\,\deriv{z} = 2\pi i \sum_{j=1}^{k} \operatorname{Res}_{z = z_j} f(z)
+    \end{equation}
+    \label{thm:residue}
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+    Deform $\gamma$ to $k$ small circles $C_1, \ldots, C_k$, one around each singularity (the integral over $\gamma$ equals the sum of integrals over $C_j$ by Cauchy's theorem applied to the holomorphic region between the contours). Each $\oint_{C_j} f\,\deriv{z}$ picks out the $c_{-1}$ coefficient of the local Laurent expansion, yielding $2\pi i\,\operatorname{Res}_{z = z_j} f$.
+\end{proof}
+
+\paragraph{Winding numbers.} The simplest residue integral is the winding number of a closed curve $\gamma$ around a point $z_0$:
+\begin{equation}
+    n(\gamma, z_0) = \dfrac{1}{2\pi i}\oint_\gamma \dfrac{\deriv{z}}{z - z_0}
+\end{equation}
+This integer counts how many times $\gamma$ winds around $z_0$. The $n$-th Fourier coefficient $c_n = \frac{1}{2\pi}\int_0^{2\pi} f(e^{i\theta})e^{-in\theta}\,\deriv{\theta}$ is, in the $z$-plane, a winding-number integral weighted by $z^{-n}$—the Fourier decomposition is a family of winding-number computations.
+
+\begin{example}[Poles inside vs.\ outside]
+    Consider $\oint_{|z|=R} \frac{\deriv{z}}{z^2 + 4}$. The integrand has simple poles at $z = \pm 2i$ with residues $\operatorname{Res}_{z=2i} = \frac{1}{4i}$ and $\operatorname{Res}_{z=-2i} = -\frac{1}{4i}$.
+    \begin{itemize}
+        \item For $R = 1$: both poles lie outside the contour, so the integral is $0$.
+        \item For $R = 3$: both poles lie inside, and the residues sum to $0$, so the integral is again $0$.
+    \end{itemize}
+    The vanishing in both cases reflects the symmetry of the pole structure; a contour enclosing only one pole would yield a nonzero result.
+\end{example}
 
 \section{Laurent Series}
 \label{sec:laurent}
@@ -1957,7 +2103,7 @@ The Taylor series representation requires $f$ to be holomorphic on a disk center
     \label{thm:laurent}
 \end{theorem}
 
-Notice the striking similarity between \eqref{eq:laurent} and the Taylor series: the Laurent series simply extends the summation to include negative powers of $(z - z_0)$. The terms with $n \geq 0$ form the \textit{analytic part}, while those with $n < 0$ form the \textit{principal part}. When $f$ has no singularity at $z_0$ (i.e., $r_1 = 0$), all coefficients with $n < 0$ vanish, and we recover the Taylor series---a tidy elision of the general case.
+Notice the striking similarity between \eqref{eq:laurent} and the Taylor series: the Laurent series simply extends the summation to include negative powers of $(z - z_0)$. The terms with $n \geq 0$ form the \textit{analytic part}, while those with $n < 0$ form the \textit{principal part}. When $f$ has no singularity at $z_0$ (i.e., $r_1 = 0$), all coefficients with $n < 0$ vanish, and we recover the Taylor series—a tidy elision of the general case.
 
 \begin{figure}[htbp]
     \centering
@@ -1966,11 +2112,15 @@ Notice the striking similarity between \eqref{eq:laurent} and the Taylor series:
     \label{fig:laurent_annulus}
 \end{figure}
 
-For a proof of this theorem, including the derivation of the coefficient formula via Cauchy's integral formula---see \cite{ahlfors_complex}.
+The coefficient formula \eqref{eq:laurent_coeff} follows directly from Cauchy's integral formula. Multiply both sides of the Laurent expansion \eqref{eq:laurent} by $(\zeta - z_0)^{-(m+1)}$ and integrate term by term over $\gamma$:
+\begin{equation}
+    \oint_\gamma \dfrac{f(\zeta)}{(\zeta - z_0)^{m+1}}\,\deriv{\zeta} = \sum_{n=-\infty}^{\infty} c_n \oint_\gamma (\zeta - z_0)^{n - m - 1}\,\deriv{\zeta}
+\end{equation}
+Parametrizing $\gamma$ as $\zeta = z_0 + Re^{i\theta}$ gives $\oint_\gamma (\zeta - z_0)^k\,\deriv{\zeta} = iR^{k+1}\int_0^{2\pi} e^{i(k+1)\theta}\,\deriv{\theta}$, which is $2\pi i$ when $k = -1$ and $0$ otherwise—the orthogonality of the exponentials on the circle. Only the $n = m$ term survives, yielding $c_m = \frac{1}{2\pi i}\oint_\gamma \frac{f(\zeta)}{(\zeta - z_0)^{m+1}}\,\deriv{\zeta}$. For a thorough treatment of existence and convergence, see \cite{ahlfors_complex}.
 
 \section{From Laurent Series to Fourier Series}
 \label{sec:laurent_to_fourier}
-We now arrive at the central connection---the bridge between complex analysis and Fourier analysis. Consider a function $f$ that's holomorphic on an annulus containing the unit circle $|z| = 1$. By the Laurent series theorem, $f$ has the representation:
+We now arrive at the central connection—the bridge between complex analysis and Fourier analysis. Consider a function $f$ that's holomorphic on an annulus containing the unit circle $|z| = 1$. By the Laurent series theorem, $f$ has the representation:
 \begin{equation}
     f(z) = \sum_{n=-\infty}^{\infty} c_n z^n
 \end{equation}
@@ -1996,9 +2146,39 @@ Which is precisely the formula for the Fourier coefficients! The Fourier series 
     \label{fig:laurent_to_fourier}
 \end{figure}
 
-This perspective also clarifies \textit{why} the Fourier series works: the completeness of the Fourier system $\{e^{in\theta}\}$ follows from the completeness of the Laurent series (Theorem~\ref{thm:laurent}) on the annulus. The linear algebra viewpoint of Chapter~\ref{ch:linear_algebra} and the complex analysis viewpoint heretofore are thus two facets of the same underlying structure---two lenses, as promised, trained on a single object.
+This perspective also clarifies \textit{why} the Fourier series works: the completeness of the Fourier system $\{e^{in\theta}\}$ follows from the completeness of the Laurent series (Theorem~\ref{thm:laurent}) on the annulus. The linear algebra viewpoint of Chapter~\ref{ch:linear_algebra} and the complex analysis viewpoint heretofore are thus two facets of the same underlying structure—two lenses, as promised, trained on a single object.
+
+\paragraph{Periodicity in complex terms.} The substitution $z = e^{i\theta}$ wraps the real line onto the unit circle; periodicity of $f(\theta)$ is thereby equivalent to single-valuedness of $f(z)$ on the circle, which in turn requires holomorphicity on some annulus $\rho^{-1} < |z| < \rho$ containing $|z| = 1$. The width of this annulus governs coefficient decay: if $f(z)$ extends holomorphically to the annulus of radius $\rho > 1$, the Laurent/Fourier coefficients satisfy $|c_n| = O(\rho^{-|n|})$. The closer the nearest singularity in the $z$-plane lies to the unit circle, the slower the Fourier series converges—a principle we'll make precise in \S\ref{sec:convergence_complex}.
+
+\paragraph{The Poisson kernel.} For $0 \leq r < 1$, the Abel-summed Fourier series $\sum_{n=-\infty}^{\infty} r^{|n|}c_n e^{in\theta}$ converges to the Poisson integral:
+\begin{equation}
+    u(r, \theta) = \dfrac{1}{2\pi}\int_0^{2\pi} P_r(\theta - \phi)\,f(\phi)\,\deriv{\phi}, \qquad P_r(\theta) = \dfrac{1 - r^2}{1 - 2r\cos\theta + r^2} = \sum_{n=-\infty}^{\infty} r^{|n|}e^{in\theta}
+\end{equation}
+The Poisson kernel $P_r$ is the Green's function of the Dirichlet problem on the disk: $u(r, \theta)$ is harmonic for $r < 1$ and agrees with $f$ on the boundary $r = 1$. This connects the heat equation of Chapter~\ref{ch:origin}—whose steady-state solutions are harmonic functions—back to the Fourier series, now via complex analysis. As $r \to 1^-$, the Poisson kernel sharpens to a delta function, recovering the original Fourier series in the limit.
 
 For further reading regarding Laurent series and their connection to Fourier analysis, see \cite{ahlfors_complex} and \cite{brown_churchill}.
+
+\section{Convergence from the Complex-Analytic Perspective}
+\label{sec:convergence_complex}
+
+The preceding sections established that Fourier coefficients are Laurent coefficients on the unit circle. This identification immediately yields sharp convergence results governed by the singularity structure of $f$ in the complex plane.
+
+\paragraph{Analytic continuation and decay rates.} If $f(\theta)$ extends to a function holomorphic in the strip $|\operatorname{Im}(z)| < \sigma$ (via $\theta \mapsto z$), the substitution $w = e^{iz}$ maps this strip to the annulus $e^{-\sigma} < |w| < e^{\sigma}$. The Laurent/Fourier coefficients then satisfy:
+\begin{equation}
+    |c_n| = O(e^{-\sigma|n|})
+\end{equation}
+Exponential decay—the hallmark of spectral methods. Conversely, an algebraic singularity of order $\alpha$ (a branch point where $f \sim (z - z_0)^\alpha$ for non-integer $\alpha$) yields only algebraic decay: $|c_n| = O(|n|^{-\alpha})$.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\textwidth]{../assets/f14_analyticity_strip.pdf}
+    \caption{Left: the strip of analyticity $|\operatorname{Im}(z)| < \sigma$ in the $z$-plane, with singularities (red) on the boundary. Right: the corresponding annulus $e^{-\sigma} < |w| < e^{\sigma}$ in the $w = e^{iz}$ plane, with the unit circle (dashed) highlighted within.}
+    \label{fig:analyticity_strip}
+\end{figure}
+
+\paragraph{Connection to the Bernstein ellipse.} The Joukowski transform $x = (z + z^{-1})/2$ maps circles $|z| = \rho$ to confocal ellipses—the Bernstein ellipses of Theorem~\ref{thm:bernstein_ellipse}. A wider annulus of holomorphicity corresponds to a larger Bernstein ellipse parameter $\rho$, and hence faster convergence of the Chebyshev expansion. The exponential rate $\rho^{-n}$ in the Bernstein theorem is the Chebyshev-basis counterpart of the $e^{-\sigma|n|}$ rate in the Fourier basis; both measure the same underlying phenomenon—distance to the nearest singularity—in different coordinate systems.
+
+\paragraph{The Gibbs phenomenon, revisited.} A jump discontinuity in $f(\theta)$ corresponds to a logarithmic branch point on the unit circle $|w| = 1$: the function $\log(1 - e^{i(\theta - \theta_0)})$ has the same local structure as the Fourier series of a step function near $\theta_0$. Because the singularity lies \textit{on} the unit circle, the annulus width is $\sigma = 0$, and the coefficients can decay no faster than $|c_n| = O(1/n)$. This algebraic decay is too slow for uniform convergence, producing the $9\%$ overshoot derived in \S\ref{sec:convergence}. The complex-analytic viewpoint thus unifies the Gibbs phenomenon with the general principle: singularity distance governs convergence rate.
 
 \section{Complex Analysis of Orthogonal Polynomials and Green's Functions}
 \label{sec:complex_orthogonal}
@@ -2021,6 +2201,7 @@ The Joukowski transform maps circles $|z| = \rho$ (for $\rho > 1$) to confocal e
 
 \begin{theorem}[Bernstein Ellipse Theorem \cite{trefethen_atap}]
     If $f$ is analytic inside the Bernstein ellipse $E_\rho$ with $\rho > 1$, then the Chebyshev coefficients $a_n$ of $f$ satisfy $|a_n| = O(\rho^{-n})$. Conversely, if $f$ has a singularity on $E_\rho$, the coefficients cannot decay faster than $\rho^{-n}$.
+    \label{thm:bernstein_ellipse}
 \end{theorem}
 
 The parallel to the Laurent series convergence theorem is immediate: the distance to the nearest singularity (measured via $\rho$) determines the rate of coefficient decay, just as the annulus radii $r_1, r_2$ in Theorem~\ref{thm:laurent} determine the Laurent convergence region.
@@ -2033,7 +2214,7 @@ so that $z^n + z^{-n} = 2T_n(x)$ and $z^n - z^{-n} = 2i\sin\theta\,U_{n-1}(x)$. 
 \begin{equation}
     z^{n+1} + z^{-(n+1)} = (z + z^{-1})(z^n + z^{-n}) - (z^{n-1} + z^{-(n-1)})
 \end{equation}
-which, under $x = J(z)$, becomes $T_{n+1}(x) = 2xT_n(x) - T_{n-1}(x)$---the same recurrence derived from the cosine addition formula in \S\ref{sec:orthogonal_polynomials}, now falling directly from the Laurent series structure on the unit circle.
+which, under $x = J(z)$, becomes $T_{n+1}(x) = 2xT_n(x) - T_{n-1}(x)$—the same recurrence derived from the cosine addition formula in \S\ref{sec:orthogonal_polynomials}, now falling directly from the Laurent series structure on the unit circle.
 
 \subsection{Legendre Polynomials via the Schl\"{a}fli Integral}
 
@@ -2046,7 +2227,7 @@ Rodrigues' formula $P_n(x) = \frac{1}{2^n n!}\frac{\deriv^n}{\deriv x^n}(x^2 - 1
 
 where $\gamma$ is any simple closed contour encircling $z = x$. This is the \textit{Schl\"{a}fli integral}, revealing Legendre polynomials as residues of a generating kernel, in direct analogy with the Laurent coefficient formula \eqref{eq:laurent_coeff}.
 
-\paragraph{Recovering Rodrigues from Cauchy.} The Schl\"{a}fli integral closes the circle between the linear algebra and complex analysis lenses. By Cauchy's integral formula for the $n$-th derivative:
+\paragraph{Recovering Rodrigues from Cauchy.} The Schl\"{a}fli integral completes the bridge between the linear algebra and complex analysis lenses. By Cauchy's integral formula for the $n$-th derivative:
 \begin{equation}
     \dfrac{\deriv^n}{\deriv x^n}(x^2 - 1)^n = \dfrac{n!}{2\pi i}\oint_\gamma \dfrac{(z^2 - 1)^n}{(z - x)^{n+1}}\deriv{z}
 \end{equation}
@@ -2061,7 +2242,7 @@ The Green's function $G(x, \xi)$ from \S\ref{sec:greens_functions} admits a comp
     G(x, \xi; \lambda) = (L - \lambda I)^{-1}\delta(x - \xi)
 \end{equation}
 
-Viewed as a function of the complex variable $\lambda$, the resolvent $G(x, \xi; \lambda)$ is \textit{meromorphic}: analytic except for poles at the eigenvalues $\lambda_n$ of $L$. The pole structure is forced: $(L - \lambda I)^{-1}$ blows up precisely when $L - \lambda I$ is singular---that is, when $\lambda$ is an eigenvalue. This is the infinite-dimensional version of $(\mathbf{A} - \lambda \mathbf{I})^{-1}$ being undefined at eigenvalues, viewed through the complex analysis lens. The residue at each pole is the projection onto the corresponding eigenspace:
+Viewed as a function of the complex variable $\lambda$, the resolvent $G(x, \xi; \lambda)$ is \textit{meromorphic}: analytic except for poles at the eigenvalues $\lambda_n$ of $L$. The pole structure is forced: $(L - \lambda I)^{-1}$ blows up precisely when $L - \lambda I$ is singular—that is, when $\lambda$ is an eigenvalue. This is the infinite-dimensional version of $(\mathbf{A} - \lambda \mathbf{I})^{-1}$ being undefined at eigenvalues, viewed through the complex analysis lens. The residue at each pole is the projection onto the corresponding eigenspace:
 \begin{equation}
     \mathrm{Res}_{\lambda = \lambda_n} G(x, \xi; \lambda) = \dfrac{\phi_n(x)\phi_n(\xi)}{\|\phi_n\|^2}
 \end{equation}
@@ -2071,7 +2252,18 @@ Applying the residue theorem (contour integration in the $\lambda$-plane around 
     G(x, \xi) = \sum_n \dfrac{\phi_n(x)\phi_n(\xi)}{\lambda_n}
 \end{equation}
 
-The circle closes: the spectral decomposition of the Green's function from Chapter~\ref{ch:origin} falls out of the residue theorem. The two lenses converge, once again, on the same underlying structure.
+The spectral decomposition of the Green's function from Chapter~\ref{ch:origin} thereby falls out of the residue theorem—the two lenses converge on a single algebraic structure.
+
+\section{Conformal Mapping and the Joukowski Transform}
+\label{sec:conformal}
+
+We close this chapter by placing the Joukowski transform—already encountered in the Chebyshev discussion—within the broader framework of conformal mapping.
+
+\paragraph{Conformal maps.} A holomorphic function $f$ with $f'(z) \neq 0$ preserves angles between curves at each point: it is a \textit{conformal map}. The Joukowski transform $J(z) = (z + z^{-1})/2$ is conformal wherever $J'(z) = (1 - z^{-2})/2 \neq 0$, i.e., away from $z = \pm 1$. It maps the exterior of the unit disk conformally onto $\mathbb{C} \setminus [-1, 1]$, and circles $|z| = \rho > 1$ to the Bernstein ellipses of Theorem~\ref{thm:bernstein_ellipse}.
+
+\paragraph{Decomposition into M\"{o}bius transforms.} The Joukowski map can be written as a composition: $J = \frac{1}{2}(z + z^{-1}) = \frac{1}{2}\bigl((z - z^{-1}) + 2z^{-1}\bigr) + \frac{1}{2}(z + z^{-1})$. More instructively, the bilinear (M\"{o}bius) transform $w = (1 + z)/(1 - z)$ maps the unit disk conformally onto the right half-plane, converting the Fourier series on the circle into a Laplace-type integral on the line. This is the bridge between Fourier and Laplace analysis: periodic problems live on the circle; half-line problems live on the half-plane; M\"{o}bius transforms shuttle between the two.
+
+\paragraph{Chapter summary.} The complex analysis lens reveals a unified picture: Fourier coefficients are Laurent coefficients on the unit circle (\S\ref{sec:laurent_to_fourier}); convergence rates are governed by the distance from the unit circle to the nearest singularity (\S\ref{sec:convergence_complex}); the Gibbs phenomenon arises from singularities on the circle itself; and the classical orthogonal polynomial families—Chebyshev, Legendre—emerge from conformal changes of variable applied to the Laurent series. Where the linear algebra lens of Chapter~\ref{ch:linear_algebra} revealed the Fourier transform as orthogonal projection in Hilbert space, the complex analysis lens reveals it as analytic continuation restricted to the unit circle.
 
 \chapter{Interpreting The Results}
 \label{ch:interpreting}
@@ -2109,7 +2301,7 @@ Though this may look different in comparison to standard vector projection in $\
         \label{fig:example1}
     \end{figure}
 
-    To dot $f$ with another function, say $g(x) = e^x$, we multiply pointwise and sum---the discrete inner product. The exact value is:
+    To dot $f$ with another function, say $g(x) = e^x$, we multiply pointwise and sum—the discrete inner product. The exact value is:
     \begin{equation}
         \dfrac{3098\sinh(\pi)}{3737} \approx 9.57398836735
     \end{equation}
@@ -2141,11 +2333,16 @@ Though this may look different in comparison to standard vector projection in $\
     \end{figure}
 \end{example}
 
+\bigskip
+
+The examples above illustrate the central act of Fourier analysis: projecting a function onto an orthogonal basis—computing inner products in $\mathbf{L}^2$. The linear algebra lens (Chapter~\ref{ch:linear_algebra}) showed that these projections are well-defined in Hilbert space; the complex analysis lens (Chapter~\ref{ch:complex_analysis}) revealed them as Laurent coefficient extractions on the unit circle, with convergence rates governed by singularity distances.
+
+In every case, however, we computed continuous integrals—$\int f(x)\overline{e_n(x)}\,\deriv{x}$—against a continuum of basis functions. In practice, one never evaluates these integrals directly. Signals are sampled at discrete points; data arrives as finite vectors. Is the passage from continuous to discrete merely an approximation—a Riemann sum in place of an integral—or does the discrete setting possess its own algebraic structure, independent of and as rich as the continuous theory?
 
 \chapter{The Discrete Fourier Transform}
 \label{ch:dft}
 
-Throughout the preceding chapters (Chapters~\ref{ch:linear_algebra}--\ref{ch:complex_analysis}), we derived the Fourier series and transform for continuous functions in $\mathbf{L}^2$. In practice, however, one works with discrete, finite data. The natural question is: what is the discrete analogue of the Fourier transform? The answer is the Discrete Fourier Transform (DFT), which is a rich algebraic object in its own right, beyond a mere approximation of the continuous transform.
+The continuous Fourier theory developed across the preceding chapters rests on infinite-dimensional Hilbert spaces, continuous inner products, and convergence in the $\mathbf{L}^2$ norm. In practice, however, one works with discrete, finite data. The natural question is: what is the discrete analogue of the Fourier transform? The answer is the Discrete Fourier Transform (DFT), which is a rich algebraic object in its own right, beyond a mere approximation of the continuous transform.
 
 \section{DFT as Matrix Multiplication}
 \label{sec:dft_matrix}
@@ -2194,7 +2391,7 @@ The connection to the continuous Fourier transform is immediate: as the sampling
     \begin{equation}
         \vec{X} = \begin{pmatrix} 1 + 0 - 1 + 0 \\ 1 + 0 + 1 + 0 \\ 1 + 0 - 1 + 0 \\ 1 + 0 + 1 + 0 \end{pmatrix} = \begin{pmatrix} 0 \\ 2 \\ 0 \\ 2 \end{pmatrix}
     \end{equation}
-    The signal has energy only at frequencies $k = 1$ and $k = 3$---consistent with $\vec{x}$ being a pure sinusoid sampled at four points. Verification via the inverse: $\vec{x} = \frac{1}{4}\overline{F_4}\vec{X} = \frac{1}{4}\begin{pmatrix} 0+2+0+2 \\ 0+2i+0-2i \\ 0-2+0-2 \\ 0-2i+0+2i \end{pmatrix} = (1, 0, -1, 0)$.
+    The signal has energy only at frequencies $k = 1$ and $k = 3$—consistent with $\vec{x}$ being a pure sinusoid sampled at four points. Verification via the inverse: $\vec{x} = \frac{1}{4}\overline{F_4}\vec{X} = \frac{1}{4}\begin{pmatrix} 0+2+0+2 \\ 0+2i+0-2i \\ 0-2+0-2 \\ 0-2i+0+2i \end{pmatrix} = (1, 0, -1, 0)$.
 \end{example}
 
 \begin{figure}[htbp]
@@ -2250,7 +2447,7 @@ Since all circulants are polynomials in $S$, they all share $S$'s eigenvectors. 
     Since $C = \sum_{k} c_k S^k$ and $S = F_N^{-1}\mathrm{diag}(\omega_N^0, \omega_N^1, \ldots, \omega_N^{N-1})F_N$, we have $C = F_N^{-1}(\sum_k c_k \mathrm{diag}(\omega_N^{0\cdot k}, \ldots, \omega_N^{(N-1)\cdot k}))F_N = F_N^{-1}\mathrm{diag}(F_N c)F_N$. See \cite{davis_circulant, bassett_circulant} for the complete proof.
 \end{proof}
 
-This is the discrete analogue of ``the Fourier transform diagonalizes the Laplacian'': in the DFT basis, every circulant---every discrete convolution operator---acts as pure scaling.
+This is the discrete analogue of ``the Fourier transform diagonalizes the Laplacian'': in the DFT basis, every circulant—every discrete convolution operator—acts as pure scaling.
 
 \paragraph{Why FFT makes convolution $O(N \log N)$.} To compute $y = c \circledast x = Cx$:
 \begin{enumerate}
@@ -2301,7 +2498,7 @@ where $E_k$ and $O_k$ are the length-$M$ DFTs of the even and odd samples ($M = 
     \label{fig:butterfly}
 \end{figure}
 
-For a general factorization $N = f_1 \cdot f_2 \cdots f_k$, the process recurses through each factor, yielding a total operation count of $O\bigl(N \sum_i f_i\bigr)$---hence the preference for small prime factors.
+For a general factorization $N = f_1 \cdot f_2 \cdots f_k$, the process recurses through each factor, yielding a total operation count of $O\bigl(N \sum_i f_i\bigr)$—hence the preference for small prime factors.
 
 \subsection{The Stride Permutation}
 
@@ -2314,7 +2511,7 @@ This is the permutation that transposes an $N_2 \times N_1$ matrix stored in col
 \paragraph{Programming intuition.} The stride permutation is \texttt{x.reshape(N2, N1).T.ravel()}: reshape, transpose, and flatten. It reindexes between the column-major layout (needed for column DFTs) and the row-major layout (needed for row DFTs). Without this reindexing, the column and row phases would read from misaligned memory.
 
 \begin{example}[Stride permutation for $N = 6$]
-    With $N_1 = 2$, $N_2 = 3$, the permutation $L_2^6$ maps $(0,1,2,3,4,5) \mapsto (0,3,1,4,2,5)$---interleaving the two groups of three, or equivalently transposing a $3 \times 2$ matrix.
+    With $N_1 = 2$, $N_2 = 3$, the permutation $L_2^6$ maps $(0,1,2,3,4,5) \mapsto (0,3,1,4,2,5)$—interleaving the two groups of three, or equivalently transposing a $3 \times 2$ matrix.
 \end{example}
 
 \subsection{Kronecker Product Formulation}
@@ -2331,7 +2528,7 @@ This is the permutation that transposes an $N_2 \times N_1$ matrix stored in col
     \begin{equation}
         F_2 \otimes I_2 = \begin{pmatrix} 1 \cdot I_2 & 1 \cdot I_2 \\ 1 \cdot I_2 & -1 \cdot I_2 \end{pmatrix} = \begin{pmatrix} 1 & 0 & 1 & 0 \\ 0 & 1 & 0 & 1 \\ 1 & 0 & -1 & 0 \\ 0 & 1 & 0 & -1 \end{pmatrix}
     \end{equation}
-    This applies the 2-point DFT to pairs of elements---the matrix version of ``for each group of 2: apply $F_2$.''
+    This applies the 2-point DFT to pairs of elements—the matrix version of ``for each group of 2: apply $F_2$.''
 \end{example}
 
 \paragraph{Programming intuition.} If you have written a nested loop that applies one operation along rows and another along columns, you have computed a Kronecker product. The matrix $A \otimes I_n$ is the matrix version of \texttt{for each group: apply A}; $I_m \otimes B$ applies $B$ independently within each group. The mixed-product property $(A \otimes B)(C \otimes D) = (AC) \otimes (BD)$ encodes the fact that the two operations commute when they act on orthogonal index sets.
@@ -2343,7 +2540,7 @@ Following Van Loan \cite{van_loan_fft}, the two-factor decomposition admits a cl
 \end{equation}
 where $L$ is the stride permutation, $T = \mathrm{diag}(\omega_N^{jk})$ is the twiddle diagonal, and $I_m$ is the $m \times m$ identity. The left factor applies $N_2$-point DFTs across $N_1$ groups, the right factor applies $N_1$-point DFTs across $N_2$ groups, and the twiddle diagonal mediates between stages.
 
-This formulation makes the recursive structure of the FFT algebraically explicit: the full $N$-point DFT matrix is a product of sparse, structured factors---Kronecker products with identities and diagonal twiddle matrices---rather than a single dense $N \times N$ multiply.
+This formulation makes the recursive structure of the FFT algebraically explicit: the full $N$-point DFT matrix is a product of sparse, structured factors—Kronecker products with identities and diagonal twiddle matrices—rather than a single dense $N \times N$ multiply.
 
 \subsection{Multi-Factor Decomposition and the Hypercube}
 \label{sec:nd_fft}
@@ -2352,9 +2549,9 @@ The Kronecker formulation extends naturally to multiple factors. For $N = f_1 \c
 \begin{equation}
     F_{s_0 \times s_1 \times \cdots \times s_{d-1}} = F_{s_0} \otimes F_{s_1} \otimes \cdots \otimes F_{s_{d-1}}
 \end{equation}
-This means independent 1-D DFTs along each axis produce the full $N$-D result---each Kronecker factor acts on one dimension while leaving the others untouched (cf.\ the mixed-product property). The order in which axes are processed is immaterial.
+This means independent 1-D DFTs along each axis produce the full $N$-D result—each Kronecker factor acts on one dimension while leaving the others untouched (cf.\ the mixed-product property). The order in which axes are processed is immaterial.
 
-Here is the punchline: a 1-D mixed-radix FFT of length $N = f_1 \cdot f_2 \cdots f_k$ \textit{is} a $k$-dimensional FFT on an $f_1 \times f_2 \times \cdots \times f_k$ hypercube. The mixed-radix decomposition reshapes a flat vector into a multi-dimensional array, transforms along each axis in turn, and flattens the result. The twiddle factors are the phase corrections needed because the 1-D data isn't truly separable---they encode the ``cross terms'' between dimensions. A length-30 FFT is a 3-D FFT on a $2 \times 3 \times 5$ cube; a length-$2^n$ FFT is an $n$-dimensional FFT on a binary hypercube.
+Here is the punchline: a 1-D mixed-radix FFT of length $N = f_1 \cdot f_2 \cdots f_k$ \textit{is} a $k$-dimensional FFT on an $f_1 \times f_2 \times \cdots \times f_k$ hypercube. The mixed-radix decomposition reshapes a flat vector into a multi-dimensional array, transforms along each axis in turn, and flattens the result. The twiddle factors are the phase corrections needed because the 1-D data isn't truly separable—they encode the ``cross terms'' between dimensions. A length-30 FFT is a 3-D FFT on a $2 \times 3 \times 5$ cube; a length-$2^n$ FFT is an $n$-dimensional FFT on a binary hypercube.
 
 \subsection{Worked Example: $N = 30 = 2 \times 3 \times 5$}
 
@@ -2465,7 +2662,7 @@ where $\chi_n = e^{-i\pi n^2/N}$ is the chirp sequence. The inner sum is a \text
     \item \textbf{Post-multiply}: $X_k = \chi_k \cdot c_k$.
 \end{enumerate}
 
-Since $M$ is a power of two, the staged algorithm handles the inner FFTs efficiently. Phase reduction ($n^2 \bmod 2N$) keeps exponents small for numerical stability. Bluestein calls the staged FFT on power-of-two lengths (always composite); the staged FFT dispatches to the generic quadratic butterfly for prime factors \textit{within} a composite $N$---it never invokes Bluestein, so there is no circular dependency.
+Since $M$ is a power of two, the staged algorithm handles the inner FFTs efficiently. Phase reduction ($n^2 \bmod 2N$) keeps exponents small for numerical stability. Bluestein calls the staged FFT on power-of-two lengths (always composite); the staged FFT dispatches to the generic quadratic butterfly for prime factors \textit{within} a composite $N$—it never invokes Bluestein, so there is no circular dependency.
 
 \begin{figure}[htbp]
     \centering
@@ -2503,7 +2700,7 @@ The DCT and DST are the discrete analogues of the continuous cosine and sine tra
 
 \textit{Gibbs connection.} The boundary jumps in the DFT's periodic extension redistribute energy into high-frequency coefficients that the DCT doesn't need. This makes a practical difference during quantization: JPEG aggressively zeroes small high-frequency DCT coefficients, relying on the fact that most of the block's energy is concentrated in the low-frequency corner. With the DFT, the same quantization would discard genuine signal information that was redistributed by boundary artifacts.
 
-\textit{Historical note.} JPEG 2000 replaced the DCT with the CDF 9/7 wavelet transform---a multi-resolution evolution of the same principle. Wavelets provide better localization in both space and frequency, eliminating the blocking artifacts that arise from JPEG's $8 \times 8$ block structure, at the cost of greater algorithmic complexity (see \S\ref{sec:wavelets}).
+\textit{Historical note.} JPEG 2000 replaced the DCT with the CDF 9/7 wavelet transform—a multi-resolution evolution of the same principle. Wavelets provide better localization in both space and frequency, eliminating the blocking artifacts that arise from JPEG's $8 \times 8$ block structure, at the cost of greater algorithmic complexity (see \S\ref{sec:wavelets}).
 
 \paragraph{Diagonalization perspective.} The DCT matrix $C_N$ diagonalizes the discrete Laplacian with Neumann boundary conditions, just as the DFT matrix diagonalizes it with periodic ones. Same operator, different BCs, different eigenbasis.
 
@@ -2526,7 +2723,7 @@ The DCT matrix $C_N$ and DST matrix $S_N$ are orthogonal matrices related to the
 \end{equation}
 where $D$ is a diagonal phase matrix ($D_{kk} = e^{-i\pi k/(2N)}$) and $P$ is a permutation. Fast DCT/DST algorithms are therefore FFTs with pre/post-processing; the ``fast'' in FDCT comes from the FFT.
 
-All three---DFT, DCT, DST---diagonalize the \textit{same} underlying operator (the discrete Laplacian) but with different boundary conditions:
+All three—DFT, DCT, DST—diagonalize the \textit{same} underlying operator (the discrete Laplacian) but with different boundary conditions:
 \begin{center}
     \begin{tabular}{l l l}
         \hline
@@ -2558,11 +2755,11 @@ Here's the key: evaluating a Chebyshev series $\sum_{k} a_k T_k(x)$ at Chebyshev
 
 Therefore $\text{FCT} = \text{DCT} = \text{FFT with pre/post processing}$, and the complexity is $O(N \log N)$.
 
-Chebyshev spectral methods---solving PDEs, evaluating polynomial approximations---thus run at FFT speed. The substitution $x = \cos\theta$ that unifies Chebyshev and Fourier at the continuous level becomes the DCT$\leftrightarrow$FFT equivalence at the discrete level. A pleasant elision.
+Chebyshev spectral methods—solving PDEs, evaluating polynomial approximations—thus run at FFT speed. The substitution $x = \cos\theta$ that unifies Chebyshev and Fourier at the continuous level becomes the DCT$\leftrightarrow$FFT equivalence at the discrete level. A pleasant elision.
 
 \subsection{Fast Legendre Transform (FLT)}
 
-The Legendre transform---converting between Legendre coefficients and function values---doesn't reduce to an FFT via a simple substitution, because the Legendre weight $w(x) = 1$ admits no simplifying trigonometric change of variables.
+The Legendre transform—converting between Legendre coefficients and function values—doesn't reduce to an FFT via a simple substitution, because the Legendre weight $w(x) = 1$ admits no simplifying trigonometric change of variables.
 
 \paragraph{The Chebyshev--Legendre connection matrix.} Since $T_k = \sum_j M_{kj} P_j$ (an upper-triangular relationship), the Legendre$\to$Chebyshev conversion is a matrix-vector product with the connection matrix $M$. Na\"ively this is $O(N^2)$.
 
@@ -2597,12 +2794,12 @@ To recapitulate: the DFT, DCT, DST, FCT, and FLT are all $O(N \log N)$ (or near)
     \end{tabular}
 \end{center}
 
-Moving between any two is a change of basis---a rotation in the discrete function space---and all can be done in nearly $O(N \log N)$ time.
+Moving between any two is a change of basis—a rotation in the discrete function space—and all can be done in nearly $O(N \log N)$ time.
 
 \chapter{Eigentheory Applied: SVD, PCA, and Compression}
 \label{ch:eigentheory}
 
-The eigentheory foundations of Chapter~\ref{ch:eigentheory_foundations} established that diagonalization---finding the basis in which an operator acts by pure scaling---is the central principle of Fourier analysis. This chapter extends the diagonalization principle to rectangular matrices (SVD), to data analysis (PCA), and to compression, where the choice of eigenbasis determines what information survives quantization.
+The eigentheory foundations of Chapter~\ref{ch:eigentheory_foundations} established that diagonalization—finding the basis in which an operator acts by pure scaling—is the central principle of Fourier analysis. This chapter extends the diagonalization principle to rectangular matrices (SVD), to data analysis (PCA), and to compression, where the choice of eigenbasis determines what information survives quantization.
 
 \section{The Singular Value Decomposition}
 \label{sec:svd}
@@ -2620,7 +2817,7 @@ The eigendecomposition $A = Q\Lambda Q^{-1}$ requires $A$ to be square (and idea
 \end{theorem}
 
 \begin{proof}
-    The natural starting point is $A^TA$, which measures how $A$ distorts lengths: $\|Ax\|^2 = x^T(A^TA)x$. Its eigenvalues are the squared stretching factors; its eigenvectors are the directions of extremal stretching---the finite-dimensional analogue of the covariance operator in the KL theorem (\S\ref{sec:pca}).
+    The natural starting point is $A^TA$, which measures how $A$ distorts lengths: $\|Ax\|^2 = x^T(A^TA)x$. Its eigenvalues are the squared stretching factors; its eigenvectors are the directions of extremal stretching—the finite-dimensional analogue of the covariance operator in the KL theorem (\S\ref{sec:pca}).
 
     The matrix $A^TA \in \mathbb{R}^{n \times n}$ is symmetric positive semidefinite, since $x^T(A^TA)x = \|Ax\|^2 \geq 0$ for all $x$. By the spectral theorem (Theorem~\ref{thm:spectral}), $A^TA$ has an orthogonal eigendecomposition $A^TA = V\Lambda V^T$ with eigenvalues $\lambda_1 \geq \cdots \geq \lambda_n \geq 0$. Define $\sigma_i = \sqrt{\lambda_i}$ for $i = 1, \ldots, r$ where $r = \mathrm{rank}(A)$ (equivalently, the number of positive eigenvalues of $A^TA$).
 
@@ -2634,7 +2831,7 @@ The eigendecomposition $A = Q\Lambda Q^{-1}$ requires $A$ to be square (and idea
     For $i \leq r$, $Av_i = \sigma_i u_i$ by construction; for $i > r$, $v_i \in \ker(A^TA) = \ker(A)$, so $Av_i = 0$. Therefore $AV = U\Sigma$, giving $A = U\Sigma V^T$.
 \end{proof}
 
-\paragraph{Geometric interpretation.} Every linear map decomposes as a rotation ($V^T$), followed by axis-aligned scaling ($\Sigma$), followed by another rotation ($U$). Concretely, $A$ maps the unit sphere to an ellipsoid: the right singular vectors $v_i$ are the input directions that map to the ellipsoid's axes, the left singular vectors $u_i$ are those axis directions in the output space, and the singular values $\sigma_i$ are the semi-axis lengths. The truncated SVD $A_k$ keeps the $k$ longest axes---the best rank-$k$ ellipsoidal approximation. For symmetric $A$, the SVD reduces to the spectral theorem ($U = V$, $\Sigma = |\Lambda|$): the SVD is the spectral theorem generalized to rectangular matrices.
+\paragraph{Geometric interpretation.} Every linear map decomposes as a rotation ($V^T$), followed by axis-aligned scaling ($\Sigma$), followed by another rotation ($U$). Concretely, $A$ maps the unit sphere to an ellipsoid: the right singular vectors $v_i$ are the input directions that map to the ellipsoid's axes, the left singular vectors $u_i$ are those axis directions in the output space, and the singular values $\sigma_i$ are the semi-axis lengths. The truncated SVD $A_k$ keeps the $k$ longest axes—the best rank-$k$ ellipsoidal approximation. For symmetric $A$, the SVD reduces to the spectral theorem ($U = V$, $\Sigma = |\Lambda|$): the SVD is the spectral theorem generalized to rectangular matrices.
 
 \begin{example}[SVD of a $2 \times 2$ Matrix]
     Let $A = \begin{pmatrix} 2 & 1 \\ 1 & 2 \end{pmatrix}$. Since $A$ is symmetric, the SVD reduces to the spectral theorem.
@@ -2663,7 +2860,7 @@ The eigendecomposition $A = Q\Lambda Q^{-1}$ requires $A$ to be square (and idea
     AA^T &= U\Sigma^2 U^T
 \end{align}
 
-\paragraph{Complex analysis lens.} For $A \in \mathbb{C}^{m \times n}$, replace transpose with conjugate transpose throughout: $A = U\Sigma V^*$ with $U, V$ unitary. The polar decomposition $A = (AA^*)^{1/2}W$ (where $W$ is a partial isometry) is the matrix analogue of the polar form $z = re^{i\theta}$ in complex analysis---magnitude separated from phase.
+\paragraph{Complex analysis lens.} For $A \in \mathbb{C}^{m \times n}$, replace transpose with conjugate transpose throughout: $A = U\Sigma V^*$ with $U, V$ unitary. The polar decomposition $A = (AA^*)^{1/2}W$ (where $W$ is a partial isometry) is the matrix analogue of the polar form $z = re^{i\theta}$ in complex analysis—magnitude separated from phase.
 
 \paragraph{The Eckart--Young theorem.} The SVD yields the best low-rank approximation of a matrix.
 
@@ -2698,7 +2895,7 @@ The eigendecomposition $A = Q\Lambda Q^{-1}$ requires $A$ to be square (and idea
 
 PCA asks: given a collection of data points in $\mathbb{R}^p$, what directions capture the most variance? The answer connects directly to the SVD and, through the Karhunen--Lo\`{e}ve theorem, to Fourier analysis itself.
 
-\paragraph{Variance and covariance.} For a random variable $X$ with mean $\mu = \mathbb{E}[X]$, the variance $\mathrm{Var}(X) = \mathbb{E}[(X - \mu)^2]$ measures the spread of $X$ about its mean. For two random variables $X$ and $Y$, the covariance $\mathrm{Cov}(X, Y) = \mathbb{E}[(X - \mu_X)(Y - \mu_Y)]$ measures their joint variation: positive when they co-vary, zero when uncorrelated. For centered data vectors (mean subtracted), $\mathrm{Cov}(X, Y) = \frac{1}{n-1}X^TY$---covariance is an inner product on centered random variables.
+\paragraph{Variance and covariance.} For a random variable $X$ with mean $\mu = \mathbb{E}[X]$, the variance $\mathrm{Var}(X) = \mathbb{E}[(X - \mu)^2]$ measures the spread of $X$ about its mean. For two random variables $X$ and $Y$, the covariance $\mathrm{Cov}(X, Y) = \mathbb{E}[(X - \mu_X)(Y - \mu_Y)]$ measures their joint variation: positive when they co-vary, zero when uncorrelated. For centered data vectors (mean subtracted), $\mathrm{Cov}(X, Y) = \frac{1}{n-1}X^TY$—covariance is an inner product on centered random variables.
 
 \paragraph{The covariance matrix.} Given a data matrix $X \in \mathbb{R}^{n \times p}$ ($n$ observations, $p$ features, centered so each column has mean zero), the sample covariance matrix is:
 \begin{equation}
@@ -2706,7 +2903,7 @@ PCA asks: given a collection of data points in $\mathbb{R}^p$, what directions c
 \end{equation}
 The diagonal entries $C_{jj}$ are the variances of individual features; the off-diagonal entries $C_{jk}$ are the pairwise covariances. $C$ is symmetric positive semidefinite by construction.
 
-Geometrically, $C$ describes the shape of the data cloud: its eigenvectors are the axes of the best-fit ellipsoid, and its eigenvalues are the squared semi-axis lengths (the variance along each axis). Diagonalizing $C$ rotates the coordinate system to align with the data's natural axes---the same operation as diagonalizing the Laplacian aligns coordinates with natural modes of vibration. The covariance matrix $C = \frac{1}{n-1}X^TX$ is a Gram matrix---the same structure as $\langle \phi_i, \phi_j \rangle$ in the Hilbert space framework of Chapter~\ref{ch:linear_algebra}. Covariance is the statistician's name for the inner product; correlation is normalized covariance, i.e., cosine similarity. PCA diagonalizes this Gram matrix just as Fourier analysis diagonalizes the Laplacian's.
+Geometrically, $C$ describes the shape of the data cloud: its eigenvectors are the axes of the best-fit ellipsoid, and its eigenvalues are the squared semi-axis lengths (the variance along each axis). Diagonalizing $C$ rotates the coordinate system to align with the data's natural axes—the same operation as diagonalizing the Laplacian aligns coordinates with natural modes of vibration. The covariance matrix $C = \frac{1}{n-1}X^TX$ is a Gram matrix—the same structure as $\langle \phi_i, \phi_j \rangle$ in the Hilbert space framework of Chapter~\ref{ch:linear_algebra}. Covariance is the statistician's name for the inner product; correlation is normalized covariance, i.e., cosine similarity. PCA diagonalizes this Gram matrix just as Fourier analysis diagonalizes the Laplacian's.
 
 \begin{figure}[htbp]
     \centering
@@ -2723,9 +2920,9 @@ The quadratic form $w^TCw$ is the variance of the data projected onto direction 
 \begin{equation}
     \nabla_w(w^TCw - \lambda w^Tw) = 2Cw - 2\lambda w = 0 \quad \Longrightarrow \quad Cw = \lambda w
 \end{equation}
-At the optimum, the covariance operator acts on $w$ by pure scaling---$w$ is an eigenvector, and the maximized variance is $\lambda$. This is the same principle that makes Fourier modes optimal: they are the directions in which the operator (here $C$, there $\nabla^2$) acts by scaling. The $k$-th principal component maximizes variance subject to orthogonality to all previous components; by induction (the Courant-Fischer minimax principle), it's the $k$-th eigenvector.
+At the optimum, the covariance operator acts on $w$ by pure scaling—$w$ is an eigenvector, and the maximized variance is $\lambda$. This is the same principle that makes Fourier modes optimal: they are the directions in which the operator (here $C$, there $\nabla^2$) acts by scaling. The $k$-th principal component maximizes variance subject to orthogonality to all previous components; by induction (the Courant-Fischer minimax principle), it's the $k$-th eigenvector.
 
-\paragraph{The Hessian as curvature of the variance landscape.} The Hessian of the Lagrangian $\mathcal{L}(w) = w^TCw - \lambda(w^Tw - 1)$ is $H = 2(C - \lambda I)$, which is negative semidefinite at the top eigenvector (all remaining eigenvalues $\leq \lambda_1$), confirming a maximum. More broadly, the covariance matrix $C$ is itself the Hessian of the quadratic form $Q(w) = w^TCw$; its eigenvectors are the principal curvature directions of this paraboloid. Note the callback to the Laplacian: $\Delta u = \tr(H_u)$, so the Laplacian captures the ``average curvature'' of a function across coordinate directions---the trace of its Hessian.
+\paragraph{The Hessian as curvature of the variance landscape.} The Hessian of the Lagrangian $\mathcal{L}(w) = w^TCw - \lambda(w^Tw - 1)$ is $H = 2(C - \lambda I)$, which is negative semidefinite at the top eigenvector (all remaining eigenvalues $\leq \lambda_1$), confirming a maximum. More broadly, the covariance matrix $C$ is itself the Hessian of the quadratic form $Q(w) = w^TCw$; its eigenvectors are the principal curvature directions of this paraboloid. Note the callback to the Laplacian: $\Delta u = \tr(H_u)$, so the Laplacian captures the ``average curvature'' of a function across coordinate directions—the trace of its Hessian.
 
 \paragraph{PCA as SVD.} If $X = U\Sigma V^T$ is the SVD of the centered data matrix, then:
 \begin{equation}
@@ -2735,12 +2932,12 @@ so the right singular vectors of $X$ \textit{are} the principal components, and 
 
 \paragraph{Eigenfaces: PCA for images.} A striking application of PCA is the eigenface method for face representation \cite{turk_pentland}. Consider $N$ grayscale face images, each of $m \times n$ pixels, flattened into vectors $x_i \in \mathbb{R}^{mn}$. Compute the mean face $\mu = \frac{1}{N}\sum_{i} x_i$ and center: $\tilde{x}_i = x_i - \mu$. Form the data matrix $\tilde{X} = [\tilde{x}_1 \mid \cdots \mid \tilde{x}_N]^T \in \mathbb{R}^{N \times mn}$.
 
-The covariance matrix $\tilde{X}^T\tilde{X} \in \mathbb{R}^{mn \times mn}$ is far too large to diagonalize directly (for $256 \times 256$ images, $mn = 65536$). The Sirovich trick \cite{sirovich_kirby} exploits the fact that $\mathrm{rank}(\tilde{X}) \leq N \ll mn$: if $v$ is an eigenvector of the small matrix $\tilde{X}\tilde{X}^T \in \mathbb{R}^{N \times N}$ with eigenvalue $\lambda$, then $\tilde{X}^Tv$ is an eigenvector of $\tilde{X}^T\tilde{X}$ with the same eigenvalue. (This works because $\tilde{X}^T\tilde{X}$ and $\tilde{X}\tilde{X}^T$ share all nonzero eigenvalues---a consequence of the SVD---and the eigenvectors of the large matrix are recovered by the map $v \mapsto \tilde{X}^Tv$.) The top $k$ eigenvectors, reshaped to $m \times n$, are the \textit{eigenfaces}---a data-adaptive basis for the face space. Any face is reconstructed as:
+The covariance matrix $\tilde{X}^T\tilde{X} \in \mathbb{R}^{mn \times mn}$ is far too large to diagonalize directly (for $256 \times 256$ images, $mn = 65536$). The Sirovich trick \cite{sirovich_kirby} exploits the fact that $\mathrm{rank}(\tilde{X}) \leq N \ll mn$: if $v$ is an eigenvector of the small matrix $\tilde{X}\tilde{X}^T \in \mathbb{R}^{N \times N}$ with eigenvalue $\lambda$, then $\tilde{X}^Tv$ is an eigenvector of $\tilde{X}^T\tilde{X}$ with the same eigenvalue. (This works because $\tilde{X}^T\tilde{X}$ and $\tilde{X}\tilde{X}^T$ share all nonzero eigenvalues—a consequence of the SVD—and the eigenvectors of the large matrix are recovered by the map $v \mapsto \tilde{X}^Tv$.) The top $k$ eigenvectors, reshaped to $m \times n$, are the \textit{eigenfaces}—a data-adaptive basis for the face space. Any face is reconstructed as:
 \begin{equation}
     x \approx \mu + \sum_{i=1}^{k} \alpha_i \phi_i, \quad \alpha_i = \langle x - \mu, \phi_i \rangle
 \end{equation}
 
-Eigenfaces are a KL basis for the empirical face distribution. The Fourier basis would be optimal only if faces were spatially stationary---they aren't (eyes are roughly centered, mouths below noses). This is the gap between data-adaptive KL and fixed Fourier bases: PCA finds the eigenbasis of the actual covariance structure, while Fourier assumes circulant (stationary) covariance.
+Eigenfaces are a KL basis for the empirical face distribution. The Fourier basis would be optimal only if faces were spatially stationary—they aren't (eyes are roughly centered, mouths below noses). This is the gap between data-adaptive KL and fixed Fourier bases: PCA finds the eigenbasis of the actual covariance structure, while Fourier assumes circulant (stationary) covariance.
 
 \paragraph{The Karhunen--Lo\`{e}ve theorem.} PCA extends from finite data to stochastic processes via the Karhunen--Lo\`{e}ve (KL) theorem \cite{karhunen_loeve}.
 
@@ -2754,7 +2951,7 @@ Eigenfaces are a KL basis for the empirical face distribution. The Fourier basis
 
 The KL expansion is optimal: among all orthonormal bases $\{\psi_n\}$, the eigenfunctions $\{\phi_n\}$ of the covariance kernel minimize the truncation error $\mathbb{E}\|X - \sum_{n=1}^{k} \langle X, \psi_n \rangle \psi_n\|^2$ for every $k$.
 
-\paragraph{The Fourier--KL connection.} For \textit{stationary} processes, the covariance depends only on the time lag: $K(s, t) = R(s - t)$. A stationary process has the same correlation structure everywhere---shifted copies of the signal look the same statistically. In a finite window, this shift-invariance produces a Toeplitz covariance matrix (each diagonal is constant). Circulant matrices are the \textit{periodic} version of Toeplitz: they assume the signal wraps around. As the window grows, boundary effects shrink and Toeplitz converges to circulant---the finite approximation approaches the periodic ideal. By Szeg\H{o}'s theorem \cite{szego_orthogonal, gray_toeplitz}, this convergence is precise; since the DFT diagonalizes all circulants (\S\ref{sec:circulant}), the eigenbasis of the covariance matrix converges to the DFT basis.
+\paragraph{The Fourier--KL connection.} For \textit{stationary} processes, the covariance depends only on the time lag: $K(s, t) = R(s - t)$. A stationary process has the same correlation structure everywhere—shifted copies of the signal look the same statistically. In a finite window, this shift-invariance produces a Toeplitz covariance matrix (each diagonal is constant). Circulant matrices are the \textit{periodic} version of Toeplitz: they assume the signal wraps around. As the window grows, boundary effects shrink and Toeplitz converges to circulant—the finite approximation approaches the periodic ideal. By Szeg\H{o}'s theorem \cite{szego_orthogonal, gray_toeplitz}, this convergence is precise; since the DFT diagonalizes all circulants (\S\ref{sec:circulant}), the eigenbasis of the covariance matrix converges to the DFT basis.
 
 \begin{theorem}[Fourier as Asymptotic KL Basis]
     For a discrete stationary process with covariance matrix $R_N$ (Toeplitz), the KL basis converges to the DFT basis as $N \to \infty$. Equivalently, the DFT is the optimal (KL) basis for stationary processes in the asymptotic limit.
@@ -2769,7 +2966,7 @@ With SVD, PCA, and the Fourier-KL connection in hand, we can compare three appro
 
 \paragraph{SVD-based compression.} Treating a grayscale image as a matrix $A \in \mathbb{R}^{m \times n}$, the truncated SVD $A_k = \sum_{i=1}^{k} \sigma_i u_i v_i^T$ provides the best rank-$k$ approximation (Theorem~\ref{thm:eckart_young}). Storage is $k(m + n + 1)$ versus $mn$; the basis is data-adaptive with cost $O(mn \cdot \min(m, n))$ for the full decomposition. The resulting reconstructions are smooth and globally blurred.
 
-\paragraph{DCT-based compression (JPEG).} The JPEG standard divides the image into $8 \times 8$ blocks and applies the 2-D DCT (\S\ref{sec:dct_dst}) to each, then quantizes and entropy-codes the coefficients. The DCT implies even-symmetric (Neumann) boundary extension, avoiding discontinuities at block edges. For signals modeled as first-order autoregressive (AR(1))---a reasonable model for natural images---the DCT is asymptotically equivalent to the KL transform \cite{strang_learning}. Cost is $O(N \log N)$ per block, with blocking artifacts at low bitrates.
+\paragraph{DCT-based compression (JPEG).} The JPEG standard divides the image into $8 \times 8$ blocks and applies the 2-D DCT (\S\ref{sec:dct_dst}) to each, then quantizes and entropy-codes the coefficients. The DCT implies even-symmetric (Neumann) boundary extension, avoiding discontinuities at block edges. For signals modeled as first-order autoregressive (AR(1))—a reasonable model for natural images—the DCT is asymptotically equivalent to the KL transform \cite{strang_learning}. Cost is $O(N \log N)$ per block, with blocking artifacts at low bitrates.
 
 \paragraph{DFT-based compression.} Apply the 2-D DFT globally, retain the largest-magnitude coefficients, and reconstruct via the inverse DFT. This is the exact KL transform for stationary (circulant) covariance, though real images aren't perfectly stationary. It produces periodic boundary ringing (the Gibbs phenomenon of \S\ref{sec:convergence}) and requires $2\times$ storage for complex coefficients.
 
@@ -2837,7 +3034,7 @@ From the perspective of Green's functions (\S\ref{sec:greens_functions}), the co
 \section{Image Reconstruction via Epicycles}
 \label{sec:epicycles_app}
 
-Perhaps the most visually arresting application of Fourier series is the reconstruction of arbitrary closed curves using epicycles---chains of rotating vectors in the complex plane. Given a closed curve $\gamma(t)$, $t \in [0, 1)$, parametrized as a complex-valued function, its Fourier series:
+Perhaps the most visually arresting application of Fourier series is the reconstruction of arbitrary closed curves using epicycles—chains of rotating vectors in the complex plane. Given a closed curve $\gamma(t)$, $t \in [0, 1)$, parametrized as a complex-valued function, its Fourier series:
 \begin{equation}
     \gamma(t) = \sum_{n=-N}^{N} c_n e^{2\pi int}
 \end{equation}
@@ -2851,9 +3048,9 @@ The pipeline from image to epicycle reconstruction involves several stages of im
 \begin{equation}
     G_x = \begin{pmatrix} -1 & 0 & 1 \\ -2 & 0 & 2 \\ -1 & 0 & 1 \end{pmatrix}, \quad G_y = \begin{pmatrix} -1 & -2 & -1 \\ 0 & 0 & 0 \\ 1 & 2 & 1 \end{pmatrix}
 \end{equation}
-The gradient magnitude $|\nabla I| = \sqrt{(G_x * I)^2 + (G_y * I)^2}$ highlights edges---exactly the contours we want to trace. This is convolution in the spatial domain, which by the convolution theorem (Theorem~\ref{thm:convolution}) becomes pointwise multiplication in the frequency domain.
+The gradient magnitude $|\nabla I| = \sqrt{(G_x * I)^2 + (G_y * I)^2}$ highlights edges—exactly the contours we want to trace. This is convolution in the spatial domain, which by the convolution theorem (Theorem~\ref{thm:convolution}) becomes pointwise multiplication in the frequency domain.
 
-\paragraph{Canny edge detection.} The Canny detector refines the Sobel gradient through three stages: (1) Gaussian smoothing to suppress noise, (2) non-maximum suppression to thin edges to single-pixel width, and (3) hysteresis thresholding with two thresholds to connect weak edges that adjoin strong ones. The Gaussian smoothing step is itself a convolution, and its Fourier transform is a low-pass filter---another application of the convolution theorem.
+\paragraph{Canny edge detection.} The Canny detector refines the Sobel gradient through three stages: (1) Gaussian smoothing to suppress noise, (2) non-maximum suppression to thin edges to single-pixel width, and (3) hysteresis thresholding with two thresholds to connect weak edges that adjoin strong ones. The Gaussian smoothing step is itself a convolution, and its Fourier transform is a low-pass filter—another application of the convolution theorem.
 
 \paragraph{Otsu's method.} For binarization, Otsu's method \cite{otsu_threshold} finds the threshold $t^*$ that maximizes the inter-class variance:
 \begin{equation}
@@ -2861,7 +3058,7 @@ The gradient magnitude $|\nabla I| = \sqrt{(G_x * I)^2 + (G_y * I)^2}$ highlight
 \end{equation}
 where $w_0, w_1$ are the class probabilities and $\mu_0, \mu_1$ the class means. Multi-Otsu extends this to $k$ classes by maximizing $\sigma_B^2(t_1, \ldots, t_{k-1})$ over multiple thresholds simultaneously.
 
-\paragraph{Contour to Fourier coefficients.} After binarization and contour extraction, the ordered contour path is resampled to uniform arc-length spacing and the Fourier coefficients are computed via FFT. As $N$ increases, the reconstruction converges to the original contour---a direct consequence of the completeness of the Fourier basis (Theorem~\ref{thm:sturm_completeness}). In practice, $N \approx 100\text{--}500$ harmonics suffices for visually faithful reproductions of most images. Epicycle reconstruction is itself a form of Fourier compression: retaining $N$ harmonics out of the full spectrum. For a systematic comparison with SVD and DCT-based methods, see Chapter~\ref{ch:eigentheory}.
+\paragraph{Contour to Fourier coefficients.} After binarization and contour extraction, the ordered contour path is resampled to uniform arc-length spacing and the Fourier coefficients are computed via FFT. As $N$ increases, the reconstruction converges to the original contour—a direct consequence of the completeness of the Fourier basis (Theorem~\ref{thm:sturm_completeness}). In practice, $N \approx 100\text{--}500$ harmonics suffices for visually faithful reproductions of most images. Epicycle reconstruction is itself a form of Fourier compression: retaining $N$ harmonics out of the full spectrum. For a systematic comparison with SVD and DCT-based methods, see Chapter~\ref{ch:eigentheory}.
 
 \begin{figure}[htbp]
     \centering
@@ -2873,7 +3070,7 @@ where $w_0, w_1$ are the class probabilities and $\mu_0, \mu_1$ the class means.
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{../assets/f19_epicycle_convergence.pdf}
-    \caption{Epicycle reconstruction of Fourier's portrait with increasing numbers of harmonics ($N = 3, 10, 50, 200$). As $N$ grows, the reconstruction converges to the original contour---a visual confirmation of the completeness of the Fourier basis.}
+    \caption{Epicycle reconstruction of Fourier's portrait with increasing numbers of harmonics ($N = 3, 10, 50, 200$). As $N$ grows, the reconstruction converges to the original contour—a visual confirmation of the completeness of the Fourier basis.}
     \label{fig:epicycle_convergence}
 \end{figure}
 
@@ -2900,7 +3097,7 @@ In each case, the Fourier transform furnishes the passage between the time (or s
 \section{Wavelets: Time-Frequency Localization}
 \label{sec:wavelets}
 
-The Fourier basis functions $e^{in\theta}$ extend over the entire domain: each has perfect frequency localization but zero time (or spatial) localization. For stationary signals---those whose frequency content does not change over time---this is ideal. For non-stationary signals (speech, seismic data, transient phenomena), it is not: a spike at $t = 0.5$ contributes to \textit{every} Fourier coefficient, smearing its temporal information across the entire frequency axis.
+The Fourier basis functions $e^{in\theta}$ extend over the entire domain: each has perfect frequency localization but zero time (or spatial) localization. For stationary signals—those whose frequency content does not change over time—this is ideal. For non-stationary signals (speech, seismic data, transient phenomena), it is not: a spike at $t = 0.5$ contributes to \textit{every} Fourier coefficient, smearing its temporal information across the entire frequency axis.
 
 \paragraph{The short-time Fourier transform.} A natural first attempt is the short-time Fourier transform (STFT): multiply the signal by a sliding window $g(t - b)$ and take the Fourier transform within each window. This produces a time-frequency representation, but the window size is fixed, imposing a rigid resolution tradeoff. A narrow window yields good time resolution but poor frequency resolution; a wide window yields the reverse. The Heisenberg-Gabor uncertainty principle makes this tradeoff fundamental: no linear transform can achieve perfect localization in both domains simultaneously.
 
@@ -2908,11 +3105,11 @@ The Fourier basis functions $e^{in\theta}$ extend over the entire domain: each h
 \begin{equation}
     \psi_{a,b}(t) = |a|^{-1/2}\,\psi\!\left(\frac{t - b}{a}\right), \quad a \neq 0,\; b \in \mathbb{R}
 \end{equation}
-The continuous wavelet transform (CWT) is the inner product $\langle f, \psi_{a,b} \rangle$---the same projection framework used throughout this paper. Large $|a|$ captures low frequencies with coarse time resolution; small $|a|$ captures high frequencies with fine time resolution. The wavelet transform thus tiles the time-frequency plane with rectangles of varying aspect ratio, adapting resolution to the signal's local structure.
+The continuous wavelet transform (CWT) is the inner product $\langle f, \psi_{a,b} \rangle$—the same projection framework used throughout this paper. Large $|a|$ captures low frequencies with coarse time resolution; small $|a|$ captures high frequencies with fine time resolution. The wavelet transform thus tiles the time-frequency plane with rectangles of varying aspect ratio, adapting resolution to the signal's local structure.
 
-\paragraph{Key wavelets.} The Haar wavelet (1909)---a step function---is the simplest: it captures whether a signal goes up or down in a given interval. The Daubechies wavelets \cite{daubechies1992} are compactly supported and maximally smooth for a given support width; the CDF 9/7 variant is the basis of JPEG 2000 compression (cf.\ the historical note in \S\ref{sec:dct_dst}). The Morlet wavelet---a Gaussian-windowed sinusoid---connects wavelets directly to the STFT.
+\paragraph{Key wavelets.} The Haar wavelet (1909)—a step function—is the simplest: it captures whether a signal goes up or down in a given interval. The Daubechies wavelets \cite{daubechies1992} are compactly supported and maximally smooth for a given support width; the CDF 9/7 variant is the basis of JPEG 2000 compression (cf.\ the historical note in \S\ref{sec:dct_dst}). The Morlet wavelet—a Gaussian-windowed sinusoid—connects wavelets directly to the STFT.
 
-\paragraph{Multi-resolution analysis.} Where the Fourier transform tiles the frequency axis uniformly (each coefficient occupies the same bandwidth), the dyadic wavelet transform tiles it logarithmically: low frequencies get wide frequency bands and long time windows, high frequencies get narrow bands and short windows. This logarithmic tiling matches the multi-scale structure of many natural signals. The wavelet transform diagonalizes operators with multi-scale structure---differential operators with spatially varying coefficients, or fractal self-similarity---just as the Fourier transform diagonalizes translation-invariant operators. The inner-product, basis-expansion, and spectral machinery developed throughout this paper carries over directly \cite{mallat2009}.
+\paragraph{Multi-resolution analysis.} Where the Fourier transform tiles the frequency axis uniformly (each coefficient occupies the same bandwidth), the dyadic wavelet transform tiles it logarithmically: low frequencies get wide frequency bands and long time windows, high frequencies get narrow bands and short windows. This logarithmic tiling matches the multi-scale structure of many natural signals. The wavelet transform diagonalizes operators with multi-scale structure—differential operators with spatially varying coefficients, or fractal self-similarity—just as the Fourier transform diagonalizes translation-invariant operators. The inner-product, basis-expansion, and spectral machinery developed throughout this paper carries over directly \cite{mallat2009}.
 
 \bibliographystyle{plain}
 \bibliography{fourier_paper}
@@ -2972,14 +3169,14 @@ When the input image carries a non-trivial alpha channel (opaque fraction betwee
 \begin{equation}
     M_{\mathrm{subject}} \leftarrow M_\alpha \cap M_{\mathrm{subject}}.
 \end{equation}
-If the resulting mask covers less than 12\% of the image area, the ML model is deemed to have failed and the mask is disabled; subsequent stages then operate on the full image. Otherwise, the largest contour of $M_{\mathrm{subject}}$ (extracted via marching squares at level $0.5$) serves as the \emph{silhouette}---the authoritative subject boundary that anchors all later stages.
+If the resulting mask covers less than 12\% of the image area, the ML model is deemed to have failed and the mask is disabled; subsequent stages then operate on the full image. Otherwise, the largest contour of $M_{\mathrm{subject}}$ (extracted via marching squares at level $0.5$) serves as the \emph{silhouette}—the authoritative subject boundary that anchors all later stages.
 
 \section{Structure and Feature Contours}
 \label{sec:structure_feature_contours}
 
 With the subject mask in hand, contour extraction proceeds in two complementary passes, each targeting a different spatial scale of image structure.
 
-\paragraph{Structure contours (iso-intensity).} Sixteen quantile thresholds are computed at equi-spaced percentiles (5th through 95th) of the subject-pixel intensity distribution. At each level, marching squares extracts iso-intensity contours---akin to the level sets of a topographic map. Contours are retained only if more than 70\% of their sample points fall inside the subject mask, preventing background leakage where iso-levels extend beyond the subject boundary. Near-concentric duplicates (area ratio $\in [0.65, 1.55]$ and bounding-box IoU $\geq 0.55$) are collapsed, and the remaining contours are sorted by enclosed area descending.
+\paragraph{Structure contours (iso-intensity).} Sixteen quantile thresholds are computed at equi-spaced percentiles (5th through 95th) of the subject-pixel intensity distribution. At each level, marching squares extracts iso-intensity contours—akin to the level sets of a topographic map. Contours are retained only if more than 70\% of their sample points fall inside the subject mask, preventing background leakage where iso-levels extend beyond the subject boundary. Near-concentric duplicates (area ratio $\in [0.65, 1.55]$ and bounding-box IoU $\geq 0.55$) are collapsed, and the remaining contours are sorted by enclosed area descending.
 
 \paragraph{Feature contours (edge density).} A density field is constructed by taking the pointwise maximum of two smoothed edge maps:
 \begin{equation}
@@ -3001,7 +3198,7 @@ Multiple filtering criteria are applied throughout the pipeline to ensure each r
 \begin{enumerate}
     \item \textbf{Area filtering}: contours whose enclosed area (computed via the shoelace formula) falls below $0.1\%$ of the image area are discarded.
     \item \textbf{Subject overlap}: structure contours require $> 70\%$ of sample points inside the ML mask; feature contours require $> 50\%$.
-    \item \textbf{Angle-threshold simplification}: points on near-straight segments are removed when the direction change between consecutive tangent vectors is below $1.0^{\circ}$. This preserves corners and sharp features while discarding redundant collinear points---a $360$-point circle has approximately $1^{\circ}$ between consecutive tangents, so circular detail is retained.
+    \item \textbf{Angle-threshold simplification}: points on near-straight segments are removed when the direction change between consecutive tangent vectors is below $1.0^{\circ}$. This preserves corners and sharp features while discarding redundant collinear points—a $360$-point circle has approximately $1^{\circ}$ between consecutive tangents, so circular detail is retained.
     \item \textbf{Deduplication}: two contours are declared near-duplicates and one is discarded when their area ratio exceeds $0.88$, their centroid distance is below $3.5\%$ of the image diagonal, and their bounding-box IoU exceeds $0.9$.
     \item \textbf{Spatial outlier pruning}: contours whose centroid falls outside the union of the silhouette bounding box and the top-3 contour bounding boxes (expanded by a $25\%$ margin) are removed.
 \end{enumerate}
@@ -3164,7 +3361,7 @@ def positions_at(self, t):
     return positions
 \end{lstlisting}
 
-The chain is ordered by decreasing amplitude $|c_n|$, so the largest circles (lowest frequencies) are drawn first. The tip of the outermost vector traces the reconstructed curve---a direct visualization of the partial Fourier sum converging to the original contour.
+The chain is ordered by decreasing amplitude $|c_n|$, so the largest circles (lowest frequencies) are drawn first. The tip of the outermost vector traces the reconstructed curve—a direct visualization of the partial Fourier sum converging to the original contour.
 
 \section{Chebyshev and Legendre Series via Polynomial Fitting}
 \label{app:poly_fitting}
@@ -3190,7 +3387,7 @@ def legendre_from_chebyshev(cheb_coeffs):
     return np.asarray(leg.coef, dtype=np.float64)
 \end{lstlisting}
 
-This produces the same polynomial re-expressed in the Legendre basis---an instance of the upper-triangular change of basis described in \S\ref{sec:transform_pipeline}.
+This produces the same polynomial re-expressed in the Legendre basis—an instance of the upper-triangular change of basis described in \S\ref{sec:transform_pipeline}.
 
 \paragraph{The Runge phenomenon and re-fitting.} A subtlety arises when computing partial sums at increasing harmonic levels: one cannot simply truncate a high-degree fit, as this can exhibit the Runge phenomenon (Figure~\ref{fig:runge}). The Lebesgue constant $\Lambda_n$ governs the amplification of interpolation error: for equispaced nodes, $\Lambda_n$ grows exponentially ($\Lambda_n \sim 2^n / (en \log n)$), while for Chebyshev nodes it grows only logarithmically ($\Lambda_n \sim \frac{2}{\pi}\log n + O(1)$). This dramatic difference means that truncating a high-degree equispaced fit to degree $k$ can produce a worse approximation than fitting at degree $k$ directly.
 
