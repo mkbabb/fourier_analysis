@@ -8,12 +8,8 @@ __pycache__
 mongo_data
 uploads
 paper/*.pdf
-paper/*.aux
-paper/*.log
-paper/*.bbl
 paper/*.blg
 paper/*.out
-paper/*.toc
 assets/portraits
 *.egg-info
 dist
