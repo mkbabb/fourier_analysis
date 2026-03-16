@@ -16,7 +16,7 @@ COPY . .
 CMD ["uv", "run", "uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
 
 FROM deps AS production
-RUN adduser --disabled-password --no-create-home app
+RUN adduser --disabled-password app
 COPY . .
 RUN chown -R app:app /app/.venv
 ENV UV_CACHE_DIR=/tmp/uv-cache
