@@ -18,7 +18,10 @@ const { toasts, dismiss } = useToast();
                     <AlertTriangle v-if="t.type === 'error'" class="toast-icon text-amber-500" />
                     <Check v-else-if="t.type === 'success'" class="toast-icon text-green-500" />
                     <Info v-else class="toast-icon text-blue-400" />
-                    <p class="toast-msg fira-code">{{ t.message }}</p>
+                    <p class="toast-msg fira-code">
+                        {{ t.message }}
+                        <code v-if="t.slug" class="toast-slug">{{ t.slug }}</code>
+                    </p>
                     <button class="toast-dismiss" @click="dismiss(t.id)">
                         <X class="h-3.5 w-3.5" />
                     </button>
@@ -49,6 +52,7 @@ const { toasts, dismiss } = useToast();
     padding: 0.625rem 0.75rem;
     border-radius: 0.625rem;
     border: 1.5px solid hsl(var(--border) / 0.3);
+    border-left: 3px solid hsl(var(--border) / 0.3);
     background: hsl(var(--popover) / 0.92);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -57,8 +61,17 @@ const { toasts, dismiss } = useToast();
     pointer-events: auto;
 }
 
+.toast-success {
+    border-left-color: hsl(142 71% 45%);
+}
+
 .toast-error {
     border-color: hsl(var(--destructive) / 0.25);
+    border-left-color: hsl(38 92% 50%);
+}
+
+.toast-info {
+    border-left-color: hsl(217 91% 60%);
 }
 
 .toast-icon {
@@ -91,6 +104,17 @@ const { toasts, dismiss } = useToast();
 
 .toast-dismiss:hover {
     background: hsl(var(--foreground) / 0.1);
+    color: hsl(var(--foreground));
+}
+
+.toast-slug {
+    display: inline;
+    font-family: "Fira Code", monospace;
+    font-size: 0.8em;
+    padding: 0.1em 0.35em;
+    border-radius: 0.25rem;
+    background: hsl(var(--foreground) / 0.06);
+    border: 1px solid hsl(var(--foreground) / 0.1);
     color: hsl(var(--foreground));
 }
 

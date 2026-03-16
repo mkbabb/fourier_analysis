@@ -4,6 +4,7 @@ export interface Toast {
     id: number;
     message: string;
     type: "error" | "info" | "success";
+    slug?: string;
 }
 
 let nextId = 0;
@@ -16,10 +17,10 @@ const DEFAULT_DURATION: Record<Toast["type"], number> = {
     success: 3000,
 };
 
-function addToast(message: string, type: Toast["type"] = "info", duration?: number) {
+function addToast(message: string, type: Toast["type"] = "info", options?: { duration?: number; slug?: string }) {
     const id = nextId++;
-    toasts.value.push({ id, message, type });
-    const timer = setTimeout(() => dismiss(id), duration ?? DEFAULT_DURATION[type]);
+    toasts.value.push({ id, message, type, slug: options?.slug });
+    const timer = setTimeout(() => dismiss(id), options?.duration ?? DEFAULT_DURATION[type]);
     timers.set(id, timer);
 }
 
