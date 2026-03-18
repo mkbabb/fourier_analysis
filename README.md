@@ -1,16 +1,14 @@
 # `fourier-analysis`
 
-Companion code for [*An Introduction to Fourier Analysis*](paper/fourier_paper.pdf). Fourier series computation, basis decomposition (Chebyshev, Legendre), epicycle reconstruction, contour tracing, and an interactive web demo.
-
-See [docs/paper-windowing.md](docs/paper-windowing.md) for the current paper-view pipeline.
+Companion code for [_An Introduction to Fourier Analysis_](paper/fourier_paper.pdf). Fourier series computation, basis decomposition (Chebyshev, Legendre), epicycle reconstruction, contour tracing, and an interactive web demo.
 
 ## About
 
-This package implements the computational backbone for the paper *An Introduction to Fourier Analysis* by me, Michael Babb, a mathematical exposition that develops Fourier series from the dual vantage of linear algebra and complex analysis, proceeding through the DFT and its applications. The code here generates every figure in the paper and exposes the core operations (coefficient extraction, reconstruction, partial sums, epicycle chains, multi-basis decomposition) as a usable library.
+This package implements the computational backbone for the paper _An Introduction to Fourier Analysis_ by me, Michael Babb, a mathematical exposition that develops Fourier series from the dual vantage of linear algebra and complex analysis, proceeding through the DFT and its applications. The code here generates every figure in the paper and exposes the core operations (coefficient extraction, reconstruction, partial sums, epicycle chains, multi-basis decomposition) as a usable library.
 
-The project descends from `fourier-animate` (February 2019), an earlier Fourier series epicycle visualization tool built concurrently with [`mdarray`](https://github.com/mkbabb/mdarray). Where that project was narrowly scoped to epicycles tracing closed curves in the complex plane, this one covers the full pipeline from contour extraction through tour ordering, Fourier decomposition, and animation rendering, plus the figure generation apparatus for the paper itself.
+The project progenates from `fourier-animate` (February 2019), an earlier Fourier series epicycle visualization tool built concurrently with [`mdarray`](https://github.com/mkbabb/mdarray). Where that project was narrowly scoped to epicycles tracing closed curves in the complex plane, this one covers the full pipeline from contour extraction through tour ordering, Fourier decomposition, and animation rendering, plus the figure generation apparatus for the paper itself.
 
-Fourier coefficients are extracted via FFT, reconstruction inverts them, and partial sums truncate the spectrum to *N* harmonics. Epicycle chains reify those coefficients as rotating phasors sorted by amplitude. The `bases` module extends this to Chebyshev and Legendre polynomial decompositions (Legendre coefficients are derived from Chebyshev via coefficient conversion rather than fitted independently), enabling side-by-side comparison of how different orthogonal systems approximate the same contour. The contour module handles extracting and ordering edge paths from raster images so they can be fed to the Fourier machinery.
+Fourier coefficients are extracted via FFT, reconstruction inverts them, and partial sums truncate the spectrum to _N_ harmonics. Epicycle chains reify those coefficients as rotating phasors sorted by amplitude. The `bases` module extends this to Chebyshev and Legendre polynomial decompositions (Legendre coefficients are derived from Chebyshev via coefficient conversion rather than fitted independently), enabling side-by-side comparison of how different orthogonal systems approximate the same contour. The contour module handles extracting and ordering edge paths from raster images so they can be fed to the Fourier machinery.
 
 ## Installation
 
@@ -113,15 +111,15 @@ curve = evaluate_partial_sum(fourier_decomp, degree=50, n_eval=1000)
 
 Seven [strategies](src/fourier_analysis/contours/) are available:
 
-| Strategy | Best for | Method |
-|---|---|---|
-| `auto` (default) | General use | 5-stage pipeline: subject isolation, structure extraction, feature extraction, assembly, and tour ordering |
-| `threshold` | Portraits, silhouettes | [Otsu binarization](https://en.wikipedia.org/wiki/Otsu%27s_method) → marching squares |
-| `adaptive_threshold` | Uneven lighting | Local adaptive thresholding → marching squares |
-| `multi_threshold` | Interior detail | [Multi-Otsu](https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.threshold_multiotsu) → contours at each level boundary |
-| `canny` | Line drawings, gradients | Canny edges → morphological closing → marching squares |
-| `edge_aware` | Photos with soft edges | Edge-density-guided region extraction |
-| `ml` | Complex scenes | ML-based subject isolation with configurable thresholds |
+| Strategy             | Best for                 | Method                                                                                                                                            |
+| -------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `auto` (default)     | General use              | 5-stage pipeline: subject isolation, structure extraction, feature extraction, assembly, and tour ordering                                        |
+| `threshold`          | Portraits, silhouettes   | [Otsu binarization](https://en.wikipedia.org/wiki/Otsu%27s_method) → marching squares                                                             |
+| `adaptive_threshold` | Uneven lighting          | Local adaptive thresholding → marching squares                                                                                                    |
+| `multi_threshold`    | Interior detail          | [Multi-Otsu](https://scikit-image.org/docs/stable/api/skimage.filters.html#skimage.filters.threshold_multiotsu) → contours at each level boundary |
+| `canny`              | Line drawings, gradients | Canny edges → morphological closing → marching squares                                                                                            |
+| `edge_aware`         | Photos with soft edges   | Edge-density-guided region extraction                                                                                                             |
+| `ml`                 | Complex scenes           | ML-based subject isolation with configurable thresholds                                                                                           |
 
 ```python
 from fourier_analysis.contours import extract_contours, resample_arc_length
@@ -153,173 +151,9 @@ anim.render("output.mp4")       # save to file
 anim.render()                    # or display interactively
 ```
 
-## Web Demo
+### Figures
 
-An interactive web application for exploring Fourier and polynomial basis decompositions. Upload an image, extract contours, and view animated epicycle reconstructions.
-
-### Architecture
-
-- **Frontend**: Vue 3 + Vite 7 + Tailwind v4 SPA with Canvas 2D epicycle renderer, KaTeX math rendering, and a build-time LaTeX paper parser
-- **Backend**: FastAPI with Motor (async MongoDB) for sessions and GridFS for image storage
-- **Database**: MongoDB 7 with TTL-indexed sessions (auto-expire after 30 days)
-- **Proxy**: nginx reverse proxy with rate limiting in production
-
-### Running locally
-
-The simplest path is the dev script, which starts both servers with hot-reload:
-
-```bash
-# Requires: Python 3.12+, Node 22+, MongoDB on localhost:27017
-./scripts/dev.sh
-```
-
-This launches uvicorn on port 8000 and Vite on port 3000, with `/api` requests proxied to the backend.
-
-Alternatively, with Docker:
-
-```bash
-docker compose up
-```
-
-### Deployment
-
-Production uses a two-file compose overlay with an nginx entry point:
-
-```bash
-docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-```
-
-The deploy script (`scripts/deploy.sh`) pushes to GitHub, SSHs to the production host, pulls, rebuilds, and runs health checks. Environment variables are documented in `.env.example`.
-
-### Frontend features
-
-- **Paper view**: the LaTeX paper parsed at build time into deterministic section data, flattened for navigation, windowed at render time, and overlaid with stable page numbers
-- **Visualization view**: image upload (drag-and-drop), contour parameter tuning (strategy, blur, area filtering, max contours, contour smoothing), basis selection (Fourier/Chebyshev/Legendre), animated epicycle canvas, coefficient panel, frame export
-- **Session persistence**: slug-based URLs (`/s/big-red-angry-python`), stored in MongoDB with GridFS-backed images
-
-### Paper pipeline
-
-The paper route is split across the two repos:
-
-1. `latex-paper` parses `paper/fourier_paper.tex`, resolves labels, flattens the section tree, and emits `virtual:paper-content`.
-2. The web app consumes that module, windows the flat section list, renders only the active neighborhood, and derives page numbers from LaTeX TOC artifacts rather than heading text.
-3. Far TOC jumps warm a small target window, jump immediately, and use a short overlay fade instead of mounting the whole paper.
-
-### API endpoints
-
-All routes are prefixed with `/api`:
-
-| Method | Path | Description |
-|---|---|---|
-| `GET` | `/health` | Health check |
-| `POST` | `/sessions` | Create session (generates a 4-word slug) |
-| `GET` | `/sessions/{slug}` | Get session |
-| `PUT` | `/sessions/{slug}` | Update contour/animation settings |
-| `DELETE` | `/sessions/{slug}` | Delete session and its image |
-| `POST` | `/sessions/{slug}/upload` | Upload image (SHA-256 dedup) |
-| `GET` | `/sessions/{slug}/image` | Retrieve image from GridFS |
-| `POST` | `/sessions/{slug}/compute/contours` | Extract contours |
-| `POST` | `/sessions/{slug}/compute/epicycles` | Compute Fourier epicycle decomposition |
-| `POST` | `/sessions/{slug}/compute/bases` | Compute multi-basis decomposition |
-
-## Structure
-
-```
-fourier_analysis/
-    assets/                      # Generated figures (PDF + PNG)
-        portraits/               # Input images for epicycle reconstruction
-    paper/
-        fourier_paper.tex        # Paper source
-        fourier_paper.bib        # Bibliography
-        fourier_paper.pdf        # Compiled paper
-    src/fourier_analysis/
-        __init__.py              # Public API exports
-        cli.py                   # CLI entry point (fourier command)
-        series.py                # Fourier coefficients, reconstruction, partial sums
-        epicycles.py             # EpicycleComponent, EpicycleChain
-        bases.py                 # Multi-basis decomposition (Fourier, Chebyshev, Legendre)
-        bases_fitting.py         # Basis fitting routines
-        bases_evaluation.py      # Basis evaluation routines
-        fft_backend.py           # FFT backend abstraction (NumPy / mdarray)
-        contours/                # Contour extraction package
-            __init__.py          # Public API (extract_contours, resample_arc_length)
-            models.py            # ContourConfig, ContourStrategy, diagnostics dataclasses
-            pipeline.py          # 5-stage orchestrator (isolate → structure → features → assemble → tour)
-            extraction.py        # Top-level extract_contours() entry point
-            image.py             # Image loading, resizing, grayscale/edge preprocessing
-            isolation.py         # Subject isolation (alpha mask, ML-based)
-            structure.py         # Structure contours (iso-intensity blobs)
-            features.py          # Feature contours (edge-density regions)
-            assembly.py          # Contour assembly and deduplication
-            masks.py             # Mask generation (Otsu, adaptive, Canny, edge-aware, ML)
-            geometry.py          # Arc-length resampling, polygon area, simplification
-            processing.py        # Contour postprocessing (smoothing, filtering, ranking)
-            ml.py                # ML-based segmentation support
-        shortest_tour.py         # KDTree nearest-neighbor + 2-opt tour ordering
-        animation.py             # Matplotlib epicycle animation renderer
-        figures/
-            generate_all.py      # Driver for all 25 paper figures
-            f01_title_epicycle.py  # ...through f25_hermite_eigenfunctions.py
-            style.py             # Shared matplotlib styling
-    api/
-        main.py                  # FastAPI app with lifespan, CORS, router mounting
-        config.py                # pydantic-settings configuration
-        dependencies.py          # Slug validation, session lookup, GridFS access
-        slugs.py                 # Human-readable slug generation (coolname)
-        Dockerfile               # Multi-stage (dev + prod targets)
-        models/
-            session.py           # Session document models
-            computation.py       # Compute request/response models
-            assets.py            # Asset models
-            shared.py            # Shared model utilities
-        routers/
-            sessions.py          # Session CRUD
-            images.py            # Image upload/retrieval (GridFS)
-            compute.py           # Contour, epicycle, and basis compute endpoints
-            contours.py          # Contour-specific routes
-            snapshots.py         # Snapshot routes
-        services/
-            database.py          # Motor client lifecycle, TTL index
-            computation.py       # Wraps fourier_analysis library for async compute
-    web/
-        package.json             # Vue 3, Pinia, KaTeX, Tailwind v4, Vite 7
-        vite.config.ts           # Dev proxy, LaTeX paper plugin, path aliases
-        Dockerfile               # Multi-stage (dev Vite / prod nginx)
-        src/
-            App.vue              # Shell: header, router view, SVG filters
-            router/index.ts      # /paper, /visualize, /s/:slug routes
-            stores/
-                session.ts       # Session CRUD, image upload, compute dispatch
-                animation.ts     # rAF-driven animation loop, scrubbing, speed
-            components/
-                paper/           # PaperView, PaperSection, theorem/math blocks
-                visualization/   # VisualizationView, BasisCanvas, AnimationControls,
-                                 #   ImageUpload, ContourSettings, BasisSelector,
-                                 #   CoefficientsPanel, ExportModal
-                ui/              # Reusable primitives (toggle, slider, select, tooltip)
-            lib/
-                api.ts           # Backend API client
-                bases.ts         # Client-side Fourier/Chebyshev/Legendre evaluation
-                math-worker.ts   # Web Worker for off-thread trace precomputation
-        plugins/
-            vite-plugin-latex-paper.ts  # Parses fourier_paper.tex into structured JSON at build time
-    nginx/
-        fourier.conf             # Reverse proxy config (rate limiting, sub-path rewriting)
-    scripts/
-        dev.sh                   # Local dev launcher (uvicorn + Vite, port discovery)
-        deploy.sh                # Production deploy (SSH, build, health check)
-    tests/
-        test_series.py           # Coefficient, reconstruction, Parseval, shift theorem tests
-        test_epicycles.py        # Epicycle chain tests
-        test_contours.py         # Contour extraction and resampling tests
-        test_shortest_tour.py    # Tour ordering tests
-        test_fft_backend.py      # Backend switching tests
-        test_bases.py            # Multi-basis decomposition and animation data tests
-```
-
-## Figures
-
-Regenerate all 25 paper figures:
+Regenerate all paper figures:
 
 ```bash
 fourier figures
@@ -327,9 +161,13 @@ fourier figures
 
 The figures span the paper's arc: partial sums, orthogonal projection, inner products, Fourier projection, the heat equation, Gibbs phenomenon, Fejér summation, Parseval's identity, Laurent series, DFT matrices, butterfly diagrams, Bluestein's algorithm, the convolution theorem, epicycle annotation and convergence, the contour-tracing pipeline, epicycle portrait reconstructions, SVD ellipsoids, PCA ellipses, the Runge phenomenon, and Hermite eigenfunctions.
 
+## Web Demo
+
+An interactive web application for exploring Fourier and polynomial basis decompositions. Upload an image, extract contours, and view thereupon the animated epicycle reconstructions.
+
 ## The mdarray connection
 
-Both this project and [`mdarray`](https://github.com/mkbabb/mdarray) descend from `fftplusplus` (May 2018), a C++ FFTPACK port with CPython bindings and several pure-Python FFT iterations. `mdarray` carried that lineage into a full N-dimensional array library with a [Temperton](https://doi.org/10.1016/0021-9991(83)90013-X) staged mixed-radix FFT engine; this project applies the Fourier analysis to series, epicycles, and visualization.
+Both this project and [`mdarray`](https://github.com/mkbabb/mdarray) descend from `fftplusplus` (May 2018), a C++ FFTPACK port with CPython bindings and several pure-Python FFT iterations. `mdarray` carried that lineage into a full N-dimensional array library with a [Temperton](<https://doi.org/10.1016/0021-9991(83)90013-X>) staged mixed-radix FFT engine; this project applies the Fourier analysis to series, epicycles, and visualization.
 
 The FFT backend is abstracted behind a [protocol](src/fourier_analysis/fft_backend.py) in `fft_backend.py`. By default, NumPy's FFT is used. If you have `mdarray` installed locally, you can switch:
 
@@ -347,13 +185,6 @@ uv pip install -e /path/to/mdarray
 
 Then `set_backend("mdarray")` will route all FFT calls through mdarray's pure-Python mixed-radix engine—useful for testing, pedagogical comparison, or environments where NumPy isn't available.
 
-## Testing
-
-```bash
-uv run pytest
-```
-
-59 tests covering coefficient extraction, FFT roundtrip reconstruction, upsampling, partial sum convergence, Parseval's identity, shift theorem, linearity, conjugate symmetry, epicycle chain evaluation, contour extraction strategies, arc-length resampling, tour ordering, backend switching, and multi-basis decomposition (Chebyshev fitting, Legendre conversion, partial sum convergence across all three bases, animation data structure).
 
 ## Paper
 
@@ -364,19 +195,3 @@ latexmk -pdf paper/fourier_paper.tex
 ```
 
 A pre-compiled PDF is included at [`paper/fourier_paper.pdf`](paper/fourier_paper.pdf).
-
-## References
-
-- Fourier, J.B.J. *Théorie analytique de la chaleur.* Cambridge University Press, 1878.
-- Stein, E.M. and Shakarchi, R. [*Fourier Analysis: An Introduction.*](https://press.princeton.edu/books/hardcover/9780691113845/fourier-analysis) Princeton Lectures in Analysis, Princeton University Press, 2003.
-- Axler, S. [*Linear Algebra Done Right.*](https://linear.axler.net/) 3rd ed., Springer, 2015.
-- Ahlfors, L.V. *Complex Analysis.* 3rd ed., McGraw-Hill, 1979.
-- Kreyszig, E. *Introductory Functional Analysis with Applications.* Wiley, 1978.
-- Cooley, J.W. and Tukey, J.W. ["An Algorithm for the Machine Calculation of Complex Fourier Series."](https://doi.org/10.1090/S0025-5718-1965-0178586-1) *Math. Comp.* **19**(90), 297–301 (1965).
-- Bluestein, L.I. ["A Linear Filtering Approach to the Computation of the Discrete Fourier Transform."](https://doi.org/10.1109/TAU.1970.1162132) *IEEE Trans. Audio Electroacoust.* **18**(4), 451–455 (1970).
-- Temperton, C. ["Self-Sorting Mixed-Radix Fast Fourier Transforms."](https://doi.org/10.1016/0021-9991(83)90013-X) *J. Comput. Phys.* **52**, 1–23 (1983).
-- Van Loan, C.F. *Computational Frameworks for the Fast Fourier Transform.* SIAM, 1992.
-
-## License
-
-MIT
