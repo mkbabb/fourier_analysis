@@ -78,6 +78,24 @@ const shortError = computed(() => {
     return msg.length > 60 ? msg.slice(0, 60) + "…" : msg;
 });
 
+function currentComputeKey(): string {
+    const maxContoursValue = maxContours.value === 0 ? null : maxContours.value;
+    return JSON.stringify({
+        imageSlug: store.imageSlug,
+        strategy: strategy.value,
+        blurSigma: blurSigma.value,
+        minContourArea: minContourArea.value,
+        maxContours: maxContoursValue,
+        smoothContours: smoothContours.value,
+        mlThreshold: mlThreshold.value,
+        nHarmonics: props.nHarmonics,
+        nPoints: props.nPoints,
+    });
+}
+
+let suppressSettingsRecompute = true;
+let lastComputedKey: string | null = null;
+
 async function runCompute() {
     if (!store.imageMeta) return;
 
@@ -106,6 +124,8 @@ async function runCompute() {
             store.computeEpicycles(),
             store.computeBases(),
         ]);
+
+        lastComputedKey = currentComputeKey();
     } finally {
         store.endCompute();
     }
@@ -114,7 +134,12 @@ async function runCompute() {
 // Auto-compute on settings change (debounced 1s to reduce request volume)
 watchDebounced(
     () => [strategy.value, blurSigma.value, minContourArea.value, maxContours.value, smoothContours.value, mlThreshold.value, props.nHarmonics, props.nPoints],
-    () => runCompute(),
+    () => {
+        if (suppressSettingsRecompute || !store.imageMeta) return;
+        const nextKey = currentComputeKey();
+        if (nextKey === lastComputedKey) return;
+        runCompute();
+    },
     { debounce: 1000, immediate: false },
 );
 
@@ -122,11 +147,37 @@ watchDebounced(
 watch(
     () => store.imageMeta,
     (meta) => {
-        if (meta && !store.epicycleData && !store.basesData && !store.computing) {
+        if (!meta) {
+            suppressSettingsRecompute = true;
+            lastComputedKey = null;
+            return;
+        }
+
+        lastComputedKey = null;
+        suppressSettingsRecompute = true;
+
+        if (!store.epicycleData && !store.basesData && !store.computing) {
             runCompute();
         }
     },
     { immediate: true },
+);
+
+watch(
+    () => store.imageSlug,
+    () => {
+        suppressSettingsRecompute = true;
+        lastComputedKey = null;
+    },
+);
+
+watch(
+    () => [strategy.value, blurSigma.value, minContourArea.value, maxContours.value, smoothContours.value, mlThreshold.value, props.nHarmonics, props.nPoints, store.imageSlug],
+    () => {
+        queueMicrotask(() => {
+            suppressSettingsRecompute = false;
+        });
+    },
 );
 </script>
 
