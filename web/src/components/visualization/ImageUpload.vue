@@ -9,14 +9,19 @@ const store = useWorkspaceStore();
 const fileInput = ref<HTMLInputElement>();
 const imgError = ref(false);
 
-// Reset error state when a new image is uploaded (including via global drag)
-watch(() => store.imageSlug, () => { imgError.value = false; });
-
-const { isDragging, preview, handleDrop, handleDragOver, handleDragEnter, handleDragLeave, handleFileSelect } =
+const { isDragging, preview, clearPreview, handleDrop, handleDragOver, handleDragEnter, handleDragLeave, handleFileSelect } =
     useImageUpload(async (file: File) => {
         imgError.value = false;
         await store.uploadImage(file);
     });
+
+// Reset component-local preview when the workspace image changes, including
+// uploads initiated from the global dropzone or canvas click target.
+watch(() => store.imageSlug, () => {
+    imgError.value = false;
+    clearPreview();
+});
+
 const hasPreview = () => !!store.imageMeta || preview.value;
 
 function openFilePicker() {

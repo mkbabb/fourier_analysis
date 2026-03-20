@@ -364,13 +364,12 @@ function drawMultiBasesFrame(s: CanvasSurface, view: ViewTransform) {
     hover.setLabelHitRegions(hitRegions);
 }
 
-// ── Watchers (consolidated) ──
-// Data watcher: resets trail, invalidates bbox, triggers draw.
-// Watches epicycleData and basesData by identity (both are always replaced
-// wholesale, never mutated) — deep comparison on these large arrays would be
-// a serious performance hit.
+// ── Watchers (split: epicycle vs bases) ──
+// Watcher A — epicycle identity + epicycle-mode visibility.
+// Trail is only cleared when the epicycle data itself changes or the
+// epicycle layer is toggled, NOT when basesData arrives.
 watch(
-    [() => store.epicycleData, () => store.basesData, () => props.activeBases],
+    [() => store.epicycleData, () => props.activeBases.includes("fourier-epicycles")],
     () => {
         trail.clearTrail();
         stableEpicycleBbox = null;
@@ -381,6 +380,22 @@ watch(
         } else {
             trail.reset();
         }
+
+        if (!surface.value) {
+            setupCanvas();
+        } else {
+            drawFrame();
+        }
+    },
+);
+
+// Watcher B — bases data + full activeBases list.
+// Only invalidates the basis fit center (layout may have changed);
+// does NOT touch trail so epicycle animation stays continuous.
+watch(
+    [() => store.basesData, () => props.activeBases],
+    () => {
+        baseFitCenter = null;
 
         if (!surface.value) {
             setupCanvas();

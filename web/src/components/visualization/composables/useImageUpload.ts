@@ -85,9 +85,18 @@ export function useImageUpload(onFile: (file: File) => void) {
         reader.readAsDataURL(file);
     }
 
+    function clearPreview() {
+        if (activeReader && activeReader.readyState === FileReader.LOADING) {
+            activeReader.abort();
+        }
+        activeReader = null;
+        preview.value = null;
+    }
+
     return {
         isDragging,
         preview,
+        clearPreview,
         handleDrop,
         handleDragOver,
         handleDragEnter,

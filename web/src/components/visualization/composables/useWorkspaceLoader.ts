@@ -122,10 +122,9 @@ export function useWorkspaceLoader(activeBases: Ref<string[]>) {
                         ...activeBases.value.filter((b) => !b.startsWith("fourier")),
                     ];
                 }
-            }
-            // Start playing if not already
-            if (!anim.playing) {
                 anim.reset();
+                anim.play();
+            } else if (!anim.playing) {
                 anim.play();
             }
         },
