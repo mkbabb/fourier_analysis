@@ -37,6 +37,13 @@ function abortable(key: string): AbortSignal {
     return ac.signal;
 }
 
+export function abortInflight(keys: string[]) {
+    for (const key of keys) {
+        inflight.get(key)?.abort();
+        inflight.delete(key);
+    }
+}
+
 /** Check if an error is an abort (not a real failure). */
 export function isAbortError(e: unknown): boolean {
     return e instanceof DOMException && e.name === "AbortError";

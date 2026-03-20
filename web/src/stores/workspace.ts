@@ -64,6 +64,13 @@ export const useWorkspaceStore = defineStore("workspace", () => {
         }, 1000);
     }
 
+    function invalidateInFlightComputation() {
+        revision.value++;
+        epicycleRevision++;
+        basesRevision++;
+        api.abortInflight(["extractContour", "computeEpicycles", "computeBases", "getContour"]);
+    }
+
     async function _saveDraftNow() {
         if (!imageSlug.value) return;
         const raw: WorkspaceDraft = structuredClone({
@@ -86,14 +93,16 @@ export const useWorkspaceStore = defineStore("workspace", () => {
         loading.value = true;
         error.value = null;
         try {
-            const hash = await api.computeSha256(file);
-            let meta = await api.checkImageHash(hash);
-            if (!meta) meta = await api.uploadImage(file);
-            imageSlug.value = meta.image_slug;
-            imageMeta.value = meta;
+            invalidateInFlightComputation();
             contour.value = null;
             epicycleData.value = null;
             basesData.value = null;
+            // Always upload: store_image_asset deduplicates by sha256 and
+            // regenerates the thumbnail with current processing (EXIF transpose).
+            // Skipping the upload on hash match would leave stale thumbnails.
+            const meta = await api.uploadImage(file);
+            imageSlug.value = meta.image_slug;
+            imageMeta.value = meta;
             router.push(`/w/${meta.image_slug}`);
             await _saveDraftNow();
         } catch (e: any) {
@@ -107,6 +116,9 @@ export const useWorkspaceStore = defineStore("workspace", () => {
     async function loadWorkspace(slug: string) {
         loading.value = true;
         error.value = null;
+        epicycleRevision++;
+        basesRevision++;
+        api.abortInflight(["computeEpicycles", "computeBases", "getContour"]);
         const rev = ++revision.value;
         try {
             const [meta, draft] = await Promise.all([
@@ -160,6 +172,9 @@ export const useWorkspaceStore = defineStore("workspace", () => {
     async function loadSnapshot(slug: string, snapshotHash: string) {
         loading.value = true;
         error.value = null;
+        epicycleRevision++;
+        basesRevision++;
+        api.abortInflight(["computeEpicycles", "computeBases", "getContour"]);
         const rev = ++revision.value;
         try {
             const [meta, snapshot] = await Promise.all([
@@ -217,6 +232,9 @@ export const useWorkspaceStore = defineStore("workspace", () => {
         beginCompute();
         error.value = null;
         try {
+            epicycleRevision++;
+            basesRevision++;
+            api.abortInflight(["computeEpicycles", "computeBases"]);
             const result = await api.saveContour(imageSlug.value, points);
             contour.value = markRaw(result);
             epicycleData.value = null;
@@ -344,6 +362,7 @@ export const useWorkspaceStore = defineStore("workspace", () => {
         reset,
         beginCompute,
         endCompute,
+        invalidateInFlightComputation,
         defaultContourSettings,
         defaultAnimationSettings,
     };
